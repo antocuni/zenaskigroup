@@ -6,11 +6,31 @@
         <title>{% block title %}Zena Ski Group{% endblock title %}</title>
         <meta name="viewport" content="width=device-width,initial-scale=1">
         <link rel="stylesheet" href="/static/css/flatly/bootstrap.min.css">
+
+        <!-- =============== <Landing Page> ============== -->
+        <!-- http://startbootstrap.com/template-overviews/landing-page/ -->
+        <link rel="stylesheet" href="/static/css/landing-page.css">
+        <link href="http://fonts.googleapis.com/css?family=Lato:300,400,700,300italic,400italic,700italic" rel="stylesheet" type="text/css">
+        <!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
+        <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
+        <!--[if lt IE 9]>
+            <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
+            <script src="https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
+        <![endif]-->
+        <!-- =============== </Landing Page> ============== -->
+
+        <!-- XXX: this should be 0px only on the home page -->
+        <style>
+          .navbar {
+            margin-bottom: 0px;
+          }
+        </style>
+
+
         {% render_block "css" %}
     </head>
     <body>
         {% cms_toolbar %}
-        <div class="container">
             <div class="navbar navbar-default" role="navigation">
                 <div class="navbar-header">
                     <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
@@ -19,7 +39,7 @@
                         <span class="icon-bar"></span>
                         <span class="icon-bar"></span>
                     </button>
-                    <a class="navbar-brand" href="#">Project name</a>
+                    <a class="navbar-brand" href="/">Zena Ski Group</a>
                 </div>
                 <div class="navbar-collapse collapse">
                     <ul class="nav navbar-nav">
@@ -27,8 +47,9 @@
                     </ul>
                 </div>
             </div>
+
             {% block content %}{% endblock content %}
-        </div>
+
         <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/1.11.3/jquery.min.js"></script>
         <script src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.3.4/js/bootstrap.min.js"></script>
         {% render_block "js" %}
