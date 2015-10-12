@@ -5,7 +5,7 @@
     <meta charset="utf-8">
     <title>{% block title %}Zena Ski Group{% endblock title %}</title>
     <meta name="viewport" content="width=device-width,initial-scale=1">
-    <link rel="stylesheet" href="/static/css/bootstrap.flatly.min.css">
+    <link rel="stylesheet" href="/static/css/bootstrap.flatly-inverse.min.css" id="mytheme">
     <link rel="stylesheet" href="/static/css/custom.css">
 
     <!-- =============== <Landing Page> ============== -->
@@ -38,6 +38,30 @@
         <ul class="nav navbar-nav">
           {% show_menu 0 1 100 100 "menu.html" %}
         </ul>
+        <ul class="nav navbar-nav navbar-right">
+          <li class="dropdown">
+            <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">Tema <span class="caret"></span></a>
+            <ul class="dropdown-menu">
+              <li><a href="#" onclick="setTheme('flatly-inverse'); return false">Flatly inverse</a></li>
+<li><a href="#" onclick="setTheme('flatly'); return false">Flatly</a></li>
+<li><a href="#" onclick="setTheme('cerulean'); return false">Cerulean</a></li>
+<li><a href="#" onclick="setTheme('cosmo'); return false">Cosmo</a></li>
+<li><a href="#" onclick="setTheme('cyborg'); return false">Cyborg</a></li>
+<li><a href="#" onclick="setTheme('darkly'); return false">Darkly</a></li>
+<li><a href="#" onclick="setTheme('journal'); return false">Journal</a></li>
+<li><a href="#" onclick="setTheme('lumen'); return false">Lumen</a></li>
+<li><a href="#" onclick="setTheme('paper'); return false">Paper</a></li>
+<li><a href="#" onclick="setTheme('readable'); return false">Readable</a></li>
+<li><a href="#" onclick="setTheme('sandstone'); return false">Sandstone</a></li>
+<li><a href="#" onclick="setTheme('simplex'); return false">Simplex</a></li>
+<li><a href="#" onclick="setTheme('slate'); return false">Slate</a></li>
+<li><a href="#" onclick="setTheme('spacelab'); return false">Spacelab</a></li>
+<li><a href="#" onclick="setTheme('superhero'); return false">Superhero</a></li>
+<li><a href="#" onclick="setTheme('united'); return false">United</a></li>
+<li><a href="#" onclick="setTheme('yeti'); return false">Yeti</a></li>
+            </ul>
+          </li>
+        </ul>
       </div>
     </div>
 
@@ -46,5 +70,13 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/1.11.3/jquery.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.3.4/js/bootstrap.min.js"></script>
     {% render_block "js" %}
+
+    <script>
+      function setTheme(theme){
+        var stylesheet = document.getElementById("mytheme");
+        stylesheet.setAttribute('href', "/static/css/bootstrap." + theme + ".min.css");
+      }
+    </script>
+
   </body>
 </html>
