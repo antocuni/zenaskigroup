@@ -1,0 +1,27 @@
+{% load i18n %}
+{% comment %}
+This template is used for the html alternative of the activation email
+if you use a django-registration backend that looks for it. e.g.
+https://github.com/huseyinyilmaz/django-registration-extended-backend
+{% endcomment %}
+{% url 'registration_activate' activation_key as activation_key_url %}
+{% blocktrans with sitename=site.name sitedomain=site.domain%}<body>
+<h3>Registrazione account Zena Ski Group</h3>
+<p>
+Grazie per esserti registrato al sito dello Zena Ski Group.
+</p>
+
+<p>
+Per completare la tua registrazione ed attivare l'account, clicca sul seguente
+link entro {{ expiration_days }} giorni (oppure copialo manualmente nella
+barra degli indirizzi del browser):<br/>
+
+http://{{ sitedomain }}{{  activation_key_url }}
+</p>
+
+<p>
+Lo staff Zena.
+</p>
+
+</body>
+{% endblocktrans %}

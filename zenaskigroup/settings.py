@@ -1,4 +1,5 @@
 import os
+import socket
 gettext = lambda s: s
 DATA_DIR = os.path.dirname(os.path.dirname(__file__))
 """
@@ -26,10 +27,14 @@ BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 SECRET_KEY = '*t&jdu(o2$=0m*bl1j5*k_5rfpdk)&btsx0fm&u==1dx=tg30a'
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = socket.gethostname() in ('homer', 'viper2')
 
-ALLOWED_HOSTS = []
+TEMPLATE_DEBUG = True
 
+ALLOWED_HOSTS = ['*']
+
+DATETIME_FORMAT = 'd/m/Y H:i'
+DATE_FORMAT = 'd/m/Y'
 
 # Application definition
 
@@ -146,7 +151,8 @@ INSTALLED_APPS = (
     'djangocms_teaser',
     'djangocms_video',
     'reversion',
-    'zenaskigroup'
+    'zenaskigroup',
+    'registration'
 )
 
 LANGUAGES = (
@@ -205,3 +211,9 @@ MIGRATION_MODULES = {
     'djangocms_style': 'djangocms_style.migrations_django',
     'djangocms_teaser': 'djangocms_teaser.migrations_django'
 }
+
+
+# django-registration-redux settings
+ACCOUNT_ACTIVATION_DAYS = 7 # One-week activation window; you may, of course,
+                            # use a different value.
+REGISTRATION_AUTO_LOGIN = True # Automatically log the user in.

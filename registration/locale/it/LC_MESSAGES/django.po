@@ -1,0 +1,320 @@
+# translation of django.po to Italian
+# Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
+# This file is distributed under the same license as the PACKAGE package.
+#
+# Nicola Larosa <nico@tekNico.net>, 2008.
+# Flavio Curella <flavio.curella@gmail.com>, 2011
+msgid ""
+msgstr ""
+"Project-Id-Version: django-registration 0.8 alpha-1\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2014-10-04 13:44+0000\n"
+"PO-Revision-Date: 2011-08-04 12:41-0600\n"
+"Last-Translator: Flavio Curella <flavio.curella@gmail.com>\n"
+"Language-Team: Italiano <it@li.org>\n"
+"Language: \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+"X-Poedit-Language: Italian\n"
+"X-Poedit-Country: ITALY\n"
+
+#: admin.py:23
+msgid "Activate users"
+msgstr "Attiva utenti"
+
+#: admin.py:43
+msgid "Re-send activation emails"
+msgstr "Re-invia email di attivazione"
+
+#: forms.py:36
+msgid "Username"
+msgstr "Nome utente"
+
+#: forms.py:37
+msgid "This value may contain only letters, numbers and @/./+/-/_ characters."
+msgstr "Questo valore può contenere solo lettere, numeri e caratteri @/./+/-/_"
+
+#: forms.py:38
+msgid "E-mail"
+msgstr ""
+
+#: forms.py:40
+msgid "Password"
+msgstr "Password"
+
+#: forms.py:42
+msgid "Password (again)"
+msgstr "Ripeti password"
+
+#: forms.py:52
+msgid "A user with that username already exists."
+msgstr "Questo nome utente è già usato."
+
+#: forms.py:66
+msgid "The two password fields didn't match."
+msgstr "Le password inserite non coincidono."
+
+#: forms.py:77
+msgid "I have read and agree to the Terms of Service"
+msgstr "Dichiaro di aver letto e di approvare le Condizioni di Servizio"
+
+#: forms.py:78
+msgid "You must agree to the terms to register"
+msgstr "Per registrarsi bisogna approvare le condizioni"
+
+#: forms.py:94
+msgid ""
+"This email address is already in use. Please supply a different email "
+"address."
+msgstr ""
+"Questo indirizzo email è già in uso. Inserisci un altro indirizzo email."
+
+#: forms.py:121
+msgid ""
+"Registration using free email addresses is prohibited. Please supply a "
+"different email address."
+msgstr ""
+"La registrazione con indirizzi email gratis non è permessa. Inserisci un "
+"altro indirizzo email."
+
+#: models.py:187
+msgid "user"
+msgstr "utente"
+
+#: models.py:188
+msgid "activation key"
+msgstr "chiave di attivazione"
+
+#: models.py:193
+msgid "registration profile"
+msgstr "profilo di registrazione"
+
+#: models.py:194
+msgid "registration profiles"
+msgstr "profili di registrazione"
+
+#: templates/registration/activate.html:3
+#: templates/registration/activation_complete.html:3
+msgid "Activation complete"
+msgstr "Attivazione completata"
+
+#: templates/registration/activate.html:3
+msgid "Activation problem"
+msgstr "Problema di attivazione"
+
+#: templates/registration/activate.html:7
+#, python-format
+msgid ""
+"\n"
+"Thanks %(account)s, activation complete!\n"
+"You may now <a href='%(auth_login_url)s'>login</a> using the username and "
+"password you set at registration.\n"
+msgstr ""
+
+#: templates/registration/activate.html:12
+msgid ""
+"Oops &ndash; it seems that your activation key is invalid.  Please check the "
+"url again."
+msgstr "Oops &ndash; sembra che la chiave di attivazione non sia valida. Si prega "
+"di controllare nuovamente la url."
+
+#: templates/registration/activation_complete.html:6
+#, python-format
+msgid ""
+"\n"
+"Thanks, activation complete!  You may now <a "
+"href='%(auth_login_url)s'>login</a> using the username and password you set "
+"at registration.\n"
+msgstr ""
+
+#: templates/registration/activation_email.html:8
+#, python-format
+msgid ""
+"<body>\n"
+"<h3>Account registration for %(sitename)s</h3>\n"
+"<p>\n"
+"You (or someone pretending to be you) have asked to register an account at\n"
+"<b>%(sitename)s</b>.<br/>\n"
+"If this wasn't you, please ignore this email and your address will be "
+"removed\n"
+"from our records.\n"
+"</p>\n"
+"<p>\n"
+"To activate this account, please click the following link within the next \n"
+"<b>%(expiration_days)s</b> days:<br/>\n"
+"<a href=\"http://%(sitedomain)s%(activation_key_url)s\">http://%(sitedomain)s"
+"%(activation_key_url)s</a>\n"
+"</p>\n"
+"<p>\n"
+"Sincerely,<br/>\n"
+"%(sitename)s Management\n"
+"</p>\n"
+"</body>\n"
+msgstr ""
+
+#: templates/registration/activation_email.txt:3
+#, python-format
+msgid ""
+"\n"
+"You (or someone pretending to be you) have asked to register an account at\n"
+"%(sitename)s.  If this wasn't you, please ignore this email\n"
+"and your address will be removed from our records.\n"
+"\n"
+"To activate this account, please click the following link within the next \n"
+"%(expiration_days)s days:\n"
+"\n"
+"http://%(siteurl)s%(activation_key_url)s\n"
+"\n"
+"Sincerely,\n"
+"%(sitename)s Management\n"
+msgstr ""
+
+#: templates/registration/activation_email_subject.txt:1
+#, python-format
+msgid "Account registration for %(sitename)s"
+msgstr "Registrazione account per %(sitename)s"
+
+#: templates/registration/login.html:3
+msgid "Login"
+msgstr ""
+
+#: templates/registration/login.html:9
+msgid "Your username and password didn't match. Please try again."
+msgstr "Username o password errati."
+
+#: templates/registration/login.html:24
+msgid "Forgot your password?"
+msgstr "Password dimenticata?"
+
+#: templates/registration/login.html:26
+msgid "Need an account?"
+msgstr "Registrati"
+
+#: templates/registration/login.html:29
+msgid "login"
+msgstr ""
+
+#: templates/registration/logout.html:3
+msgid "Logged out"
+msgstr "Disconnesso"
+
+#: templates/registration/logout.html:5
+msgid "Successfully logged out!"
+msgstr "Disconnessione effettuata"
+
+#: templates/registration/password_change_done.html:3
+msgid "Password changed"
+msgstr "Password modificata"
+
+#: templates/registration/password_change_done.html:5
+msgid "Password successfully changed!"
+msgstr "Password modificata correttamente"
+
+#: templates/registration/password_change_form.html:3
+#: templates/registration/password_change_form.html:8
+msgid "Change password"
+msgstr "Cambia password"
+
+#: templates/registration/password_reset_complete.html:3
+msgid "Password reset complete"
+msgstr "Reset della password completato"
+
+#: templates/registration/password_reset_complete.html:4
+#, python-format
+msgid ""
+"\n"
+"Your password has been reset!  You may now <a href=\"%(login_url)s\">log in</"
+"a>.\n"
+msgstr ""
+
+#: templates/registration/password_reset_confirm.html:3
+msgid "Confirm password reset"
+msgstr "Conferma password reset"
+
+#: templates/registration/password_reset_confirm.html:5
+msgid "Enter your new password below to reset your password:"
+msgstr "Immetti la nuova password per effettuare il reset:"
+
+#: templates/registration/password_reset_confirm.html:9
+msgid "Set password"
+msgstr "Imposta password"
+
+#: templates/registration/password_reset_done.html:3
+msgid "Password reset"
+msgstr "Reset password"
+
+#: templates/registration/password_reset_done.html:6
+msgid ""
+"We have sent you an email with a link to reset your password.\n"
+"Please check your email and click the link to continue."
+msgstr ""
+"Abbiamo spedito un'email con un link per resettare la password.\n"
+"Si prega di controllare l'email e cliccare sul link per continuare."
+
+#: templates/registration/password_reset_email.html:1
+msgid "Greetings"
+msgstr ""
+
+#: templates/registration/password_reset_email.html:3
+#, python-format
+msgid ""
+"You are receiving this email because you (or someone pretending to be you)\n"
+"requested that your password be reset on the %(domain)s site.  If you do "
+"not \n"
+"wish to reset your password, please ignore this message.\n"
+"\n"
+"To reset your password, please click the following link, or copy and paste "
+"it\n"
+"into your web browser:"
+msgstr ""
+
+#: templates/registration/password_reset_email.html:12
+#, python-format
+msgid ""
+"\n"
+"Your username, in case you've forgotten: %(username)s\n"
+"\n"
+"Best regards,\n"
+"%(site_name)s Management\n"
+msgstr ""
+
+#: templates/registration/password_reset_form.html:3
+#: templates/registration/password_reset_form.html:10
+msgid "Reset password"
+msgstr "Reset password"
+
+#: templates/registration/password_reset_form.html:4
+msgid ""
+"\n"
+"Forgot your password?  Enter your email in the form below and we'll send "
+"you\n"
+"instructions for creating a new one."
+msgstr ""
+"\n"
+"Password dimenticata? Inserire l'indirizzo email qua sotto e vi spediremo"
+"le istruzioni per reimpostarla."
+
+#: templates/registration/registration_complete.html:3
+msgid "Activation email sent"
+msgstr "Email di attivazione inviata"
+
+#: templates/registration/registration_complete.html:5
+msgid ""
+"An activation email has been sent.\n"
+"Please check your email and click on the link to activate your account."
+msgstr ""
+"L'email di attivazione è stata spedita.\n"
+"Si prega di controllare l'email e cliccare sul link per attivare l'account."
+
+#: templates/registration/registration_form.html:3
+msgid "Register for an account"
+msgstr "Registrazione"
+
+#: templates/registration/registration_form.html:8
+msgid "Send activation email"
+msgstr "Registrati"
+
+#~ msgid "Email address"
+#~ msgstr "indirizzo email"
