@@ -1,0 +1,50 @@
+<html>
+<head>
+    <link rel="stylesheet" type="text/css" href="/static/zena.css" media="screen,print">
+</head>
+
+<body>
+  <table class="simple">
+    <tr>
+      <th>Data</th>
+      <th>Destinazione</th>
+      <th>Partecipanti</th>
+    </tr>
+
+    <tr>
+      <td>{{ trip.date }}</td>
+      <td>{{ trip.destination }}</td>
+      <td>{{ participants|length }}</td>
+    </tr>
+  </table>
+
+  <table class="simple">
+    <tr>
+      <th></th>
+      <th>Nome</th>
+      <th>Lista</th>
+      <th>Socio?</th>
+      <th>Acconto</th>
+      <th>Skipass</th>
+      <th>Saldo</th>
+      <th>Registrato da</th>
+    </tr>
+
+    {% for p in participants %}
+    <tr>
+      <td>{{ forloop.counter }}</td>
+      <td>{{ p.name|title }}</td>
+      <td>{{ p.sublist }}</td>
+      <td>{{ p.is_member|yesno:"X,&nbsp;"|safe }}</td>
+      <td>{{ p.deposit }} €</td>
+      <td>&nbsp;</td>
+      <td>&nbsp;</td>
+      {% if p.registered_by %}
+        <td>{{ p.registered_by.member }}</td>
+      {% else %}
+        <td>&nbsp;</td>
+      {% endif %}
+    </tr>
+    {% endfor %}
+  </table>
+</body>

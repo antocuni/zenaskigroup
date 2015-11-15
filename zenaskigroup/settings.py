@@ -152,6 +152,7 @@ INSTALLED_APPS = (
     'djangocms_video',
     'reversion',
     'zenaskigroup',
+    'trips',
     'registration'
 )
 

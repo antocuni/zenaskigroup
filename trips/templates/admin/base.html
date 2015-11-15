@@ -1,0 +1,8 @@
+{% overextends "admin/base.html" %}
+{% load i18n %}
+
+{% block extrajs %}
+<script>
+  Suit.$("#site-name").parent().attr("href", "/")
+</script>
+{% endblock %}

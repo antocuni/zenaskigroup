@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <!--[if IE]><meta http-equiv="ImageToolbar" content="False" /><![endif]-->
+    <link rel="stylesheet" type="text/css" href="/static/reset.css" media="screen,print">
+    <link rel="stylesheet" type="text/css" href="/static/style.css" media="screen,print">
+    <link rel="stylesheet" type="text/css" href="/static/template.css" media="screen">
+    <!--[if lte IE 7]><link rel="stylesheet" type="text/css" href="/static/ie.css" media="screen" /><![endif]-->
+    <link rel="stylesheet" type="text/css" href="/static/zena.css" media="screen,print">
+    <link rel="stylesheet" type="text/css" href="/static/menu.css" media="screen,print">
+    {% block extrahead %}{% endblock %}
+    <title>Zena Ski Group</title>
+  </head>
+
+  <body data-feedly-mini="yes" data-dynamite-selected="true">
+	<div id="imPage">
+	  <div id="imHeader">
+		<h1 class="imHidden">Zena Ski Group</h1>
+	  </div>
+	  <div id="imMnMn" class="auto">
+        <div id="cssmenu">
+        <ul>
+          <li {% block menu-zena %}{% endblock %}>
+            <a href="//www.zenaskigroup.it/">Zena Ski Group</a>
+          </li>
+          <li {% block menu-trip %}{% endblock %}>
+            <a href="/">Prossima gita</a>
+          </li>
+          <li {% block menu-profile %}{% endblock %}>
+            <a href="/accounts/profile/">Profilo utente</a>
+          </li>
+          <li {% block menu-faq %}{% endblock %}>
+            <a href="/faq/">Aiuto</a>
+          </li>
+          {% if user.is_staff %}
+              <li {% block menu-topup %}{% endblock %}>
+                <a href="/topup/">Ricarica</a>
+              </li>
+              <li {% block menu-admin %}{% endblock %}>
+                <a href="/admin/">Admin</a>
+              </li>
+          {% endif %}
+        </ul>
+      </div>
+      </div>
+	  <div id="imContentGraphics">
+      </div>
+	  <div id="imContent" style="height: 1058px;">
+        <div style="width: 600px; margin-left: auto; margin-right: auto">
+          {% block content %}{% endblock %}
+        </div>
+        <div class="imClear"></div>
+      </div>
+    </div>
+  </body>
+</html>

@@ -1,0 +1,125 @@
+{% extends "base.html" %}
+
+{% block menu-trip %}
+class="active"
+{% endblock %}
+
+{% block content %}
+<h1>Iscrizione online</h1>
+
+<br>
+<img style="width: 50%; float: right" src="{{trip.poster.url}}">
+
+<br>
+<h2>La gita</h2>
+<table class="simple">
+  <tr>
+    <th>Data</th>
+    <td>{{trip.date}}</td>
+  </tr>
+  <tr class={{ registration_allowed|yesno:",red" }} >
+    <th>Chiusura iscrizioni</th>
+    <td>{{trip.closing_date}}</td>
+  </tr>
+  <tr>
+    <th>Destinazione</th>
+    <td>{{trip.destination}}</td>
+  </tr>
+  <tr>
+    <th>Posti totali</th>
+    <td>{{trip.seats}}</td>
+  </tr>
+  <tr>
+    <th>Posti disponibili</th>
+    <td>{{trip.seats_left_or_0}}</td>
+  </tr>
+  <tr>
+    <th>Caparra</th>
+    <td>{{trip.deposit}} €</td>
+  </tr>
+
+  {% if user.is_staff %}
+  <tr>
+    <td colspan=2 style="text-align: center">
+      <a href="../detail/" class="">Lista partecipanti</a>
+    </td>
+  </tr>
+  {% endif %}
+
+</table>
+
+<br>
+<h2>I miei dati</h2>
+<table class="simple">
+  <tr>
+    <th>Nome</th>
+    <td>{{ user.get_full_name }}</td>
+  </tr>
+  <tr>
+    <th>Credito residuo</th>
+    <td class="{{ user.member.balance_class }}">{{ user.member.balance }} €</td>
+  </tr>
+</table>
+
+
+<div class="imClear"></div>
+<div style="width: 100%">
+    <h2>Le mie iscrizioni</h2>
+
+    {% if trip.with_reservation %}    
+    <p>
+      I posti sono temporaneamente esauriti.<br>
+      È possibile iscriversi <b class="red">con riserva</b>.<br>
+      Nel caso riuscissimo ad organizzare un secondo pullman, la tua
+      iscrizione sarà automaticamente confermata e verrai informato via email,
+      altrimenti ti sarà restituita la caparra versata.
+    </p>
+    {% endif %}
+
+    <form action="" method="post">
+      {% csrf_token %}
+      {% if error %}
+          <ul class="errorlist">
+            <li>{{ error }}</li>
+          </ul>
+      {% endif %}
+      {% if message %}
+          <ul class="messagelist">
+            <li>{{ message }}</li>
+          </ul>
+      {% endif %}
+      <table class="simple">
+        <tr>
+          <th>Cognome e nome</th>
+          <th>Socio?</th>
+          <th>Caparra</th>
+          <th>Stato</th>
+        </tr>
+
+        {% for participant in participants %}
+        <tr>
+          <td>{{ participant.name }}</td>
+          <td style="text-align: center">{{ participant.is_member_icon }}</td>
+          <td style="text-align: center">{{ participant.deposit }} €</td>
+          {% if participant.with_reservation %}
+            <td class="red">Con riserva</td>
+          {% else %}
+            <td class="green">Confermato</td>
+          {% endif %}
+        </tr>
+        {% endfor %}
+
+        {% if registration_allowed %}
+            <tr>
+              <td>{{ form.name.errors }}{{ form.name }}</td>
+              <td style="text-align: center">{{ form.is_member.errors }}{{ form.is_member }}</td>
+              <td style="text-align: center">{{trip.deposit}} €</td>
+              <td><input type="submit" value="Iscrivi" /></td>
+            </tr>
+        {% endif %}
+      </table>
+    </form>
+</div>
+
+{% endblock %}
+

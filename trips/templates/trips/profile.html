@@ -1,0 +1,58 @@
+{% extends "base.html" %}
+
+{% block menu-profile %}
+class="active"
+{% endblock %}
+
+{% block content %}
+<h1>Profilo utente</h1>
+
+<br>
+<h2>I miei dati</h2>
+<table class="simple">
+  <tr>
+    <th>Nome utente</th>
+    <td>{{ user.username }} (<a href="/accounts/logout/">logout</a>)</td>
+  </tr>
+  <tr>
+    <th>Nome e cognome</th>
+    <td>{{ user.get_full_name }}</td>
+  </tr>
+  <tr>
+    <th>Email</th>
+    <td>{{ user.email }}</td>
+  </tr>
+  <tr>
+    <th>Numero tessera</th>
+    <td>{{ user.member.card_no }}</td>
+  </tr>
+  <tr>
+    <th>Credito residuo</th>
+    <td class="{{ user.member.balance_class }}">{{ user.member.balance }} €</td>
+  </tr>
+  <tr>
+    <td colspan="2" style="text-align: center">
+      <a href="edit">Modifica dati</a>
+    </td>
+  </tr>
+</table>
+
+<h2>Estratto conto</h2>
+<table class="simple">
+  <tr>
+    <th>Data</th>
+    <th>Causale</th>
+    <th>Valore</th>
+  </tr>
+
+  {% for t in transfers %}
+  <tr>
+    <td>{{t.date}}</td>
+    <td>{{t.description}}</td>
+    <td>{{t.value}} €</td>
+  </tr>
+  {% endfor %}
+</table>
+
+{% endblock %}
+
