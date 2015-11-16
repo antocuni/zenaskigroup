@@ -13,7 +13,8 @@ class TestMenu(Menu):
         nodes.append(n)
         nodes.append(n2)
         nodes.append(n3)
-        nodes.append(n4)
+        if request.user.is_staff:
+            nodes.append(n4)
         return nodes
 
 menu_pool.register_menu(TestMenu)
