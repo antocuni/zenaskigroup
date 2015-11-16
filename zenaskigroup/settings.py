@@ -1,4 +1,5 @@
 import os
+import socket
 gettext = lambda s: s
 DATA_DIR = os.path.dirname(os.path.dirname(__file__))
 """
@@ -26,10 +27,14 @@ BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 SECRET_KEY = '*t&jdu(o2$=0m*bl1j5*k_5rfpdk)&btsx0fm&u==1dx=tg30a'
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = socket.gethostname() in ('homer', 'viper2')
 
-ALLOWED_HOSTS = []
+TEMPLATE_DEBUG = True
 
+ALLOWED_HOSTS = ['*']
+
+DATETIME_FORMAT = 'd/m/Y H:i'
+DATE_FORMAT = 'd/m/Y'
 
 # Application definition
 
@@ -53,16 +58,15 @@ WSGI_APPLICATION = 'zenaskigroup.wsgi.application'
 # Internationalization
 # https://docs.djangoproject.com/en/1.8/topics/i18n/
 
-LANGUAGE_CODE = 'en'
+LANGUAGE_CODE = 'it'
 
 TIME_ZONE = 'Europe/Rome'
 
-USE_I18N = False
+USE_I18N = True
 
 USE_L10N = False
 
-USE_TZ = True
-
+USE_TZ = False
 
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/1.8/howto/static-files/
@@ -146,17 +150,21 @@ INSTALLED_APPS = (
     'djangocms_teaser',
     'djangocms_video',
     'reversion',
-    'zenaskigroup'
+    'zenaskigroup',
+    'trips',
+    'registration'
 )
 
 LANGUAGES = (
     ## Customize this
-    ('en', gettext('en')),
+#    ('en', gettext('en')),
+    ('it', gettext('it')),
 )
 
 CMS_LANGUAGES = {
     ## Customize this
     'default': {
+#        'fallbacks': ['en', 'it'],
         'public': True,
         'hide_untranslated': False,
         'redirect_on_fallback': True,
@@ -164,12 +172,20 @@ CMS_LANGUAGES = {
     1: [
         {
             'public': True,
-            'code': 'en',
+            'code': 'it',
             'hide_untranslated': False,
-            'name': gettext('en'),
+            'name': gettext('Italiano'),
             'redirect_on_fallback': True,
         },
+        ## {
+        ##     'public': True,
+        ##     'code': 'en',
+        ##     'hide_untranslated': False,
+        ##     'name': gettext('en'),
+        ##     'redirect_on_fallback': True,
+        ## },
     ],
+        
 }
 
 CMS_TEMPLATES = (
@@ -205,3 +221,19 @@ MIGRATION_MODULES = {
     'djangocms_style': 'djangocms_style.migrations_django',
     'djangocms_teaser': 'djangocms_teaser.migrations_django'
 }
+
+
+# django-registration-redux settings
+ACCOUNT_ACTIVATION_DAYS = 7 # One-week activation window; you may, of course,
+                            # use a different value.
+REGISTRATION_AUTO_LOGIN = True # Automatically log the user in.
+
+# ==============
+# email settings
+# ==============
+
+DEFAULT_FROM_EMAIL = 'Zena Ski Group <mail@zenaskigroup.it>'
+ADMIN_EMAIL = 'anto.cuni@gmail.com'
+
+if DEBUG:
+    EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'

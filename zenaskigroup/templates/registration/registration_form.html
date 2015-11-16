@@ -1,0 +1,31 @@
+{% extends "registration/registration_base.html" %}
+{% load i18n %}
+{% block title %}{% trans "Register for an account" %}{% endblock %}
+
+{% block content %}
+
+<div class="container">
+
+  <div id="signupbox" style="margin-top:50px" class="mainbox col-md-6 col-md-offset-3 col-sm-8 col-sm-offset-2">
+    <div class="panel panel-success">
+      <div class="panel-heading">
+        <div class="panel-title">Registrazione</div>
+      </div>
+
+      <div class="panel-body" >
+        <form id="signupform" role="form" method="post" action="">
+          {% csrf_token %}
+          <table class="table">
+            {{ form.as_table }}
+          </table>
+          <div class="form-group text-right">
+            <br>
+            <input class="btn btn-info" type="submit" value="{% trans "Send activation email" %}" />
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+
+{% endblock %}

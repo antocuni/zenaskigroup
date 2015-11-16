@@ -1,0 +1,13 @@
+{% load i18n %}
+{% url 'registration_activate' activation_key as activation_key_url%}
+{% blocktrans with sitename=site.name siteurl=site.domain %}
+Grazie per esserti registrato al sito dello Zena Ski Group.
+
+Per completare la tua registrazione ed attivare l'account, clicca sul seguente
+link entro {{ expiration_days }} giorni (oppure copialo manualmente nella
+barra degli indirizzi del browser):
+
+http://{{ siteurl }}{{ activation_key_url }}
+
+Lo staff Zena.
+{% endblocktrans %}

@@ -20,3 +20,11 @@
   background-color: rgba(0, 0, 0, 0.4);
 }
 
+body {
+    font-weight: normal!important;
+}
+
+
+.vertical-middle td {
+    vertical-align: middle!important;
+}

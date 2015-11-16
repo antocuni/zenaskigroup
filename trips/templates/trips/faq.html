@@ -1,0 +1,100 @@
+{% extends "base.html" %}
+{% load sekizai_tags %}
+
+{% addtoblock "css" %}
+<style>
+  p {
+    margin-left: 10px;
+  }
+
+  h2 {
+    margin-top: 20px;
+  }
+
+  ul {
+    list-style-type: circle;
+    margin-top: 0.5em;
+    margin-left: 2.5em;
+  }
+</style>
+{% endaddtoblock %}
+
+{% block content %}
+<div class="container">
+  <div class="row">
+    <div class="col-md-8 col-lg-6">
+
+<h1>Aiuto</h1>
+<p>
+  Come la scorsa stagione, è possibile iscriversi alle gite direttamente dal
+  nostro sito web. Segue una lista delle domande più frequenti.
+</p>
+
+<h2>Come faccio ad iscrivermi online?</h2>
+<p>
+  Per prima cosa, è necessario <a href="/accounts/register/">registrarsi</a>
+  al sito. Una volta completata la registrazione, è sufficiente cliccare sul
+  link <i>Iscriviti online!</i> sulla pagina di ciascuna gita.
+</p>
+
+<h2>È <i>obbligatorio</i> iscriversi online?</h2>
+<p>
+  Assolutamente no. Per chi vuole, è possibile iscriversi presso i soliti
+  punti vendita:
+  <ul>
+    <li>Luciano Sport: Via Verità 3, Voltri</li>
+    <li>Club 3G: Via Vigna 66R, Sestri Ponente</li>
+  </ul>
+</p>
+
+<h2>Come faccio a pagare la caparra?</h2>
+<p>
+  Al momento dell'iscrizione, la quota verrà scalata dal <i>credito
+  prepagato</i>. Se non si dispone di abbastanza credito, non sarà possibile
+  iscriversi online.
+</p>
+
+<h2>Come faccio ad iscrivermi alla festa di inizio stagione?</h2>
+<p>
+  Per la festa di inizio stagione non è prevista alcuna caparra. Pertanto, è
+  possibile iscriversi anche se il credito è pari a 0.
+</p>
+
+<h2>Come faccio a ricaricare il mio credito?</h2>
+<p>
+  È possibile ricaricare il credito prepagato:
+  <ul>
+    <li>durante la festa di inizio stagione;</li>
+    <li>presso la sede dello sci club in Passeggiata R.Bruzzone 50, Voltri, al
+      lunedì dalle 21:30 alle 23:00;
+    </li>
+    <li>direttamente sul pullman, durante il viaggio di ritorno dalle gite.
+    </li>
+  </ul>
+</p>
+
+<h2>Cosa succede se non utilizzo tutto il mio credito?</h2>
+<p>
+  Alla fine della stagione, sarà possibile richiedere la restituzione
+  dell'eventuale credito inutilizzato, oppure decidere di tenerlo per poterlo
+  utilizzare nella prossima stagione.
+</p>
+
+<h2>Posso iscrivere altre persone?</h2>
+<p>
+  Certo. Ciascun utente può iscrivere quante persone vuole, sia soci che non
+  soci, a patto che abbia abbastanza credito.
+</p>
+
+<h2>Se non vengo alla gita, posso recuperare il credito utilizzato per la caparra?</h2>
+<p>
+  No. Tuttavia, se ti sei iscritto ad una gita e sai di non poter venire, ti
+  invitiamo a contattarci: se riusciamo a trovare un sostituto in tempo,
+  potrai riavere la tua caparra.
+</p>
+
+    </div>
+  </div>
+</div>
+
+{% endblock %}
