@@ -97,11 +97,6 @@ class Participant(models.Model):
     with_reservation = models.BooleanField(default=False, blank=False,
                                            verbose_name='Con riserva?')
 
-
-    def is_member_icon(self):
-        from django.contrib.admin.templatetags.admin_list import _boolean_icon
-        return _boolean_icon(self.is_member)
-
     def __unicode__(self):
         return self.name
 
