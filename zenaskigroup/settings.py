@@ -58,16 +58,15 @@ WSGI_APPLICATION = 'zenaskigroup.wsgi.application'
 # Internationalization
 # https://docs.djangoproject.com/en/1.8/topics/i18n/
 
-LANGUAGE_CODE = 'en'
+LANGUAGE_CODE = 'it'
 
 TIME_ZONE = 'Europe/Rome'
 
-USE_I18N = False
+USE_I18N = True
 
 USE_L10N = False
 
 USE_TZ = False
-
 
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/1.8/howto/static-files/
@@ -158,12 +157,14 @@ INSTALLED_APPS = (
 
 LANGUAGES = (
     ## Customize this
-    ('en', gettext('en')),
+#    ('en', gettext('en')),
+    ('it', gettext('it')),
 )
 
 CMS_LANGUAGES = {
     ## Customize this
     'default': {
+#        'fallbacks': ['en', 'it'],
         'public': True,
         'hide_untranslated': False,
         'redirect_on_fallback': True,
@@ -171,12 +172,20 @@ CMS_LANGUAGES = {
     1: [
         {
             'public': True,
-            'code': 'en',
+            'code': 'it',
             'hide_untranslated': False,
-            'name': gettext('en'),
+            'name': gettext('Italiano'),
             'redirect_on_fallback': True,
         },
+        ## {
+        ##     'public': True,
+        ##     'code': 'en',
+        ##     'hide_untranslated': False,
+        ##     'name': gettext('en'),
+        ##     'redirect_on_fallback': True,
+        ## },
     ],
+        
 }
 
 CMS_TEMPLATES = (
