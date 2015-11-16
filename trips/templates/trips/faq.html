@@ -1,6 +1,7 @@
 {% extends "base.html" %}
+{% load sekizai_tags %}
 
-{% block extrahead %}
+{% addtoblock "css" %}
 <style>
   p {
     margin-left: 10px;
@@ -16,13 +17,12 @@
     margin-left: 2.5em;
   }
 </style>
-{% endblock %}
-
-{% block menu-faq %}
-class="active"
-{% endblock %}
+{% endaddtoblock %}
 
 {% block content %}
+<div class="container">
+  <div class="row">
+    <div class="col-md-8 col-lg-6">
 
 <h1>Aiuto</h1>
 <p>
@@ -93,6 +93,8 @@ class="active"
   potrai riavere la tua caparra.
 </p>
 
-
+    </div>
+  </div>
+</div>
 
 {% endblock %}
