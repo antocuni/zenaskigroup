@@ -21,8 +21,8 @@ class Member(models.Model):
         return u'%s #%s' % (name, card_no)
 
     def balance_class(self):
-        if self.balance < 0:
-            return "red"
+        if self.balance <= 0:
+            return "text-danger"
         else:
             return ""
 
