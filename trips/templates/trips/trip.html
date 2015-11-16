@@ -20,11 +20,13 @@ class="active"
   <div class="row">
     <div class="col-md-8">
       <img class="img-responsive img-thumbnail" src="{{trip.poster.url}}">
+      <br>
+      <br>
     </div>
 
     <div class="col-md-4">
       
-  <table class="simple">
+      <table class="table table-striped table-bordered table-hover">
 
         {% if trip.with_reservation %}
         <tr>
@@ -42,17 +44,9 @@ class="active"
 
         <tr>
           <td colspan=2 style="text-align: center">
-            <a href="register/" class="biglink">Iscriviti online!</a>
+            <a href="register/" class="btn btn-lg btn-success" >Iscriviti online!</a>
           </td>
         </tr>
-
-        {% if user.is_staff %}
-        <tr>
-          <td colspan=2 style="text-align: center">
-            <a href="detail/" class="">Lista partecipanti</a>
-          </td>
-        </tr>
-        {% endif %}
 
         <tr>
           <th>Data</th>
@@ -83,7 +77,8 @@ class="active"
           {% csrf_token %}
           <tr>
             <td>{{ form.sublist }}</td>
-            <td>{{ form.count }} <input type="submit" value="Aggiungi" /></td>
+            <td>{{ form.count }}</td>
+            <td><input value="+" type="submit" class="form-control btn btn-default" /></td>
           </tr>
         </form>
         {% endif %}
@@ -92,6 +87,15 @@ class="active"
           <th>Posti disponibili</th>
           <td>{{trip.seats_left_or_0}}</td>
         </tr>
+
+        {% if user.is_staff %}
+        <tr>
+          <td colspan=2 style="text-align: center">
+            <a href="detail/" class="btn btn-sm btn-info" >Lista partecipanti</a>
+          </td>
+        </tr>
+        {% endif %}
+
       </table>
     </div>
   </div>

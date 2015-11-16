@@ -28,6 +28,13 @@ class TripForm(forms.Form):
     sublist = forms.CharField(label='Lista', max_length=20)
     count = forms.IntegerField(label='Posti', min_value=0)
 
+    def __init__(self, *args, **kwargs):
+        super(TripForm, self).__init__(*args, **kwargs)
+        self.fields['sublist'].widget.attrs['placeholder'] = 'Sottolista'
+        self.fields['sublist'].widget.attrs['class'] = 'form-control'
+        self.fields['count'].widget.attrs['placeholder'] = 'Posti'
+        self.fields['count'].widget.attrs['class'] = 'form-control'
+
 def trip(request, trip_id):
     try:
         trip = models.Trip.objects.get(pk=trip_id)
