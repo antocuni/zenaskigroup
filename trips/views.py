@@ -16,9 +16,13 @@ from trips import models
 # show trip
 # ----------------------------------
 
-def index(request):
+def next_trip(request):
     trip = models.Trip.objects.latest()
     return redirect('/trip/%d/' % trip.id)
+
+def next_trip_register(request):
+    trip = models.Trip.objects.latest()
+    return redirect('/trip/%d/register' % trip.id)
 
 def latest_poster(request):
     trip = models.Trip.objects.latest()
