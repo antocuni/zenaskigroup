@@ -46,8 +46,16 @@
           {% csrf_token %}
           <tr>
             <td>{{ form.sublist }}</td>
-            <td>{{ form.count }}</td>
-            <td><input value="+" type="submit" class="btn btn-default btn-sm" /></td>
+            <td>
+              <div class="input-group">
+                {{ form.count }}
+                <span class="input-group-btn">
+                  <button type="submit" class="btn btn-default btn-sm">
+                    <span class="glyphicon glyphicon-plus-sign" aria-hidden="true"></span>
+                  </button>
+                </span>
+              </div><!-- /input-group -->
+            </td>
           </tr>
         </form>
         {% endblock %}
