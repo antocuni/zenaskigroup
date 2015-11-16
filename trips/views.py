@@ -180,10 +180,10 @@ class RegisterForm(forms.Form):
     name = forms.CharField(label='Nome',
                            max_length=200,
                            widget=forms.TextInput(
-                               attrs={'placeholder': 'Nome da iscrivere'}
+                               attrs={'placeholder': 'Nome da iscrivere',
+                                      'class': 'form-control input-sm'}
                            ))
-    is_member = forms.BooleanField(label='Socio?', initial=True, required=False)
-    
+    is_member = forms.BooleanField(label='Socio?', initial=True, required=False)    
 
 
 @login_required
