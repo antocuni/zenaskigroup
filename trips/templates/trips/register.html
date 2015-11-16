@@ -1,56 +1,12 @@
-{% extends "base.html" %}
+{% extends "trips/trip.html" %}
 
-{% block menu-trip %}
-class="active"
-{% endblock %}
+{% block add-sublist %}{% endblock %}
+{% block trip-buttons %}{% endblock %}
 
-{% block content %}
-<h1>Iscrizione online</h1>
 
-<br>
-<img style="width: 50%; float: right" src="{{trip.poster.url}}">
-
-<br>
-<h2>La gita</h2>
-<table class="simple">
-  <tr>
-    <th>Data</th>
-    <td>{{trip.date}}</td>
-  </tr>
-  <tr class={{ registration_allowed|yesno:",red" }} >
-    <th>Chiusura iscrizioni</th>
-    <td>{{trip.closing_date}}</td>
-  </tr>
-  <tr>
-    <th>Destinazione</th>
-    <td>{{trip.destination}}</td>
-  </tr>
-  <tr>
-    <th>Posti totali</th>
-    <td>{{trip.seats}}</td>
-  </tr>
-  <tr>
-    <th>Posti disponibili</th>
-    <td>{{trip.seats_left_or_0}}</td>
-  </tr>
-  <tr>
-    <th>Caparra</th>
-    <td>{{trip.deposit}} €</td>
-  </tr>
-
-  {% if user.is_staff %}
-  <tr>
-    <td colspan=2 style="text-align: center">
-      <a href="../detail/" class="">Lista partecipanti</a>
-    </td>
-  </tr>
-  {% endif %}
-
-</table>
-
-<br>
-<h2>I miei dati</h2>
-<table class="simple">
+{% block registration %}
+<h3>I miei dati</h3>
+<table class="table table-striped table-bordered table-hover table-condensed">
   <tr>
     <th>Nome</th>
     <td>{{ user.get_full_name }}</td>
@@ -61,20 +17,7 @@ class="active"
   </tr>
 </table>
 
-
-<div class="imClear"></div>
-<div style="width: 100%">
-    <h2>Le mie iscrizioni</h2>
-
-    {% if trip.with_reservation %}    
-    <p>
-      I posti sono temporaneamente esauriti.<br>
-      È possibile iscriversi <b class="red">con riserva</b>.<br>
-      Nel caso riuscissimo ad organizzare un secondo pullman, la tua
-      iscrizione sarà automaticamente confermata e verrai informato via email,
-      altrimenti ti sarà restituita la caparra versata.
-    </p>
-    {% endif %}
+<h3>Le mie iscrizioni</h3>
 
     <form action="" method="post">
       {% csrf_token %}
@@ -88,7 +31,7 @@ class="active"
             <li>{{ message }}</li>
           </ul>
       {% endif %}
-      <table class="simple">
+      <table class="table table-striped table-bordered table-hover table-condensed">
         <tr>
           <th>Cognome e nome</th>
           <th>Socio?</th>
@@ -120,6 +63,4 @@ class="active"
       </table>
     </form>
 </div>
-
 {% endblock %}
-

@@ -31,9 +31,9 @@ class TripForm(forms.Form):
     def __init__(self, *args, **kwargs):
         super(TripForm, self).__init__(*args, **kwargs)
         self.fields['sublist'].widget.attrs['placeholder'] = 'Sottolista'
-        self.fields['sublist'].widget.attrs['class'] = 'form-control'
+        self.fields['sublist'].widget.attrs['class'] = 'form-control input-sm'
         self.fields['count'].widget.attrs['placeholder'] = 'Posti'
-        self.fields['count'].widget.attrs['class'] = 'form-control'
+        self.fields['count'].widget.attrs['class'] = 'form-control input-sm'
 
 def trip(request, trip_id):
     try:
@@ -41,6 +41,8 @@ def trip(request, trip_id):
     except models.Trip.DoesNotExist:
         raise Http404
 
+    registration_allowed = trip.closing_date >= datetime.now()
+    
     if request.method == 'POST':
         form = TripForm(request.POST)
         if form.is_valid():
@@ -53,6 +55,7 @@ def trip(request, trip_id):
     form = TripForm()
     context = {
         'trip': trip,
+        'registration_allowed': registration_allowed,
         'form': form
     }
     return render(request, 'trips/trip.html', context)
