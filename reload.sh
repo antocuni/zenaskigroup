@@ -1,0 +1,1 @@
+killall -HUP uwsgi
