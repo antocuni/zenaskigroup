@@ -18,7 +18,7 @@ from trips import models
 
 def index(request):
     trip = models.Trip.objects.latest()
-    return redirect('/%d/' % trip.id)
+    return redirect('/trip/%d/' % trip.id)
 
 def latest_poster(request):
     trip = models.Trip.objects.latest()

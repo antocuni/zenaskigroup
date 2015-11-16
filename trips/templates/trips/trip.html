@@ -16,77 +16,85 @@ class="active"
 
 {% block content %}
 
-<img src="{{trip.poster.url}}" width="600">
+<div class="container">
+  <div class="row">
+    <div class="col-md-8">
+      <img class="img-responsive img-thumbnail" src="{{trip.poster.url}}">
+    </div>
 
-<table class="simple" style="margin-left: auto; margin-right: auto">
+    <div class="col-md-4">
+      
+  <table class="simple">
 
-  {% if trip.with_reservation %}
-  <tr>
-    <td colspan=2>
-      <p style="width: 350px">
-      I posti sono temporaneamente esauriti.<br>
-      È possibile iscriversi <b class="red">con riserva</b>.<br>  Nel caso
-      riuscissimo ad organizzare un secondo pullman la tua iscrizione sarà
-      automaticamente confermata, altrimenti ti sarà restituita la caparra
-      versata.
-      </p>
-    </td>
-  </tr>
-  {% endif %}
+        {% if trip.with_reservation %}
+        <tr>
+          <td colspan=2>
+            <p style="width: 350px">
+              I posti sono temporaneamente esauriti.<br>
+              È possibile iscriversi <b class="red">con riserva</b>.<br>  Nel caso
+              riuscissimo ad organizzare un secondo pullman la tua iscrizione sarà
+              automaticamente confermata, altrimenti ti sarà restituita la caparra
+              versata.
+            </p>
+          </td>
+        </tr>
+        {% endif %}
 
-  <tr>
-    <td colspan=2 style="text-align: center">
-      <a href="register/" class="biglink">Iscriviti online!</a>
-    </td>
-  </tr>
+        <tr>
+          <td colspan=2 style="text-align: center">
+            <a href="register/" class="biglink">Iscriviti online!</a>
+          </td>
+        </tr>
 
-  {% if user.is_staff %}
-  <tr>
-    <td colspan=2 style="text-align: center">
-      <a href="detail/" class="">Lista partecipanti</a>
-    </td>
-  </tr>
-  {% endif %}
+        {% if user.is_staff %}
+        <tr>
+          <td colspan=2 style="text-align: center">
+            <a href="detail/" class="">Lista partecipanti</a>
+          </td>
+        </tr>
+        {% endif %}
 
-  <tr>
-    <th>Data</th>
-    <td>{{trip.date}}</td>
-  </tr>
-  <tr>
-    <th>Chiusura iscrizioni online</th>
-    <td>{{trip.closing_date}}</td>
-  </tr>
-  <tr>
-    <th>Destinazione</th>
-    <td>{{trip.destination}}</td>
-  </tr>
-  <tr>
-    <th>Posti totali</th>
-    <td>{{trip.seats}}</td>
-  </tr>
+        <tr>
+          <th>Data</th>
+          <td>{{trip.date}}</td>
+        </tr>
+        <tr>
+          <th>Chiusura iscrizioni online</th>
+          <td>{{trip.closing_date}}</td>
+        </tr>
+        <tr>
+          <th>Destinazione</th>
+          <td>{{trip.destination}}</td>
+        </tr>
+        <tr>
+          <th>Posti totali</th>
+          <td>{{trip.seats}}</td>
+        </tr>
 
-  {% if user.is_staff %}
-    {% for sublist, count in trip.sublist_summary %}
-      <tr>
-        <td><span style="padding: 10px">{{sublist}}</span></td>
-        <td>{{count}}</td>
-      </tr>
-    {% endfor %}
+        {% if user.is_staff %}
+        {% for sublist, count in trip.sublist_summary %}
+        <tr>
+          <td><span style="padding: 10px">{{sublist}}</span></td>
+          <td>{{count}}</td>
+        </tr>
+        {% endfor %}
 
-    <form action="" method="post">
-      {% csrf_token %}
-      <tr>
-        <td>{{ form.sublist }}</td>
-        <td>{{ form.count }} <input type="submit" value="Aggiungi" /></td>
-      </tr>
-    </form>
-  {% endif %}
+        <form action="" method="post">
+          {% csrf_token %}
+          <tr>
+            <td>{{ form.sublist }}</td>
+            <td>{{ form.count }} <input type="submit" value="Aggiungi" /></td>
+          </tr>
+        </form>
+        {% endif %}
 
-  <tr>
-    <th>Posti disponibili</th>
-    <td>{{trip.seats_left_or_0}}</td>
-  </tr>
-
-</table>
+        <tr>
+          <th>Posti disponibili</th>
+          <td>{{trip.seats_left_or_0}}</td>
+        </tr>
+      </table>
+    </div>
+  </div>
+</div>
 
 {% endblock %}
