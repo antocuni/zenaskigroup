@@ -192,6 +192,7 @@ CMS_TEMPLATES = (
     ## Customize this
     ('page.html', 'Page'),
     ('feature.html', 'Page with Feature'),
+    ('thumbnail.html', 'Page with Thumbnail'),
     ('home.html', 'Home Page'),
 )
 
