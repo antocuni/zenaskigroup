@@ -184,10 +184,16 @@ class RegisterForm(forms.Form):
     name = forms.CharField(label='Nome',
                            max_length=200,
                            widget=forms.TextInput(
-                               attrs={'placeholder': 'Nome da iscrivere',
+                               attrs={'placeholder': 'Nome',
                                       'class': 'form-control input-sm'}
                            ))
-    is_member = forms.BooleanField(label='Socio?', initial=True, required=False)    
+    surname = forms.CharField(label='Cognome',
+                              max_length=200,
+                              widget=forms.TextInput(
+                                  attrs={'placeholder': 'Cognome',
+                                         'class': 'form-control input-sm'}
+                              ))
+    is_member = forms.BooleanField(label='Socio?', initial=False, required=False)    
 
 
 @login_required
@@ -207,9 +213,11 @@ def register(request, trip_id):
             error = "Posti esauriti"
         form = RegisterForm(request.POST)
         if form.is_valid() and not error:
+            name = '%s %s' % (form.cleaned_data['surname'], form.cleaned_data['name'])
+            name = name.strip()
             participant = models.Participant(trip=trip,
                                              deposit=trip.deposit,
-                                             name=form.cleaned_data['name'],
+                                             name=name,
                                              is_member=form.cleaned_data['is_member'],
                                              sublist='Online',
                                              registered_by=request.user,

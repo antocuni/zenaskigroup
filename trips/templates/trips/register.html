@@ -60,7 +60,11 @@
 
         {% if registration_allowed %}
             <tr>
-              <td>{{ form.name.errors }}{{ form.name }}</td>
+              <td class="row-no-padding">
+                {{ form.surname.errors }}{{ form.name.errors }}
+                <div class="col-sm-6">{{ form.surname }}</div>
+                <div class="col-sm-6">{{ form.name }}</div>
+              </td>
               <td class="text-center">{{ form.is_member.errors }}{{ form.is_member }}</td>
               <td class="text-center">{{trip.deposit}} €</td>
               <td>
