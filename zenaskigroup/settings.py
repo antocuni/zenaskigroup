@@ -238,3 +238,37 @@ ADMIN_EMAIL = 'anto.cuni@gmail.com'
 
 if DEBUG:
     EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
+
+
+BOOTSTRAP_STYLES = [
+    dict(name='Success Alert', element='div', attributes={'class': 'alert alert-success'}),
+    dict(name='Info Alert', element='div', attributes={'class': 'alert alert-info'}),
+    dict(name='Warning Alert', element='div', attributes={'class': 'alert alert-warning'}),
+    dict(name='Danger Alert', element='div', attributes={'class': 'alert alert-danger'}),
+
+    dict(name='Default Label', element='span', attributes={'class': 'label label-default'}),
+    dict(name='Primary Label', element='span', attributes={'class': 'label label-primary'}),
+    dict(name='Success Label', element='span', attributes={'class': 'label label-success'}),
+    dict(name='Info Label', element='span', attributes={'class': 'label label-info'}),
+    dict(name='Warning Label', element='span', attributes={'class': 'label label-warning'}),
+    dict(name='Danger Label', element='span', attributes={'class': 'label label-danger'}),
+
+    dict(name='Muted Text', element='span', attributes={'class': 'text-muted'}),
+    dict(name='Primary Text', element='span', attributes={'class': 'text-primary'}),
+    dict(name='Success Text', element='span', attributes={'class': 'text-success'}),
+    dict(name='Info Text', element='span', attributes={'class': 'text-info'}),
+    dict(name='Warning Text', element='span', attributes={'class': 'text-warning'}),
+    dict(name='Danger Text', element='span', attributes={'class': 'text-danger'}),
+
+    dict(name='Primary Background', element='span', attributes={'class': 'bg-primary'}),
+    dict(name='Success Background', element='span', attributes={'class': 'bg-success'}),
+    dict(name='Info Background', element='span', attributes={'class': 'bg-info'}),
+    dict(name='Warning Background', element='span', attributes={'class': 'bg-warning'}),
+    dict(name='Danger Background', element='span', attributes={'class': 'bg-danger'}),
+]
+    
+     
+CKEDITOR_SETTINGS = {
+    'contentsCss': "/static/css/bootstrap.flatly.min.css",
+    'stylesSet': BOOTSTRAP_STYLES,
+}
