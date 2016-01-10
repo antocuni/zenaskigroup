@@ -1,18 +1,21 @@
 {% extends "base.html" %}
 {% load sekizai_tags %}
 
-{% addtoblock "css" %}
-  <link href="/static/select2/select2.css" rel="stylesheet"/>
-  <!-- <style> -->
-  <!-- /* force the select2 box to use the same font as the rest of the page */ -->
-  <!-- .select2-container .select2-choice, .select2-result-label { -->
-  <!--   font-family:Arial, Helvetica, sans-serif; -->
-  <!--   font-size: 10pt; -->
-  <!-- } -->
-  <!-- </style> -->
-{% endaddtoblock %}
-
 {% block content %}
+
+    {% addtoblock "css" %}
+    <link href="//cdnjs.cloudflare.com/ajax/libs/select2/4.0.1/css/select2.min.css" rel="stylesheet" />
+    {% endaddtoblock %}
+
+    {% addtoblock "js" %}
+    <script src="//cdnjs.cloudflare.com/ajax/libs/select2/4.0.1/js/select2.min.js"></script>
+    <script>
+      // enable select2 for the "socio" combo box
+      $(document).ready(function() { $("#id_member").select2({ width: 'resolve' }); });
+    </script>
+    {% endaddtoblock %}
+
+
 <div class="container">
   <div class="row">
     <h1>Ricarica credito</h1>
@@ -60,11 +63,5 @@
   </div>
 </div>
 
-<script src="//ajax.googleapis.com/ajax/libs/jquery/1.11.0/jquery.min.js"></script>
-<script src="/static/select2/select2.min.js"></script>
 
-<script>
-  // enable select2 for the "socio" combo box
-  $(document).ready(function() { $("#id_member").select2({ width: 'resolve' }); });
-</script>
 {% endblock %}
