@@ -16,9 +16,7 @@ class Member(models.Model):
                                   verbose_name='Fidato?')
 
     def __unicode__(self):
-        name = self.user.first_name or self.user.username
-        card_no = self.card_no or '???'
-        return u'%s #%s' % (name, card_no)
+        return self.user.first_name or self.user.username
 
     def balance_class(self):
         if self.balance <= 0:
