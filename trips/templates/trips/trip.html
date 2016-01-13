@@ -7,6 +7,18 @@
 <meta http-equiv="refresh" content="30">
 {% endaddtoblock %}
 
+{% addtoblock "js" %}
+<script>
+  $(document).ready(function($) {
+      $("#btn-admin").click(function() {
+          var url = "/admin/trips/trip/" + $(this).data("trip");
+          var sideframe = new CMS.Sideframe({maximized: true});
+          sideframe.open(url, true);
+          sideframe._maximize();
+      });
+  });
+</script>
+{% endaddtoblock %}
 
 <div class="container">
   <div class="row">
@@ -100,6 +112,11 @@
           <a href="detail/" class="btn btn-info" >
             <span class="glyphicon glyphicon-list-alt" aria-hidden="true"></span>
             Lista partecipanti
+          </a>
+
+          <a id="btn-admin" class="btn btn-info" data-trip={{trip.id}} >
+            <span class="glyphicon glyphicon-cog" aria-hidden="true"></span>
+            Admin
           </a>
         {% endif %}
       </div>
