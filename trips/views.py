@@ -81,10 +81,18 @@ def detail(request, trip_id):
         trip = models.Trip.objects.get(pk=trip_id)
     except models.Trip.DoesNotExist:
         raise Http404
-    participants = list(trip.participant_set.all())
+    #
+    participants = trip.participant_set.filter(with_reservation=False)
+    participants = list(participants.all())
     participants.sort(key=lambda p: (p.sublist.lower().strip() == 'staff', p.name.lower()))
+    #
+    reserves = trip.participant_set.filter(with_reservation=True)
+    reserves = list(reserves.all())
+    #
+    tables = [('Partecipanti', participants),
+              ('Riserve', reserves)]
     context = {'trip': trip,
-               'participants': participants}
+               'tables': tables}
     return render(request, 'trips/detail.html', context)
 
 

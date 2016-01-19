@@ -19,6 +19,10 @@
   </table>
 
   <table class="simple">
+  {% for header, participants in tables %}
+    <tr>
+      <th class="header" colspan="8">{{ header }}</th>
+    </tr>
     <tr>
       <th></th>
       <th>Nome</th>
@@ -46,5 +50,6 @@
       {% endif %}
     </tr>
     {% endfor %}
+  {% endfor %}
   </table>
 </body>

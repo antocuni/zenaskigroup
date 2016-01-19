@@ -115,6 +115,11 @@ table.simple {
 	-webkit-box-shadow: 0 1px 2px #d1d1d1;
 	box-shadow: 0 1px 2px #d1d1d1;
 }
+table.simple th.header {
+    text-align: center!important;
+    font-size: larger;
+}
+
 table.simple th {
 	padding:8px 12px 9px 12px;
 	border-top:1px solid #fafafa;
