@@ -181,6 +181,16 @@ def editprofile(request):
 # ----------------------------------
 
 class RegisterForm(forms.Form):
+
+    @classmethod
+    def from_trip(cls, trip):
+        form = cls()
+        deposit = trip.deposit
+        if trip.with_reservation and trip.seats_left <= 0:
+            deposit = 0 # default 0 deposit for registrations with reservation
+        form.fields['deposit'].initial = deposit
+        return form
+
     name = forms.CharField(label='Nome',
                            max_length=200,
                            widget=forms.TextInput(
@@ -193,7 +203,12 @@ class RegisterForm(forms.Form):
                                   attrs={'placeholder': 'Cognome',
                                          'class': 'form-control input-sm'}
                               ))
-    is_member = forms.BooleanField(label='Socio?', initial=False, required=False)    
+    is_member = forms.BooleanField(label='Socio?', initial=False, required=False)
+    deposit = forms.DecimalField(label='Caparra',
+                                 widget=forms.TextInput(
+                                     attrs={'class': 'form-control input-sm',
+                                            'size': 5}
+                                 ))
 
 
 @login_required
@@ -206,17 +221,22 @@ def register(request, trip_id):
     error = None
     message = None
     if request.method == 'POST':
-        if (request.user.member.balance < trip.deposit and
-            not request.user.member.trusted):
-            error = "Credito insufficiente"
+        form = RegisterForm(request.POST)
+        deposit = trip.deposit
+        if request.user.member.trusted:
+            if form.is_valid():
+                deposit = form.cleaned_data['deposit']
+        else:
+            if request.user.member.balance < deposit:
+                error = "Credito insufficiente"
+        #
         if trip.seats_left <= 0 and not trip.with_reservation:
             error = "Posti esauriti"
-        form = RegisterForm(request.POST)
         if form.is_valid() and not error:
             name = '%s %s' % (form.cleaned_data['surname'], form.cleaned_data['name'])
             name = name.strip()
             participant = models.Participant(trip=trip,
-                                             deposit=trip.deposit,
+                                             deposit=deposit,
                                              name=name,
                                              is_member=form.cleaned_data['is_member'],
                                              sublist='Online',
@@ -224,16 +244,16 @@ def register(request, trip_id):
                                              with_reservation=trip.with_reservation)
             with transaction.atomic():
                 trip.participant_set.add(participant)
-                request.user.member.balance -= trip.deposit
+                request.user.member.balance -= deposit
                 descr = u'Iscrizione di %s a %s' % (participant.name, trip)
                 t = models.MoneyTransfer(member=request.user.member,
-                                         value=-trip.deposit,
+                                         value=-deposit,
                                          executed_by=request.user,
                                          description=descr)
                 t.save()
                 request.user.member.save()
                 trip.save()
-            form = RegisterForm()
+            form = RegisterForm.from_trip(trip)
             message = (u"L'iscrizione è andata a buon fine. Credito residuo: %s €" %
                        request.user.member.balance)
 
@@ -256,7 +276,7 @@ def register(request, trip_id):
             email.bcc = [settings.ADMIN_EMAIL]
             email.send(fail_silently=True)
     else:
-        form = RegisterForm()
+        form = RegisterForm.from_trip(trip)
 
     registration_allowed = trip.closing_date >= datetime.now()
     participants = trip.participant_set.filter(registered_by=request.user)
