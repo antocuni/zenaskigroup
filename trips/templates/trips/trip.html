@@ -21,7 +21,7 @@
       (function loop() {
           var now = new Date();
           if ( now - lastupdate > 30*1000 ) {
-              location.reload();
+              window.location = window.location.href;
           }
           lastupdate = now;
           window.setTimeout(function(){window.requestAnimFrame(loop)}, 1000);
