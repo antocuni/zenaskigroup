@@ -53,7 +53,10 @@ class Trip(models.Model):
     def sublist_summary(self):
         count = Counter()
         for p in self.participant_set.all():
-            count[p.sublist] += 1
+            if p.with_reservation:
+                count['Riserve'] += 1
+            else:
+                count[p.sublist] += 1
         return sorted(count.items())
 
     @property
