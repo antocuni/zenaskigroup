@@ -71,6 +71,7 @@
                   {{ form.deposit.errors }}{{ form.deposit}}
                 {% else %}
                   {{ trip.deposit }} €
+                  {{ form.deposit.errors }}{{ form.deposit.as_hidden }}
                 {% endif %}
               </td>
               <td>
