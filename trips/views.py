@@ -323,6 +323,7 @@ class JacketSubscribeForm(forms.ModelForm):
 def jacket(request):
     form = JacketSubscribeForm()
     error = None
+    
     context = {
         'error': error,
         'form': form,
