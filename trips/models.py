@@ -116,3 +116,15 @@ class MoneyTransfer(models.Model):
 
     def __unicode__(self):
         return u'%s: %+d €, %s' % (self.member.user.get_full_name(), self.value, self.description)
+
+
+class JacketSubscribe(models.Model):
+    class Meta:
+        verbose_name = 'Contatto'
+        verbose_name_plural = 'Mailing List Giacca'
+
+    name = models.CharField(max_length=200, verbose_name='Nome', blank=False)
+    email = models.CharField(max_length=200, verbose_name='Email', blank=False)
+
+    def __unicode__(self):
+        return self.name

@@ -296,3 +296,35 @@ def register(request, trip_id):
                'message': message,
                'registration_allowed': registration_allowed}
     return render(request, 'trips/register.html', context)
+
+
+class JacketSubscribeForm(forms.ModelForm):
+
+    class Meta:
+        model = models.JacketSubscribe
+        fields = ['name', 'email']
+
+    name = forms.CharField(label='Nome',
+                           max_length=200,
+                           widget=forms.TextInput(
+                               attrs={'placeholder': 'Nome',
+                                      'class': 'form-control input-sm'}
+                           ))
+
+    email = forms.CharField(label='Email',
+                           max_length=200,
+                           widget=forms.TextInput(
+                               attrs={'placeholder': 'E-mail',
+                                      'class': 'form-control input-sm'}
+                           ))
+
+
+
+def jacket(request):
+    form = JacketSubscribeForm()
+    error = None
+    context = {
+        'error': error,
+        'form': form,
+        }
+    return render(request, 'trips/tuta.html', context)

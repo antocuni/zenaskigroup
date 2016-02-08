@@ -12,4 +12,5 @@ urlpatterns = patterns('',
     url(r'^trip/(?P<trip_id>\d+)/detail/$', views.detail, name='detail'),
     url(r'^accounts/profile/$', views.profile, name='profile'),
     url(r'^accounts/profile/edit/$', views.editprofile, name='editprofile'),
+    url(r'^tuta/$', views.jacket, name='jacket'),
 )
