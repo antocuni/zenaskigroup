@@ -127,4 +127,4 @@ class JacketSubscribe(models.Model):
     email = models.CharField(max_length=200, verbose_name='Email', blank=False)
 
     def __unicode__(self):
-        return self.name
+        return u'%s <%s>' % (self.name, self.email)

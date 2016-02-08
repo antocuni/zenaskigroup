@@ -7,6 +7,7 @@
   <div class="row">
     <div class="col-lg-9">
       <h1>Anteprima tuta sociale <span class="label label-default">2016/2017</span></h1>
+
       <p>Dopo anni di attesa, finalmente è in dirittura di arrivo la <b>nuova
       tuta sociale!</b>  Per garantire un ottimo rapporto tra qualità e prezzo
       la scelta è caduta
@@ -17,7 +18,7 @@
         Aprile-Maggio, in modo da averle in tempo per l'inizio della prossima
         stagione sciistica, <b>inverno 2016/2017</b>.
 
-      <div class="alert alert-success" role="alert">
+      <div class="alert alert-info" role="alert">
         <span class="glyphicon glyphicon-ok-circle" aria-hidden="true"></span> Il
         costo indicativo per il completo giacca e pantaloni dovrebbe aggirarsi
         intorno ai 450-470 €
@@ -26,35 +27,38 @@
       <img src="/static/img/extreme-vintage.jpg" class="img-thumbnail" >
       <br><br>
 
-      <div class="panel panel-success">
+      {% if saved %}
+      <div class="alert alert-success">
+        La tua richiesta è stata correttamente registrata. Verrai contattato
+        il prima possibile
+      </div>
+      {% else %}
+      <div class="panel panel-info">
         <div class="panel-heading">
           <h3 class="panel-title">Richiesta informazioni</h3>
         </div>
         <div class="panel-body">
           <p>Se sei interessato a ricevere ulteriori informazioni non appena saranno
             disponibili, lasciaci il tuo nominativo!</p>
+          <form action="" method="post">
+            {% csrf_token %}
+            <div class="col-sm-4">
+              {{ form.name }}
+              {{ form.name.errors }}
+            </div>
+            <div class="col-sm-4">
+              {{ form.email }}
+              {{ form.email.errors }}
+            </div>
+            <div class="col-sm-4">
+              <input class="btn btn-sm btn-info" type="submit" value="OK" />
+            </div>
+          </form>
         </div>
-
-        <form action="" method="post">
-          {% csrf_token %}
-          {% if error %}
-          <div class="alert alert-danger">
-            {{ error }}
-          </div>
-          {% endif %}
-          <div class="col-sm-4">
-            {{ form.name.errors }}{{ form.name }}
-          </div>
-          <div class="col-sm-4">
-            {{ form.email.errors }}{{ form.email }}
-          </div>
-          <div class="col-sm-4">
-            <input class="btn btn-sm btn-info" type="submit" value="OK" />
-          </div>
-        </form>
-        <br>
-        <br>
       </div>
+      {% endif %}
+      <br>
+      <br>
     </div>
   </div>
 </div>

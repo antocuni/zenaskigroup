@@ -58,5 +58,4 @@ class TripAdmin(admin.ModelAdmin):
 # Register your models here.
 admin.site.register(models.Trip, TripAdmin)
 admin.site.register(models.MoneyTransfer)
-
-
+admin.site.register(models.JacketSubscribe)

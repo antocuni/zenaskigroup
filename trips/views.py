@@ -321,11 +321,17 @@ class JacketSubscribeForm(forms.ModelForm):
 
 
 def jacket(request):
+    saved = False
     form = JacketSubscribeForm()
-    error = None
-    
+    if request.method == 'POST':
+        form = JacketSubscribeForm(request.POST)
+        if form.is_valid():
+            form.save(commit=True)
+            saved = True
+            form = JacketSubscribeForm()
+    #
     context = {
-        'error': error,
         'form': form,
+        'saved': saved
         }
     return render(request, 'trips/tuta.html', context)
