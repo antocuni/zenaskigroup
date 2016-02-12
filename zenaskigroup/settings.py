@@ -121,8 +121,10 @@ MIDDLEWARE_CLASSES = (
     'cms.middleware.user.CurrentUserMiddleware',
     'cms.middleware.page.CurrentPageMiddleware',
     'cms.middleware.toolbar.ToolbarMiddleware',
-    'cms.middleware.language.LanguageCookieMiddleware'
+    'cms.middleware.language.LanguageCookieMiddleware',
+    'zenaskigroup.utils.UserTracebackMiddleware',
 )
+
 
 INSTALLED_APPS = (
     'djangocms_admin_style',
@@ -235,6 +237,7 @@ REGISTRATION_AUTO_LOGIN = True # Automatically log the user in.
 
 DEFAULT_FROM_EMAIL = 'Zena Ski Group <mail@zenaskigroup.it>'
 ADMIN_EMAIL = 'anto.cuni@gmail.com'
+ADMINS = [ADMIN_EMAIL]
 
 if DEBUG:
     EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
