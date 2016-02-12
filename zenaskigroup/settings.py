@@ -237,7 +237,7 @@ REGISTRATION_AUTO_LOGIN = True # Automatically log the user in.
 
 DEFAULT_FROM_EMAIL = 'Zena Ski Group <mail@zenaskigroup.it>'
 ADMIN_EMAIL = 'anto.cuni@gmail.com'
-ADMINS = [ADMIN_EMAIL]
+ADMINS = [('Antonio Cuni', ADMIN_EMAIL)]
 
 if DEBUG:
     EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
