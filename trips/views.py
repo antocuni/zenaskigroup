@@ -108,7 +108,6 @@ class TopupForm(forms.ModelForm):
 
 @staff_member_required
 def topup(request):
-    raise ValueError
     transfers = models.MoneyTransfer.objects.filter(date=date.today(),
                                                     value__gt=0)
     
