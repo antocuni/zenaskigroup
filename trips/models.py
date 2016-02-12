@@ -9,7 +9,7 @@ from annoying.fields import AutoOneToOneField
 
 class Member(models.Model):
     user = AutoOneToOneField(User)
-    balance = models.DecimalField(max_digits=5, decimal_places=2, verbose_name='Credito',
+    balance = models.DecimalField(max_digits=10, decimal_places=2, verbose_name='Credito',
                                   default=0)
     card_no = models.CharField(max_length=5, verbose_name='Numero tessera', blank=True)
     trusted = models.BooleanField(default=False, blank=False,
@@ -34,7 +34,7 @@ class Trip(models.Model):
     closing_date = models.DateTimeField(verbose_name='Chiusura iscrizioni')
     destination = models.CharField(max_length=200, verbose_name='Destinazione')
     seats = models.PositiveIntegerField(verbose_name='Numero di posti')
-    deposit = models.DecimalField(max_digits=5, decimal_places=2, verbose_name='Caparra',
+    deposit = models.DecimalField(max_digits=10, decimal_places=2, verbose_name='Caparra',
                                   default=20)
     poster = models.ImageField(verbose_name='Locandina')
     allow_extra_seats = models.BooleanField(default=False, blank=False,
@@ -89,7 +89,7 @@ class Participant(models.Model):
 
     trip = models.ForeignKey(Trip)
     name = models.CharField(max_length=200, verbose_name='Nome')
-    deposit = models.DecimalField(max_digits=5, decimal_places=2, verbose_name='Caparra')
+    deposit = models.DecimalField(max_digits=10, decimal_places=2, verbose_name='Caparra')
     is_member = models.BooleanField(default=True, blank=False,
                                     verbose_name='Socio?')
     registered_by = models.ForeignKey(User, verbose_name='Iscritto da',
@@ -109,7 +109,7 @@ class MoneyTransfer(models.Model):
 
     member = models.ForeignKey(Member, verbose_name='Socio')
     date = models.DateField(verbose_name='Data', default=date.today)
-    value = models.DecimalField(max_digits=5, decimal_places=2, verbose_name='Valore')
+    value = models.DecimalField(max_digits=10, decimal_places=2, verbose_name='Valore')
     executed_by = models.ForeignKey(User, verbose_name='Eseguito da')
     description = models.CharField(max_length=200, verbose_name='Causale',
                                    default='Ricarica')
