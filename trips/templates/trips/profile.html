@@ -12,8 +12,10 @@
           <tr>
             <th>Nome utente</th>
             <td>{{ user.username }}
+              {% if not hide_edit %}
               &nbsp;&nbsp;&nbsp;
               <a class="btn btn-xs btn-danger" href="/accounts/logout/">logout</a>
+              {% endif %}
             </td>
           </tr>
           <tr>
@@ -33,13 +35,15 @@
             <td class="{{ user.member.balance_class }}">{{ user.member.balance }} €</td>
           </tr>
         </table>
- 
+
+        {% if not hide_edit %}
         <div class="text-center">
           <a href="edit/" class="btn btn-primary" >
             <span class="glyphicon glyphicon-edit" aria-hidden="true"></span>
             Modifica dati
           </a>
         </div>
+        {% endif %}
     </div>
   </div>
 

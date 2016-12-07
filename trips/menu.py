@@ -18,7 +18,7 @@ class TripMenu(Menu):
     def get_admin_nodes(self):
         N = NavigationNode
         return [
-            N('Credito online', "", id='balance'),
+            N('Credito online', "/balance/", id='balance'),
             N('Ricarica', "/balance/topup/", id='topup', parent_id='balance'),
             N('Riepilogo', "/balance/summary", id='summary', parent_id='balance'),
         ]

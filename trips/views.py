@@ -142,6 +142,19 @@ def balance_summary(request):
     context = {'users': users}
     return render(request, 'trips/balance_summary.html', context)
 
+@staff_member_required
+def balance_user(request, user_id):
+    user_id = int(user_id)
+    user = models.User.objects.get(pk=user_id)
+    transfers = models.MoneyTransfer.objects.filter(member=user.member)
+    transfers = transfers.order_by('-date')
+    context = {
+        'user': user,
+        'transfers': transfers,
+        'hide_edit': True,
+    }
+    return render(request, 'trips/profile.html', context)
+
 
 # ----------------------------------
 # user profile

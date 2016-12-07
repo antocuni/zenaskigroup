@@ -4,6 +4,7 @@ from trips import views
 urlpatterns = patterns('',
     url(r'^balance/topup/$', views.topup, name='topup'),
     url(r'^balance/summary/$', views.balance_summary, name='balance_summary'),
+    url(r'^balance/(?P<user_id>\d+)/$', views.balance_user, name='balance_user'),
     url(r'^faq/$', views.faq, name='faq'),
     url(r'^trip/latest_poster/$', views.latest_poster, name='latest_poster'),
     url(r'^trip/$', views.next_trip, name='next_trip'),
