@@ -154,7 +154,7 @@ class ProfileForm(forms.Form):
     name = forms.CharField(label='Nome e cognome',
                            max_length=200)
     email = forms.EmailField(label='Email')
-    card_no = forms.CharField(label='Numero tessera', max_length=5)
+    card_no = forms.CharField(label='Numero tessera', max_length=5, required=False)
 
 
 @login_required
