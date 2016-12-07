@@ -2,19 +2,25 @@ from menus.base import Menu, NavigationNode
 from menus.menu_pool import menu_pool
 from django.utils.translation import ugettext_lazy as _
 
-class TestMenu(Menu):
+class TripMenu(Menu):
 
     def get_nodes(self, request):
-        nodes = []
-        n = NavigationNode(_('Prossima gita'), "/trip/", 1)
-        n2 = NavigationNode(_('Profilo utente'), "/accounts/profile/", 2)
-        n3 = NavigationNode(_('Aiuto'), "/faq/", 3)
-        n4 = NavigationNode(_('Ricarica'), "/topup/", 4)
-        nodes.append(n)
-        nodes.append(n2)
-        nodes.append(n3)
+        N = NavigationNode
+        nodes = [
+            N('Prossima gita', "/trip/", id='next_trip'),
+            N('Profilo utente', "/accounts/profile/", id='profile'),
+            N('Aiuto', "/faq/", id='help'),
+        ]
         if request.user.is_staff:
-            nodes.append(n4)
+            nodes += self.get_admin_nodes()
         return nodes
 
-menu_pool.register_menu(TestMenu)
+    def get_admin_nodes(self):
+        N = NavigationNode
+        return [
+            N('Credito online', "", id='balance'),
+            N('Ricarica', "/balance/topup/", id='topup', parent_id='balance'),
+            N('Riepilogo', "/balance/summary", id='summary', parent_id='balance'),
+        ]
+
+menu_pool.register_menu(TripMenu)

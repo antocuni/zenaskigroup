@@ -2,7 +2,8 @@ from django.conf.urls import patterns, url
 from trips import views
 
 urlpatterns = patterns('',
-    url(r'^topup/$', views.topup, name='topup'),
+    url(r'^balance/topup/$', views.topup, name='topup'),
+    url(r'^balance/summary/$', views.balance_summary, name='balance_summary'),
     url(r'^faq/$', views.faq, name='faq'),
     url(r'^trip/latest_poster/$', views.latest_poster, name='latest_poster'),
     url(r'^trip/$', views.next_trip, name='next_trip'),

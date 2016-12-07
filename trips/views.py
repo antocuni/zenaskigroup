@@ -134,6 +134,15 @@ def topup(request):
                'transfers': transfers}
     return render(request, 'trips/topup.html', context)
 
+
+@staff_member_required
+def balance_summary(request):
+    users = models.User.objects.exclude(member__balance=0)
+    users = users.order_by('member__balance')
+    context = {'users': users}
+    return render(request, 'trips/balance_summary.html', context)
+
+
 # ----------------------------------
 # user profile
 # ----------------------------------
