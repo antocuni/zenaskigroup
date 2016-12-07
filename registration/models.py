@@ -71,7 +71,7 @@ class RegistrationManager(models.Manager):
                 return user
         return False
 
-    def create_inactive_user(self, username, email, password,
+    def create_inactive_user(self, username, email, password, first_name,
                              site, send_email=True, request=None):
         """
         Create a new, inactive ``User``, generate a
@@ -84,7 +84,8 @@ class RegistrationManager(models.Manager):
         it will be passed to the email template.
 
         """
-        new_user = UserModel().objects.create_user(username, email, password)
+        new_user = UserModel().objects.create_user(username, email, password,
+                                                   first_name=first_name)
         new_user.is_active = False
         new_user.save()
 
