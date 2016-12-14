@@ -4,6 +4,6 @@ backup*
 media
 static
 project.db
-zenaskigroup.log
+django.log
 *.pyc
 *~
