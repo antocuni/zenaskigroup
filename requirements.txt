@@ -15,9 +15,10 @@ https://github.com/divio/djangocms-teaser/archive/master.zip?1444643016.38
 https://github.com/divio/djangocms-video/archive/master.zip?1444643016.38
 Django<1.9
 pytz
-django-reversion>=1.8.7
+django-reversion==1.8.7
 django-classy-tags>=0.3.4.1
-html5lib
+html5lib==0.999
 Pillow>=2.3
 django-sekizai>=0.7
 six
+django-annoying==0.8.4
