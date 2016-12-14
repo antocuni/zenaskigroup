@@ -357,3 +357,14 @@ def jacket(request):
         'saved': saved
         }
     return render(request, 'trips/tuta.html', context)
+
+
+@staff_member_required
+def sendmail(request):
+    send_mail('Zena Ski Group: Test Email',
+              'This is a test email',
+              settings.DEFAULT_FROM_EMAIL,
+              [settings.ADMIN_EMAIL],
+              fail_silently=True)
+    #
+    return HttpResponse("email sent to " + settings.ADMIN_EMAIL)
