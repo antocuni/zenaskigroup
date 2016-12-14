@@ -24,3 +24,4 @@ six
 django-annoying==0.8.4
 Django-Select2==5.2.0
 django-request-logging==0.4.6
+django-nullmailer==0.1

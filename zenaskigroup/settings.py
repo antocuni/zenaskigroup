@@ -239,11 +239,7 @@ REGISTRATION_AUTO_LOGIN = True # Automatically log the user in.
 DEFAULT_FROM_EMAIL = 'Zena Ski Group <mail@zenaskigroup.it>'
 ADMIN_EMAIL = 'anto.cuni@gmail.com'
 ADMINS = [('Antonio Cuni', ADMIN_EMAIL)]
-
-EMAIL_USE_TLS = True
-EMAIL_HOST = 'smtp.unbit.it'
-EMAIL_HOST_USER = 'mail@zenaskigroup.it'
-EMAIL_HOST_PASSWORD = 'zena1997'
+EMAIL_BACKEND = 'nullmailer.backend.EmailBackend'
 
 if DEBUG:
     EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'

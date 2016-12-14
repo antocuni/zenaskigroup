@@ -6,4 +6,7 @@ mkdir $ROOT/nullmailer/queue
 mkdir $ROOT/nullmailer/tmp
 mkfifo $ROOT/nullmailer/trigger
 
-echo make sure to symlink to /etc/nullmailer/remotes and /etc/nullmailer/defaulthost
+echo make sure to make the appropriate symlinks:
+echo   - /etc/nullmailer/remotes
+echo   - /etc/nullmailer/defaulthost
+echo   - ~/vassals/nullmailer.ini --> uwsgi.ini
