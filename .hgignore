@@ -1,4 +1,9 @@
+syntax: glob
+
 backup*
-media/*
+media
+static
 project.db
 zenaskigroup.log
+*.pyc
+*~
