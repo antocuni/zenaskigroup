@@ -1,6 +1,6 @@
 syntax: glob
 
-backup*
+backup/*
 media
 static
 project.db
