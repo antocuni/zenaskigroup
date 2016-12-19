@@ -240,6 +240,7 @@ DEFAULT_FROM_EMAIL = 'Zena Ski Group <mail@zenaskigroup.it>'
 ADMIN_EMAIL = 'anto.cuni@gmail.com'
 ADMINS = [('Antonio Cuni', ADMIN_EMAIL)]
 EMAIL_BACKEND = 'nullmailer.backend.EmailBackend'
+SERVER_EMAIL = 'mail@zenaskigroup.it' # this is the sender of error messages
 
 if DEBUG:
     EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
