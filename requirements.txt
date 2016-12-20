@@ -1,3 +1,4 @@
+cmsplugin-filer==1.1.3
 Django==1.8.5
 django-annoying==0.8.4
 django-appconf==1.0.1
@@ -13,6 +14,7 @@ django-sekizai==0.8.2
 Django-Select2==5.2.0
 django-treebeard==3.0
 djangocms-admin-style==0.2.8
+djangocms-attributes-field==0.1.2
 djangocms-column==1.5
 djangocms-file==0.1
 djangocms-flash==0.2.0
@@ -27,8 +29,7 @@ djangocms-video==0.1
 easy-thumbnails==2.3
 html5lib==0.999
 Pillow==3.0.0
+pkg-resources==0.0.0
 pytz==2015.6
 six==1.10.0
 Unidecode==0.4.19
-wsgiref==0.1.2
-
