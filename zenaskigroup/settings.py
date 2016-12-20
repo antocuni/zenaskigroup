@@ -141,6 +141,19 @@ INSTALLED_APPS = (
     'menus',
     'sekizai',
     'treebeard',
+
+    # <django-filer>
+    'easy_thumbnails',
+    'filer',
+    'mptt',
+    'cmsplugin_filer_file',
+    'cmsplugin_filer_folder',
+    'cmsplugin_filer_link',
+    'cmsplugin_filer_image',
+    'cmsplugin_filer_teaser',
+    'cmsplugin_filer_video',
+    # </django-filer>
+    
     'djangocms_text_ckeditor',
     'djangocms_style',
     'djangocms_column',
@@ -231,6 +244,15 @@ MIGRATION_MODULES = {
 ACCOUNT_ACTIVATION_DAYS = 7 # One-week activation window; you may, of course,
                             # use a different value.
 REGISTRATION_AUTO_LOGIN = True # Automatically log the user in.
+
+THUMBNAIL_HIGH_RESOLUTION = True
+THUMBNAIL_PROCESSORS = (
+    'easy_thumbnails.processors.colorspace',
+    'easy_thumbnails.processors.autocrop',
+    #'easy_thumbnails.processors.scale_and_crop',
+    'filer.thumbnail_processors.scale_and_crop_with_subject_location',
+    'easy_thumbnails.processors.filters',
+)
 
 # ==============
 # email settings
