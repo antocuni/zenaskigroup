@@ -1,6 +1,4 @@
-Django-Select2==5.2.0
 Django==1.8.5
-Pillow==3.0.0
 django-annoying==0.8.4
 django-appconf==1.0.1
 django-classy-tags==0.6.2
@@ -9,6 +7,7 @@ django-nullmailer==0.3
 django-request-logging==0.4.6
 django-reversion==1.8.5
 django-sekizai==0.8.2
+Django-Select2==5.2.0
 django-treebeard==3.0
 djangocms-admin-style==0.2.8
 djangocms-column==1.5
@@ -23,6 +22,7 @@ djangocms-teaser==0.1
 djangocms-text-ckeditor==2.6.0
 djangocms-video==0.1
 html5lib==0.999
+Pillow==3.0.0
 pytz==2015.6
 six==1.10.0
 wsgiref==0.1.2
