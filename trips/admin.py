@@ -45,12 +45,18 @@ admin.site.register(User, UserAdmin)
 
 
 
-class ParticipantInline(admin.TabularInline):
+class ParticipantStack(admin.StackedInline):
+    verbose_name_plural = 'Lista'
+    model = models.Participant
+    extra = 1
+
+class ParticipantTable(admin.TabularInline):
+    verbose_name_plural = 'Griglia'
     model = models.Participant
     extra = 1
 
 class TripAdmin(admin.ModelAdmin):
-    inlines = [ParticipantInline]
+    inlines = [ParticipantStack, ParticipantTable]
     readonly_fields = ('sublist_table', 'poster_preview')
 
 

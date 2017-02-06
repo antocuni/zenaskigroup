@@ -128,7 +128,17 @@ MIDDLEWARE_CLASSES = (
 
 
 INSTALLED_APPS = (
-    'djangocms_admin_style',
+    ## 'djangocms_admin_style',
+
+    ## 'flat_responsive',
+    ## 'flat',
+
+    ## 'bootstrap_admin',
+
+    # this looks the best on mobile phone, but you need to use StackedInline
+    # instead of TabularInline
+    'jet',  
+
     'django.contrib.auth',
     'django.contrib.contenttypes',
     'django.contrib.sessions',
