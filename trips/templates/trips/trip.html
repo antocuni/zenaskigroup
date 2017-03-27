@@ -59,48 +59,46 @@
           <td>{{trip.destination}}</td>
         </tr>
         <tr>
-          <th>Posti totali</th>
-          <td>{{trip.seats}}</td>
-        </tr>
-
-        {% if user.is_staff %}
-        {% for sublist, count in trip.sublist_summary %}
-        <tr>
-          <td><span style="padding: 10px">{{sublist}}</span></td>
-          <td>{{count}}</td>
-        </tr>
-        {% endfor %}
-
-        {% block add-sublist %}
-        <form action="" method="post">
-          {% csrf_token %}
-          <tr>
-            <td>{{ form.sublist }}</td>
-            <td>
-              <div class="input-group">
-                {{ form.count }}
-                <span class="input-group-btn">
-                  <button type="submit" class="btn btn-default btn-sm">
-                    <span class="glyphicon glyphicon-plus" aria-hidden="true"></span>
-                  </button>
-                </span>
-              </div><!-- /input-group -->
-            </td>
-          </tr>
-        </form>
-        {% endblock %}
-        {% endif %}
-
-        <tr>
           <th>Disponibilità posti</th>
           <td class="{{availability_class}}">{{availability}}</td>
         </tr>
-
+        
         {% if show_seats %}
-        <tr>
-          <th>Posti disponibili</th>
-          <td>{{trip.seats_left_or_0}}</td>
-        </tr>
+            <tr>
+              <th>Posti totali</th>
+              <td>{{trip.seats}}</td>
+            </tr>
+            {% if user.is_staff %}
+            {% for sublist, count in trip.sublist_summary %}
+            <tr>
+              <td><span style="padding: 10px">{{sublist}}</span></td>
+              <td>{{count}}</td>
+            </tr>
+            {% endfor %}
+
+            {% block add-sublist %}
+            <form action="" method="post">
+              {% csrf_token %}
+              <tr>
+                <td>{{ form.sublist }}</td>
+                <td>
+                  <div class="input-group">
+                    {{ form.count }}
+                    <span class="input-group-btn">
+                      <button type="submit" class="btn btn-default btn-sm">
+                        <span class="glyphicon glyphicon-plus" aria-hidden="true"></span>
+                      </button>
+                    </span>
+                  </div><!-- /input-group -->
+                </td>
+              </tr>
+            </form>
+            {% endblock %}
+            {% endif %}
+            <tr>
+              <th>Posti disponibili</th>
+              <td>{{trip.seats_left_or_0}}</td>
+            </tr>
         {% endif %}
 
         <tr>

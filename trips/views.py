@@ -81,7 +81,11 @@ def compute_availability(user, context):
     context['availability'] = availability
     context['availability_class'] = cls
     #
-    show_seats = True
+    show_seats = False
+    trusted = hasattr(user, 'member') and user.member.trusted
+    if user.is_staff or trusted:
+        # staff and trusted users always see the actual number of seats left
+        show_seats = True
     context['show_seats'] = show_seats
     
     
