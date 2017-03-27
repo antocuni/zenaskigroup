@@ -10,24 +10,8 @@
           var url = "/admin/trips/trip/" + $(this).data("trip");
           var sideframe = new CMS.Sideframe({maximized: true});
           sideframe.open(url, true);
-          sideframe._maximize();
+          //sideframe._maximize();
       });
-
-      /*
-      // refresh the page when we stay away from the browser for more than 30
-      // seconds
-      window.requestAnimFrame = window.requestAnimationFrame ||
-                                window.mozRequestAnimationFrame;
-      var lastupdate = new Date();
-      (function loop() {
-          var now = new Date();
-          if ( now - lastupdate > 30*1000 ) {
-              window.location = window.location.href;
-          }
-          lastupdate = now;
-          window.setTimeout(function(){window.requestAnimFrame(loop)}, 1000);
-      })();
-      */
   });
 </script>
 {% endaddtoblock %}
