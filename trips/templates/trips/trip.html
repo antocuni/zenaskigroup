@@ -92,9 +92,16 @@
         {% endif %}
 
         <tr>
+          <th>Disponibilità posti</th>
+          <td class="{{availability_class}}">{{availability}}</td>
+        </tr>
+
+        {% if show_seats %}
+        <tr>
           <th>Posti disponibili</th>
           <td>{{trip.seats_left_or_0}}</td>
         </tr>
+        {% endif %}
 
         <tr>
           <th>Caparra</th>

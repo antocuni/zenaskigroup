@@ -62,8 +62,29 @@ def trip(request, trip_id):
         'registration_allowed': registration_allowed,
         'form': form
     }
+    compute_availability(request.user, context)
     return render(request, 'trips/trip.html', context)
 
+
+def compute_availability(user, context):
+    from trips.utils import seats_availability, SOLD_OUT, CRITICAL, LOW, LIMITED, HIGH
+    classes = {
+        SOLD_OUT: ('Esauriti', 'text-danger'),
+        CRITICAL: ('Critica', 'danger'),
+        LOW:      ('Bassa', 'text-danger'),
+        LIMITED:  ('Limitata', 'text-warning'),
+        HIGH:     ('Alta', 'text-success'),
+        }
+
+    availability = seats_availability(context['trip'])
+    availability, cls = classes.get(availability, ('', ''))
+    context['availability'] = availability
+    context['availability_class'] = cls
+    #
+    show_seats = True
+    context['show_seats'] = show_seats
+    
+    
 
 # ----------------------------------
 # faq
@@ -317,6 +338,7 @@ def register(request, trip_id):
                'error': error,
                'message': message,
                'registration_allowed': registration_allowed}
+    compute_availability(request.user, context)
     return render(request, 'trips/register.html', context)
 
 

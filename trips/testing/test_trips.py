@@ -1,7 +1,7 @@
 from datetime import date
 from mock import Mock
 from freezegun import freeze_time
-from trips.utils import seats_availability
+from trips.utils import seats_availability, SOLD_OUT, CRITICAL, LOW, LIMITED, HIGH
 
 def availability(trip, left):
     trip.seats_left = left
@@ -12,36 +12,36 @@ def test_seats_availability():
     trip.date = date(2017, 3, 26)
     # first tuesday
     with freeze_time('2017-03-14'):
-        assert availability(trip, left=100) == 'alta'
-        assert availability(trip, left=76) == 'alta'
-        assert availability(trip, left=75) == 'limitata'
-        assert availability(trip, left=50) == 'bassa'
-        assert availability(trip, left=25) == 'critica'
-        assert availability(trip, left=0) == 'esauriti'
+        assert availability(trip, left=100) == HIGH
+        assert availability(trip, left=76) == HIGH
+        assert availability(trip, left=75) == LIMITED
+        assert availability(trip, left=50) == LOW
+        assert availability(trip, left=25) == CRITICAL
+        assert availability(trip, left=0) == SOLD_OUT
     
     # first friday, before 12:00: no change
     with freeze_time('2017-03-17 11:59'):
-        assert availability(trip, left=100) == 'alta'
-        assert availability(trip, left=76) == 'alta'
-        assert availability(trip, left=75) == 'limitata'
-        assert availability(trip, left=50) == 'bassa'
-        assert availability(trip, left=25) == 'critica'
-        assert availability(trip, left=0) == 'esauriti'
+        assert availability(trip, left=100) == HIGH
+        assert availability(trip, left=76) == HIGH
+        assert availability(trip, left=75) == LIMITED
+        assert availability(trip, left=50) == LOW
+        assert availability(trip, left=25) == CRITICAL
+        assert availability(trip, left=0) == SOLD_OUT
     
     # first friday, after 12:00: never show "alta"
     with freeze_time('2017-03-17 12:00'):
-        assert availability(trip, left=100) == 'limitata'
-        assert availability(trip, left=76) == 'limitata'
-        assert availability(trip, left=75) == 'limitata'
-        assert availability(trip, left=50) == 'bassa'
-        assert availability(trip, left=25) == 'critica'
-        assert availability(trip, left=0) == 'esauriti'
+        assert availability(trip, left=100) == LIMITED
+        assert availability(trip, left=76) == LIMITED
+        assert availability(trip, left=75) == LIMITED
+        assert availability(trip, left=50) == LOW
+        assert availability(trip, left=25) == CRITICAL
+        assert availability(trip, left=0) == SOLD_OUT
     #
     # second tuesday, after 12:00: never show "limitata"
     with freeze_time('2017-03-21 12:00'):
-        assert availability(trip, left=100) == 'bassa'
-        assert availability(trip, left=76) == 'bassa'
-        assert availability(trip, left=75) == 'bassa'
-        assert availability(trip, left=50) == 'bassa'
-        assert availability(trip, left=25) == 'critica'
-        assert availability(trip, left=0) == 'esauriti'
+        assert availability(trip, left=100) == LOW
+        assert availability(trip, left=76) == LOW
+        assert availability(trip, left=75) == LOW
+        assert availability(trip, left=50) == LOW
+        assert availability(trip, left=25) == CRITICAL
+        assert availability(trip, left=0) == SOLD_OUT
