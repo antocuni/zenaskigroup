@@ -41,14 +41,14 @@ h6 {
     padding-bottom: 50px;
     text-align: center;
     color: #f8f8f8;
-    background: url(/static/img/zenaback.jpg) no-repeat center center; /* default image, max resolution */
+    background: url(/static/img/zenabanner.jpg) no-repeat center center; /* default image, max resolution */
     background-size: cover;
 }
 
 /* lower resolution images if the browser is new enough to support media queries */
 @media only screen and (max-width: 768px) {
     .intro-header {
-        background: url(/static/img/zenaback-768.jpg) no-repeat center top;
+        background: url(/static/img/zenabanner-768.jpg) no-repeat center bottom;
     }
 }
 
