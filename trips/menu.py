@@ -7,6 +7,7 @@ class TripMenu(Menu):
     def get_nodes(self, request):
         N = NavigationNode
         nodes = [
+            N('Foto', "/pictures", id='pictures'),
             N('Prossima gita', "/trip/", id='next_trip'),
             N('Profilo utente', "/accounts/profile/", id='profile'),
             N('Aiuto', "/faq/", id='help'),

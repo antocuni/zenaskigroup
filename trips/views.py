@@ -91,11 +91,15 @@ def compute_availability(user, context):
     
 
 # ----------------------------------
-# faq
+# faq & pictures
 # ----------------------------------
 
 def faq(request):
     return render(request, 'trips/faq.html', {})
+
+def pictures(request):
+    return render(request, 'trips/pictures.html', {})
+
 
 # ----------------------------------
 # participant list

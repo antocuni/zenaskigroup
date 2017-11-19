@@ -1,0 +1,43 @@
+{% extends "base.html" %}
+{% load sekizai_tags %}
+
+{% block fb_hook %}
+<script>
+  window.fbAsyncInit = function() {
+    FB.init({
+      appId            : 'zenaski',
+      autoLogAppEvents : true,
+      xfbml            : true,
+      version          : 'v2.11'
+    });
+    FB.AppEvents.logPageView();
+  };
+
+  (function(d, s, id){
+     var js, fjs = d.getElementsByTagName(s)[0];
+     if (d.getElementById(id)) {return;}
+     js = d.createElement(s); js.id = id;
+     js.src = "//connect.facebook.net/en_US/sdk.js";
+     fjs.parentNode.insertBefore(js, fjs);
+   }(document, 'script', 'facebook-jssdk'));
+</script>
+{% endblock %}
+
+{% block content %}
+<div class="container">
+  <div class="row">
+    <div class="col-md-8 col-lg-6">
+      <h1>Inverno 2017-2018</h1>
+    </div>
+  </div>
+
+  <div class="row">
+    <div class="col-md-4">
+      <div class="fb-post"
+           data-href="https://www.facebook.com/zenaski/posts/1549882531759769"
+           data-show-text="false">
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}
