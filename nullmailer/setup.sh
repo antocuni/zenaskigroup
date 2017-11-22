@@ -10,4 +10,4 @@ mkfifo $ROOT/nullmailer/trigger
 echo make sure to make the appropriate symlinks:
 echo   - /etc/nullmailer/remotes
 echo   - /etc/nullmailer/defaulthost
-echo   - ~/vassals/nullmailer.ini --> uwsgi.ini
+echo   '- ~/vassals/nullmailer.ini --> uwsgi.ini'
