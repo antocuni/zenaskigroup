@@ -4,6 +4,7 @@ ROOT=${1:-/var/spool}
 mkdir $ROOT/nullmailer
 mkdir $ROOT/nullmailer/queue
 mkdir $ROOT/nullmailer/tmp
+mkdir $ROOT/nullmailer/failed
 mkfifo $ROOT/nullmailer/trigger
 
 echo make sure to make the appropriate symlinks:
