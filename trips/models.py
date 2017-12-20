@@ -39,6 +39,8 @@ class Trip(models.Model):
     poster = models.ImageField(verbose_name='Locandina')
     allow_extra_seats = models.BooleanField(default=False, blank=False,
                                             verbose_name='Consenti iscrizioni con riserva?')
+    fb_post = models.URLField(verbose_name='Facebook post', blank=True)
+    fb_album = models.URLField(verbose_name='Facebook album', blank=True)
 
     @property
     def seats_left(self):

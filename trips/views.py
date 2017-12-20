@@ -98,7 +98,9 @@ def faq(request):
     return render(request, 'trips/faq.html', {})
 
 def pictures(request):
-    return render(request, 'trips/pictures.html', {})
+    # XXX: remove the hardcoded date, and think how to separate seasons
+    trips = models.Trip.objects.filter(date__gt='2017-11-01').order_by('-date')
+    return render(request, 'trips/pictures.html', {'trips': trips})
 
 
 # ----------------------------------

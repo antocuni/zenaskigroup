@@ -32,12 +32,28 @@
   </div>
 
   <div class="row">
-    <div class="col-md-4">
+    {% for trip in trips %}
+    {% if trip.fb_post %}
+    <div class="col-lg-4">
+      <h4>
+        <span class="label label-default">{{trip.date}}</span>
+        {{trip.destination}}
+      </h4>
+      <div class="btn-toolbar" role="toolbar">
+        <a class="btn btn-primary" href="{{trip.fb_album}}" target="_blank">
+          Apri nel browser</a>
+        <a class="btn btn-primary" href="fb://faceweb/f?href={{trip.fb_album}}">
+          Apri nell'app</a>
+      </div>
+      <br>
       <div class="fb-post"
-           data-href="https://www.facebook.com/zenaski/posts/1549882531759769"
+           data-href="{{trip.fb_post}}"
            data-show-text="false">
       </div>
     </div>
+    {% endif %} 
+    {% endfor %}
   </div>
+  
 </div>
 {% endblock %}
