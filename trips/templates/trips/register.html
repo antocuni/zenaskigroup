@@ -9,11 +9,12 @@
 <table class="table table-striped table-bordered table-hover table-condensed">
   <tr>
     <th>Nome</th>
-    <td>{{ user.get_full_name }}</td>
+    <td colspan="2">{{ user.get_full_name }}</td>
   </tr>
   <tr>
     <th>Credito residuo</th>
     <td class="{{ user.member.balance_class }}">{{ user.member.balance }} €</td>
+    <td>{% include "trips/topup_button.html" %}</td>
   </tr>
 </table>
 
