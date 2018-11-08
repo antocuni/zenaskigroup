@@ -138,7 +138,7 @@ class TopupForm(forms.ModelForm):
 
 
 @staff_member_required
-def topup(request):
+def balance_topup(request):
     transfers = models.MoneyTransfer.objects.filter(date=date.today(),
                                                     value__gt=0)
     
@@ -163,7 +163,7 @@ def topup(request):
     form = TopupForm()
     context = {'form': form,
                'transfers': transfers}
-    return render(request, 'trips/topup.html', context)
+    return render(request, 'trips/balance_topup.html', context)
 
 
 @staff_member_required
