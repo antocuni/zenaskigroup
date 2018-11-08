@@ -11,7 +11,8 @@
       <p>
         Da questa pagina è possibile ricaricare il credito online tramite
         PayPal e/o carta di credito. Una volta ricaricato il credito, sarà
-        possibile iscriversi alla gita.
+        possibile iscriversi alla gita. Il credito eventualmente rimasto sarà
+        utilizzabile per le prossime gite.
       </p>
 
       <p>
@@ -19,11 +20,18 @@
         possibile fare ricariche a <b>multipli di 25 €</b>.
       </p>
 
+      {% if trip.seats_left < 10 %}
+      <div class="alert alert-danger" role="alert">
+        <p><b>Attenzione!</b></p>
+        Rimangono solo <b>{{ trip.seats_left }} posti disponibili</b> per la prossima
+        gita a {{ trip.destination }}
+      </div>
+      {% endif %}
+
         <h3>I miei dati</h3>
         <table class="table table-striped table-bordered table-hover table-condensed">
           <tr>
-
-        <th>Nome utente</th>
+            <th>Nome utente</th>
             <td>{{ user.username }}</td>
           </tr>
           <tr>
@@ -37,8 +45,6 @@
 
     </div>
   </div>
-
-
 </div>
 
 {% endblock %}

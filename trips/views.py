@@ -239,8 +239,10 @@ def editprofile(request):
 @login_required
 def account_topup(request):
     user = request.user
+    trip = models.Trip.objects.latest()
     context = {
         'user': user,
+        'trip': trip,
     }
     return render(request, 'trips/account_topup.html', context)
 
