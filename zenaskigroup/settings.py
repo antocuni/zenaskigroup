@@ -27,7 +27,7 @@ BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 SECRET_KEY = '*t&jdu(o2$=0m*bl1j5*k_5rfpdk)&btsx0fm&u==1dx=tg30a'
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = socket.gethostname() in ('homer', 'viper2')
+DEBUG = socket.gethostname() in ('homer', 'viper2', 'bart')
 
 TEMPLATE_DEBUG = True
 
