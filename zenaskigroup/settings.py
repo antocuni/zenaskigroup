@@ -29,8 +29,6 @@ SECRET_KEY = '*t&jdu(o2$=0m*bl1j5*k_5rfpdk)&btsx0fm&u==1dx=tg30a'
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = socket.gethostname() in ('homer', 'viper2')
 
-TEMPLATE_DEBUG = True
-
 ALLOWED_HOSTS = ['*']
 
 DATETIME_FORMAT = 'd/m/Y H:i'
@@ -87,6 +85,7 @@ TEMPLATES = [
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
         'DIRS': [os.path.join(BASE_DIR, 'zenaskigroup', 'templates'),],
         'OPTIONS': {
+            'debug': DEBUG,
             'context_processors': [
                 'django.contrib.auth.context_processors.auth',
     'django.contrib.messages.context_processors.messages',
