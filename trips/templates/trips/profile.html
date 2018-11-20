@@ -33,14 +33,7 @@
           <tr>
             <th>Credito residuo</th>
             <td class="{{ user.member.balance_class }}">{{ user.member.balance }} €</td>
-            <td>
-              {% if not hide_edit %}
-              <a class="btn btn-block btn-xs btn-info" href="/accounts/topup/">
-                <span class="glyphicon glyphicon-credit-card" aria-hidden="true"></span>
-                Ricarica
-              </a>
-              {% endif %}
-            </td>
+            <td>{% include "trips/topup_button.html" %}</td>
           </tr>
         </table>
 

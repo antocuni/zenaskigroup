@@ -236,14 +236,6 @@ def editprofile(request):
     return render(request, 'trips/editprofile.html', context)
     
 
-@login_required
-def account_topup(request):
-    user = request.user
-    context = {
-        'user': user,
-    }
-    return render(request, 'trips/account_topup.html', context)
-
 
 # ----------------------------------
 # registration
