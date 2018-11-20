@@ -1,0 +1,22 @@
+{% load sekizai_tags %}
+
+{% addtoblock "js" %}
+<script>
+  // enable popover
+  $(document).ready(function($) {
+      $('[data-toggle="popover"]').popover();
+  });
+</script>
+{% endaddtoblock %}
+
+<button type="button" class="btn btn-block btn-xs btn-info"
+        data-toggle="popover"
+        data-placement="top"
+        title="Ricarica credito"
+        data-html="true"
+        data-content="Purtroppo per ragioni fiscali e organizzative non possiamo 
+                      accettare pagamenti online.
+                      <a href='/faq#ricarica'>Maggiori informazioni</a>">
+  Ricarica
+  <span class="glyphicon glyphicon-question-sign" aria-hidden="true"></span>
+</button>
