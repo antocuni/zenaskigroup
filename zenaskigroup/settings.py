@@ -233,7 +233,12 @@ DATABASES = {
         'NAME': os.path.join(BASE_DIR, 'project.db'),
         'PASSWORD': '',
         'PORT': '',
-        'USER': ''
+        'USER': '',
+
+        'TEST': {
+            'ENGINE': 'django.db.backends.sqlite3',
+            'NAME': os.path.join(BASE_DIR, 'testing', 'tests.db'),
+        }
     }
 }
 

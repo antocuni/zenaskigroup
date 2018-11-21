@@ -7,3 +7,5 @@ project.db
 django.log
 *.pyc
 *~
+.pytest_cache
+testing/tests.db
