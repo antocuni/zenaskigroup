@@ -19,6 +19,8 @@ import os
 
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
+SILENCED_SYSTEM_CHECKS = ["fields.W342"]
+
 
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/1.8/howto/deployment/checklist/
@@ -35,15 +37,7 @@ DATETIME_FORMAT = 'd/m/Y H:i'
 DATE_FORMAT = 'd/m/Y'
 
 # Application definition
-
-
-
-
-
 ROOT_URLCONF = 'zenaskigroup.urls'
-
-
-
 WSGI_APPLICATION = 'zenaskigroup.wsgi.application'
 
 
