@@ -258,6 +258,7 @@ class RegisterForm(forms.Form):
                                attrs={'placeholder': 'Nome',
                                       'class': 'form-control input-sm'}
                            ))
+
     surname = forms.CharField(label='Cognome',
                               max_length=200,
                               widget=forms.TextInput(
