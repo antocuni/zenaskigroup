@@ -268,31 +268,33 @@ class TestRegister(BaseTestView):
 
     @freeze_time('2018-12-24')
     def test_with_reservation(self, trip, testuser):
-        testuser.member.balance = 50
+        testuser.member.balance = 75
         trip.seats = 1
         trip.allow_extra_seats = True
         testuser.member.save()
         trip.save()
         self.login()
-        resp = self.post('/trip/1/register/', {'name': 'Pippo',
-                                               'surname': 'Pluto',
-                                               'is_member': '1',
-                                               'deposit': '25'})
+        data = [{'name': 'Pippo', 'surname': 'Pluto', 'deposit': '25'}]
+        resp = self.submit('/trip/1/register/', data)
         assert resp.status_code == 200
         participants = self.get_participants(self.trip)
-        assert participants == [('Pluto Pippo', True, 25, False)]
+        assert participants == [('Pluto Pippo', False, 25, False)]
 
         mail.outbox = []
-        resp = self.post('/trip/1/register/', {'name': 'Mickey',
-                                               'surname': 'Mouse',
-                                               'is_member': '1',
-                                               'deposit': '25'})
+        data = [
+            {'name': 'Mickey', 'surname': 'Mouse', 'deposit': '25'},
+            {'name': 'Donald', 'surname': 'Duck', 'deposit': '25'}
+        ]
+        resp = self.submit('/trip/1/register/', data)
         assert resp.status_code == 200
         participants = self.get_participants(self.trip)
-        assert participants == [('Pluto Pippo', True, 25, False),
-                                ('Mouse Mickey', True, 25, True)]
+        assert participants == [('Pluto Pippo', False, 25, False),
+                                ('Mouse Mickey', False, 25, True),
+                                ('Duck Donald', False, 25, True)]
         msg = mail.outbox[0]
         assert 'CON RISERVA' in msg.body
+        assert 'Mouse Mickey' in msg.body
+        assert 'Duck Donald' in msg.body
 
     @freeze_time('2018-12-24')
     def test_form_invalid(self, testuser):

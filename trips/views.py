@@ -386,12 +386,13 @@ class Register(LoginRequiredView):
                              to = [user.email])
 
         if trip.with_reservation:
-            xxx
-            body = (u"L'iscrizione di {name} per la gita a {destination} del "
+            body = (u"L'iscrizione delle seguenti persone per la gita a "
+                    u"{destination} del "
                     u"{date} è stata effettuata CON RISERVA.\n"
                     u"In caso di conferma, verrai informato via email, oppure "
-                    u"puoi controllare lo stato della tua iscrizione direttamente "
-                    u'sul sito, nella pagina "Iscriviti online".\n')
+                    u"puoi controllare lo stato della tua iscrizione "
+                    u'direttamente sul sito, nella pagina "Iscriviti online":\n'
+                    u"{participant_names}\n")
         else:
             body = (u"L'iscrizione delle seguenti persone per la gita a "
                     u"{destination} del "
