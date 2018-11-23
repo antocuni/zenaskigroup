@@ -379,46 +379,6 @@ class Register(LoginRequiredView):
         email.send(fail_silently=True)
 
 
-
-class JacketSubscribeForm(forms.ModelForm):
-
-    class Meta:
-        model = models.JacketSubscribe
-        fields = ['name', 'email']
-
-    name = forms.CharField(label='Nome',
-                           max_length=200,
-                           widget=forms.TextInput(
-                               attrs={'placeholder': 'Nome',
-                                      'class': 'form-control input-sm'}
-                           ))
-
-    email = forms.CharField(label='Email',
-                           max_length=200,
-                           widget=forms.TextInput(
-                               attrs={'placeholder': 'E-mail',
-                                      'class': 'form-control input-sm'}
-                           ))
-
-
-
-def jacket(request):
-    saved = False
-    form = JacketSubscribeForm()
-    if request.method == 'POST':
-        form = JacketSubscribeForm(request.POST)
-        if form.is_valid():
-            form.save(commit=True)
-            saved = True
-            form = JacketSubscribeForm()
-    #
-    context = {
-        'form': form,
-        'saved': saved
-        }
-    return render(request, 'trips/tuta.html', context)
-
-
 @staff_member_required
 def sendmail(request):
     send_mail('Zena Ski Group: Test Email',
