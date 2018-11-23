@@ -285,11 +285,10 @@ def register(request, trip_id):
         form = RegisterForm(request.POST)
         deposit = trip.deposit
         if request.user.member.trusted:
-             if form.is_valid():
-                 deposit = form.cleaned_data['deposit']
+            if form.is_valid():
+                deposit = form.cleaned_data['deposit']
         else:
             if request.user.member.balance < deposit:
-                xxx
                 error = "Credito insufficiente"
         #
         if trip.seats_left <= 0 and not trip.with_reservation:

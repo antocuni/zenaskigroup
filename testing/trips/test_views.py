@@ -145,3 +145,15 @@ class TestRegister(BaseTestView):
         assert participants == [('Pluto Pippo', True, 10)]
         testuser.member.refresh_from_db()
         assert testuser.member.balance == 20
+
+    @freeze_time('2018-12-24')
+    def test_no_credit(self, db, trip, testuser, client):
+        self.login()
+        resp = self.post('/trip/1/register/', {'name': 'Pippo',
+                                               'surname': 'Pluto',
+                                               'is_member': '1',
+                                               'deposit': '25'})
+        assert resp.status_code == 200
+        participants = self.get_participants(self.trip)
+        assert not participants
+        assert resp.context['error'] == 'Credito insufficiente'
