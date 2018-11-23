@@ -288,7 +288,8 @@ class Register(LoginRequiredView):
         if user.member.balance < deposit and not user.member.trusted:
             error = "Credito insufficiente"
         #
-        if trip.seats_left <= 0 and not trip.with_reservation:
+        n_participants = len(formset)
+        if trip.seats_left < n_participants and not trip.with_reservation:
             error = "Posti esauriti"
         if not formset.is_valid() or error:
             # pass form to render so that it can show the errors and

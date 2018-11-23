@@ -244,10 +244,23 @@ class TestRegister(BaseTestView):
         testuser.member.save()
         trip.save()
         self.login()
-        resp = self.post('/trip/1/register/', {'name': 'Pippo',
-                                               'surname': 'Pluto',
-                                               'is_member': '1',
-                                               'deposit': '25'})
+        resp = self.submit('/trip/1/register/',
+                           [{'name': 'Pippo', 'surname': 'Pluto'}])
+        assert resp.status_code == 200
+        participants = self.get_participants(self.trip)
+        assert not participants
+        assert resp.context['error'] == 'Posti esauriti'
+
+    @freeze_time('2018-12-24')
+    def test_no_seats_left_many(self, trip, testuser):
+        testuser.member.balance = 50
+        trip.seats = 1
+        testuser.member.save()
+        trip.save()
+        self.login()
+        data = [{'name': 'Pippo', 'surname': 'Pluto'},
+                {'name': 'Mickey', 'surname': 'Mouse'}]
+        resp = self.submit('/trip/1/register/', data)
         assert resp.status_code == 200
         participants = self.get_participants(self.trip)
         assert not participants
