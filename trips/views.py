@@ -285,10 +285,8 @@ def register(request, trip_id):
         form = RegisterForm(request.POST)
         deposit = trip.deposit
         if request.user.member.trusted:
-            xxx
-            if form.is_valid():
-                xxx
-                deposit = form.cleaned_data['deposit']
+             if form.is_valid():
+                 deposit = form.cleaned_data['deposit']
         else:
             if request.user.member.balance < deposit:
                 xxx

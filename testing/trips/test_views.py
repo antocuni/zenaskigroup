@@ -125,3 +125,23 @@ class TestRegister(BaseTestView):
         assert msg.body == (u"L'iscrizione di Pluto Pippo per la gita a "
                             u"Cervinia del 25/12/2018 è stata effettuata "
                             "con successo.\n")
+
+
+    @freeze_time('2018-12-24')
+    def test_trusted_deposit(self, db, trip, testuser, client):
+        testuser.member.balance = 30
+        testuser.member.trusted = True
+        testuser.member.save()
+        self.login()
+
+        # since the user is trusted, we use the deposit which was actually
+        # specified in the form
+        resp = self.post('/trip/1/register/', {'name': 'Pippo',
+                                               'surname': 'Pluto',
+                                               'is_member': '1',
+                                               'deposit': '10'})
+        assert resp.status_code == 200
+        participants = self.get_participants(self.trip)
+        assert participants == [('Pluto Pippo', True, 10)]
+        testuser.member.refresh_from_db()
+        assert testuser.member.balance == 20
