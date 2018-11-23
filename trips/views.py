@@ -293,7 +293,7 @@ class Register(LoginRequiredView):
         if not formset.is_valid() or error:
             # pass form to render so that it can show the errors and
             # pre-populate the already compiled fields
-            return self.render(trip, form=form, error=error)
+            return self.render(trip, formset=formset, error=error)
         return self.on_form_validated(trip, formset, deposit)
 
     def on_form_validated(self, trip, formset, deposit):

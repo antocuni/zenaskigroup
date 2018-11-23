@@ -212,14 +212,30 @@ class TestRegister(BaseTestView):
     @freeze_time('2018-12-24')
     def test_no_credit(self):
         self.login()
-        resp = self.post('/trip/1/register/', {'name': 'Pippo',
-                                               'surname': 'Pluto',
-                                               'is_member': '1',
-                                               'deposit': '25'})
+        resp = self.submit('/trip/1/register/',
+                           [{'name': 'Pippo', 'surname': 'Pluto'}])
         assert resp.status_code == 200
         participants = self.get_participants(self.trip)
         assert not participants
         assert resp.context['error'] == 'Credito insufficiente'
+
+    @freeze_time('2018-12-24')
+    def test_no_credit_many(self, testuser):
+        # we have enough credit for one, but not for two. Check that we refuse
+        # the whole transation
+        testuser.member.balance = 40
+        testuser.member.save()
+        self.login()
+        data = [{'name': 'Pippo', 'surname': 'Pluto'},
+                {'name': 'Mickey', 'surname': 'Mouse'}]
+        
+        resp = self.submit('/trip/1/register/', data)
+        assert resp.status_code == 200
+        participants = self.get_participants(self.trip)
+        assert not participants
+        assert resp.context['error'] == 'Credito insufficiente'
+        testuser.member.refresh_from_db()
+        assert testuser.member.balance == 40
 
     @freeze_time('2018-12-24')
     def test_no_seats_left(self, trip, testuser):
