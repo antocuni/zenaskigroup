@@ -1,8 +1,11 @@
+# -*- encoding: utf-8 -*-
+
 import pytest
 from freezegun import freeze_time
 from datetime import date, datetime
 from django.contrib.auth.models import User
 from django.core.files.uploadedfile import SimpleUploadedFile
+from django.core import mail
 from trips import models
 from trips.views import RegisterForm
 
@@ -21,7 +24,7 @@ def trip(db):
 
 @pytest.fixture
 def testuser(db):
-    u = User.objects.create(username='testuser')
+    u = User.objects.create(username='testuser', email='test@user.com')
     u.set_password('12345')
     u.save()
     return u
@@ -109,4 +112,14 @@ class TestRegister(BaseTestView):
         assert t.value == -25
         assert t.executed_by == testuser
 
-        # XXX check the email
+        assert resp.context['message'] == (u"L'iscrizione è andata a buon fine. "
+                                           u"Credito residuo: 5.00 €")
+
+        # check the email which has been sent
+        assert len(mail.outbox) == 1
+        msg = mail.outbox[0]
+        assert msg.subject == 'Zena Ski Group: conferma iscrizione'
+        assert msg.to == ['test@user.com']
+        assert msg.body == (u"L'iscrizione di Pluto Pippo per la gita a "
+                            u"Cervinia del 25/12/2018 è stata effettuata "
+                            "con successo.\n")
