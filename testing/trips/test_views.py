@@ -157,3 +157,19 @@ class TestRegister(BaseTestView):
         participants = self.get_participants(self.trip)
         assert not participants
         assert resp.context['error'] == 'Credito insufficiente'
+
+    @freeze_time('2018-12-24')
+    def test_no_seats_left(self, trip, testuser):
+        testuser.member.balance = 25
+        trip.seats = 0
+        testuser.member.save()
+        trip.save()
+        self.login()
+        resp = self.post('/trip/1/register/', {'name': 'Pippo',
+                                               'surname': 'Pluto',
+                                               'is_member': '1',
+                                               'deposit': '25'})
+        assert resp.status_code == 200
+        participants = self.get_participants(self.trip)
+        assert not participants
+        assert resp.context['error'] == 'Posti esauriti'

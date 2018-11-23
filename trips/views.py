@@ -292,7 +292,7 @@ def register(request, trip_id):
                 error = "Credito insufficiente"
         #
         if trip.seats_left <= 0 and not trip.with_reservation:
-            xxx
+            # xxx: test the "with_reservation" case
             error = "Posti esauriti"
         if form.is_valid() and not error:
             name = '%s %s' % (form.cleaned_data['surname'], form.cleaned_data['name'])
