@@ -280,17 +280,13 @@ class Register(LoginRequiredView):
         return self.render(trip)
 
     def post(self, request, trip_id):
-        user = self.request
+        user = self.request.user
         trip = self.get_trip(trip_id)
         formset = RegisterFormSet(request.POST)
         error = None
         deposit = self.compute_total_deposit(trip, formset)
-        if request.user.member.trusted:
-            if form.is_valid():
-                deposit = form.cleaned_data['deposit']
-        else:
-            if request.user.member.balance < deposit:
-                error = "Credito insufficiente"
+        if user.member.balance < deposit and not user.member.trusted:
+            error = "Credito insufficiente"
         #
         if trip.seats_left <= 0 and not trip.with_reservation:
             error = "Posti esauriti"
@@ -352,9 +348,14 @@ class Register(LoginRequiredView):
             raise Http404
 
     def compute_total_deposit(self, trip, formset):
-        return trip.deposit * len(formset)
+        total = 0
+        for form in formset:
+            total += self.compute_one_deposit(trip, form)
+        return total
 
     def compute_one_deposit(self, trip, form):
+        if self.request.user.member.trusted and form.is_valid():
+            return form.cleaned_data['deposit']
         return trip.deposit
 
     def new_formset(self, trip):
