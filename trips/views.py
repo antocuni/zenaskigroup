@@ -5,6 +5,8 @@ from django.core.mail import send_mail, EmailMessage
 from django.conf import settings
 from django.shortcuts import render, redirect
 from django.http import HttpResponse, Http404
+from django.views.generic import View
+from django.utils.decorators import method_decorator
 from django.contrib.auth.decorators import login_required
 from django.contrib.admin.views.decorators import staff_member_required
 import django.contrib.auth.models as auth_models
@@ -272,18 +274,24 @@ class RegisterForm(forms.Form):
                                             'size': 5}
                                  ))
 
+class LoginRequiredView(View):
+    @method_decorator(login_required)
+    def dispatch(self, *args, **kwargs):
+        return super(LoginRequiredView, self).dispatch(*args, **kwargs)
 
-@login_required
-def register(request, trip_id):
-    try:
-        trip = models.Trip.objects.get(pk=trip_id)
-    except models.Trip.DoesNotExist:
-        raise Http404
 
-    error = None
-    message = None
-    if request.method == 'POST':
+class Register(LoginRequiredView):
+
+    def get(self, request, trip_id):
+        trip = self.get_trip(trip_id)
+        form = RegisterForm.from_trip(trip)
+        return self.render(trip, form)
+
+    def post(self, request, trip_id):
+        user = self.request
+        trip = self.get_trip(trip_id)
         form = RegisterForm(request.POST)
+        error = None
         deposit = trip.deposit
         if request.user.member.trusted:
             if form.is_valid():
@@ -294,63 +302,82 @@ def register(request, trip_id):
         #
         if trip.seats_left <= 0 and not trip.with_reservation:
             error = "Posti esauriti"
-        if form.is_valid() and not error:
-            name = '%s %s' % (form.cleaned_data['surname'], form.cleaned_data['name'])
-            name = name.strip()
-            participant = models.Participant(trip=trip,
-                                             deposit=deposit,
-                                             name=name,
-                                             is_member=form.cleaned_data['is_member'],
-                                             sublist='Online',
-                                             registered_by=request.user,
-                                             with_reservation=trip.with_reservation)
-            with transaction.atomic():
-                trip.participant_set.add(participant)
-                request.user.member.balance -= deposit
-                descr = u'Iscrizione di %s a %s' % (participant.name, trip)
-                t = models.MoneyTransfer(member=request.user.member,
-                                         value=-deposit,
-                                         executed_by=request.user,
-                                         description=descr)
-                t.save()
-                request.user.member.save()
-                trip.save()
-            form = RegisterForm.from_trip(trip)
-            message = (u"L'iscrizione è andata a buon fine. Credito residuo: %s €" %
-                       request.user.member.balance)
+        if not form.is_valid or error:
+            return self.render(trip, form, error=error)
+        return self.on_form_validated(trip, form, deposit)
 
-            email = EmailMessage(subject = 'Zena Ski Group: conferma iscrizione',
-                                 to = [request.user.email])
+    def on_form_validated(self, trip, form, deposit):
+        user = self.request.user
+        name = '%s %s' % (form.cleaned_data['surname'], form.cleaned_data['name'])
+        name = name.strip()
+        participant = models.Participant(trip=trip,
+                                         deposit=deposit,
+                                         name=name,
+                                         is_member=form.cleaned_data['is_member'],
+                                         sublist='Online',
+                                         registered_by=user,
+                                         with_reservation=trip.with_reservation)
+        with transaction.atomic():
+            trip.participant_set.add(participant)
+            user.member.balance -= deposit
+            descr = u'Iscrizione di %s a %s' % (participant.name, trip)
+            t = models.MoneyTransfer(member=user.member,
+                                     value=-deposit,
+                                     executed_by=user,
+                                     description=descr)
+            t.save()
+            user.member.save()
+            trip.save()
 
-            if trip.with_reservation:
-                body = (u"L'iscrizione di {name} per la gita a {destination} del "
-                        u"{date} è stata effettuata CON RISERVA.\n"
-                        u"In caso di conferma, verrai informato via email, oppure "
-                        u"puoi controllare lo stato della tua iscrizione direttamente "
-                        u'sul sito, nella pagina "Iscriviti online".\n')
-            else:
-                body = (u"L'iscrizione di {name} per la gita a {destination} del "
-                        u"{date} è stata effettuata con successo.\n")
-            #
-            email.body =  body.format(name = participant.name,
-                                      destination = trip.destination,
-                                      date = trip.date.strftime("%d/%m/%Y"))
-            email.bcc = [settings.ADMIN_EMAIL]
-            email.send(fail_silently=True)
-    else:
+        self.send_confirmation_email(trip, participant)
         form = RegisterForm.from_trip(trip)
+        message = (u"L'iscrizione è andata a buon fine. Credito residuo: %s €" %
+                   user.member.balance)
+        return self.render(trip, form, message=message)
 
-    registration_allowed = trip.closing_date >= datetime.now()
-    participants = trip.participant_set.filter(registered_by=request.user)
-    context = {'trip': trip,
-               'user': request.user,
-               'participants': participants,
-               'form': form,
-               'error': error,
-               'message': message,
-               'registration_allowed': registration_allowed}
-    compute_availability(request.user, context)
-    return render(request, 'trips/register.html', context)
+
+
+    # ---------------------
+
+    def get_trip(self, trip_id):
+        try:
+            return models.Trip.objects.get(pk=self.kwargs['trip_id'])
+        except models.Trip.DoesNotExist:
+            raise Http404
+
+    def render(self, trip, form, **kwargs):
+        registration_allowed = trip.closing_date >= datetime.now()
+        participants = trip.participant_set.filter(registered_by=self.request.user)
+        context = {'trip': trip,
+                   'user': self.request.user,
+                   'participants': participants,
+                   'form': form,
+                   'registration_allowed': registration_allowed}
+        context.update(**kwargs)
+        compute_availability(self.request.user, context)
+        return render(self.request, 'trips/register.html', context)
+
+    def send_confirmation_email(self, trip, participant):
+        user = self.request.user
+        email = EmailMessage(subject = 'Zena Ski Group: conferma iscrizione',
+                             to = [user.email])
+
+        if trip.with_reservation:
+            body = (u"L'iscrizione di {name} per la gita a {destination} del "
+                    u"{date} è stata effettuata CON RISERVA.\n"
+                    u"In caso di conferma, verrai informato via email, oppure "
+                    u"puoi controllare lo stato della tua iscrizione direttamente "
+                    u'sul sito, nella pagina "Iscriviti online".\n')
+        else:
+            body = (u"L'iscrizione di {name} per la gita a {destination} del "
+                    u"{date} è stata effettuata con successo.\n")
+        #
+        email.body =  body.format(name = participant.name,
+                                  destination = trip.destination,
+                                  date = trip.date.strftime("%d/%m/%Y"))
+        email.bcc = [settings.ADMIN_EMAIL]
+        email.send(fail_silently=True)
+
 
 
 class JacketSubscribeForm(forms.ModelForm):
