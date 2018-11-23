@@ -243,16 +243,12 @@ def editprofile(request):
 # registration
 # ----------------------------------
 
-class RegisterForm(forms.Form):
+class LoginRequiredView(View):
+    @method_decorator(login_required)
+    def dispatch(self, *args, **kwargs):
+        return super(LoginRequiredView, self).dispatch(*args, **kwargs)
 
-    @classmethod
-    def from_trip(cls, trip):
-        form = cls()
-        deposit = trip.deposit
-        if trip.with_reservation and trip.seats_left <= 0:
-            deposit = 0 # default 0 deposit for registrations with reservation
-        form.fields['deposit'].initial = deposit
-        return form
+class RegisterForm(forms.Form):
 
     name = forms.CharField(label='Nome',
                            max_length=200,
@@ -274,11 +270,8 @@ class RegisterForm(forms.Form):
                                             'size': 5}
                                  ))
 
-class LoginRequiredView(View):
-    @method_decorator(login_required)
-    def dispatch(self, *args, **kwargs):
-        return super(LoginRequiredView, self).dispatch(*args, **kwargs)
 
+RegisterFormSet = forms.formset_factory(RegisterForm, extra=2)
 
 class Register(LoginRequiredView):
 
@@ -289,7 +282,8 @@ class Register(LoginRequiredView):
     def post(self, request, trip_id):
         user = self.request
         trip = self.get_trip(trip_id)
-        form = RegisterForm(request.POST)
+        formset = RegisterFormSet(request.POST)
+        xxx
         error = None
         deposit = trip.deposit
         if request.user.member.trusted:
@@ -345,15 +339,22 @@ class Register(LoginRequiredView):
         except models.Trip.DoesNotExist:
             raise Http404
 
-    def render(self, trip, form=None, **kwargs):
-        if form is None:
-            form = RegisterForm.from_trip(trip)
+    def new_formset(self, trip):
+        deposit = trip.deposit
+        if trip.with_reservation and trip.seats_left <= 0:
+            deposit = 0 # default 0 deposit for registrations with reservation
+        formset = RegisterFormSet(initial=[{'deposit': deposit}])
+        return formset
+
+    def render(self, trip, formset=None, **kwargs):
+        if formset is None:
+            formset = self.new_formset(trip)
         registration_allowed = trip.closing_date >= datetime.now()
         participants = trip.participant_set.filter(registered_by=self.request.user)
         context = {'trip': trip,
                    'user': self.request.user,
                    'participants': participants,
-                   'form': form,
+                   'formset': formset,
                    'registration_allowed': registration_allowed}
         context.update(**kwargs)
         compute_availability(self.request.user, context)
