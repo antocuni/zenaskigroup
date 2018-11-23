@@ -292,7 +292,6 @@ def register(request, trip_id):
                 error = "Credito insufficiente"
         #
         if trip.seats_left <= 0 and not trip.with_reservation:
-            # xxx: test the "with_reservation" case
             error = "Posti esauriti"
         if form.is_valid() and not error:
             name = '%s %s' % (form.cleaned_data['surname'], form.cleaned_data['name'])
@@ -323,7 +322,6 @@ def register(request, trip_id):
                                  to = [request.user.email])
 
             if trip.with_reservation:
-                xxx
                 body = (u"L'iscrizione di {name} per la gita a {destination} del "
                         u"{date} è stata effettuata CON RISERVA.\n"
                         u"In caso di conferma, verrai informato via email, oppure "

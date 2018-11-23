@@ -62,7 +62,7 @@ class TestRegister(BaseTestView):
     def get_participants(self, trip):
         res = []
         for p in trip.participant_set.all():
-            res.append((p.name, p.is_member, p.deposit))
+            res.append((p.name, p.is_member, p.deposit, p.with_reservation))
         return res
 
     def test_login_required(self):
@@ -99,7 +99,7 @@ class TestRegister(BaseTestView):
 
         # check that we registered the participant
         participants = self.get_participants(self.trip)
-        assert participants == [('Pluto Pippo', True, 25)]
+        assert participants == [('Pluto Pippo', True, 25, False)]
 
         # that the money was taken
         testuser.member.refresh_from_db()
@@ -142,7 +142,7 @@ class TestRegister(BaseTestView):
                                                'deposit': '10'})
         assert resp.status_code == 200
         participants = self.get_participants(self.trip)
-        assert participants == [('Pluto Pippo', True, 10)]
+        assert participants == [('Pluto Pippo', True, 10, False)]
         testuser.member.refresh_from_db()
         assert testuser.member.balance == 20
 
@@ -173,3 +173,33 @@ class TestRegister(BaseTestView):
         participants = self.get_participants(self.trip)
         assert not participants
         assert resp.context['error'] == 'Posti esauriti'
+
+    @freeze_time('2018-12-24')
+    def test_with_reservation(self, trip, testuser):
+        testuser.member.balance = 50
+        trip.seats = 1
+        trip.allow_extra_seats = True
+        testuser.member.save()
+        trip.save()
+        self.login()
+        resp = self.post('/trip/1/register/', {'name': 'Pippo',
+                                               'surname': 'Pluto',
+                                               'is_member': '1',
+                                               'deposit': '25'})
+        assert resp.status_code == 200
+        participants = self.get_participants(self.trip)
+        assert participants == [('Pluto Pippo', True, 25, False)]
+
+        mail.outbox = []
+        resp = self.post('/trip/1/register/', {'name': 'Mickey',
+                                               'surname': 'Mouse',
+                                               'is_member': '1',
+                                               'deposit': '25'})
+        assert resp.status_code == 200
+        participants = self.get_participants(self.trip)
+        assert participants == [('Pluto Pippo', True, 25, False),
+                                ('Mouse Mickey', True, 25, True)]
+        msg = mail.outbox[0]
+        assert 'CON RISERVA' in msg.body
+
+
