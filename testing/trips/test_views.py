@@ -264,7 +264,9 @@ class TestRegister(BaseTestView):
         assert resp.status_code == 200
         participants = self.get_participants(self.trip)
         assert not participants
-        assert resp.context['error'] == 'Posti esauriti'
+        assert resp.context['error'] == (
+            'Non ci sono abbastanza posti per iscrivere tutte le persone '
+            'richieste. Numero massimo di posti disponibili: 1')
 
     @freeze_time('2018-12-24')
     def test_with_reservation(self, trip, testuser):
@@ -295,6 +297,29 @@ class TestRegister(BaseTestView):
         assert 'CON RISERVA' in msg.body
         assert 'Mouse Mickey' in msg.body
         assert 'Duck Donald' in msg.body
+
+    @freeze_time('2018-12-24')
+    def test_no_seats_left_even_with_reservation(self, trip, testuser):
+        # if we have 2 seats left but try to register 3 people, we want to
+        # reject the whole transation, even if we have "with_reservation"
+        testuser.member.balance = 75
+        trip.seats = 2
+        trip.allow_extra_seats = True
+        testuser.member.save()
+        trip.save()
+        self.login()
+        data = [
+            {'name': 'Pippo', 'surname': 'Pluto', 'deposit': '25'},
+            {'name': 'Mickey', 'surname': 'Mouse', 'deposit': '25'},
+            {'name': 'Donald', 'surname': 'Duck', 'deposit': '25'}
+        ]
+        resp = self.submit('/trip/1/register/', data)
+        assert resp.status_code == 200
+        participants = self.get_participants(self.trip)
+        assert not participants
+        assert resp.context['error'] == (
+            'Non ci sono abbastanza posti per iscrivere tutte le persone '
+            'richieste. Numero massimo di posti disponibili: 2')
 
     @freeze_time('2018-12-24')
     def test_form_invalid(self, testuser):

@@ -290,7 +290,13 @@ class Register(LoginRequiredView):
         #
         n_participants = len(formset)
         if trip.seats_left < n_participants and not trip.with_reservation:
-            error = "Posti esauriti"
+            if trip.seats_left == 0:
+                error = "Posti esauriti"
+            else:
+                error = ('Non ci sono abbastanza posti per iscrivere '
+                         'tutte le persone richieste. Numero massimo di '
+                         'posti disponibili: %d' % trip.seats_left)
+
         if not formset.is_valid() or error:
             # pass form to render so that it can show the errors and
             # pre-populate the already compiled fields
