@@ -65,7 +65,7 @@ class TestRegister(BaseTestView):
             res.append((p.name, p.is_member, p.deposit))
         return res
 
-    def test_login_required(self, trip):
+    def test_login_required(self):
         resp = self.get('/trip/1/register/')
         assert resp.status_code == 302
         assert resp.url == 'http://testserver/accounts/login/?next=/trip/1/register/'
@@ -84,7 +84,7 @@ class TestRegister(BaseTestView):
         assert not resp.context['registration_allowed']
 
     @freeze_time('2018-12-24')
-    def test_register_ok(self, db, trip, testuser, client):
+    def test_register_ok(self, testuser):
         testuser.member.balance = 30
         testuser.member.save()
         self.login()
@@ -128,7 +128,7 @@ class TestRegister(BaseTestView):
 
 
     @freeze_time('2018-12-24')
-    def test_trusted_deposit(self, db, trip, testuser, client):
+    def test_trusted_deposit(self, testuser):
         testuser.member.balance = 30
         testuser.member.trusted = True
         testuser.member.save()
@@ -147,7 +147,7 @@ class TestRegister(BaseTestView):
         assert testuser.member.balance == 20
 
     @freeze_time('2018-12-24')
-    def test_no_credit(self, db, trip, testuser, client):
+    def test_no_credit(self):
         self.login()
         resp = self.post('/trip/1/register/', {'name': 'Pippo',
                                                'surname': 'Pluto',
