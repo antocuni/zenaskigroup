@@ -282,18 +282,25 @@ def register(request, trip_id):
     error = None
     message = None
     if request.method == 'POST':
+        xxx
         form = RegisterForm(request.POST)
         deposit = trip.deposit
         if request.user.member.trusted:
+            xxx
             if form.is_valid():
+                xxx
                 deposit = form.cleaned_data['deposit']
         else:
+            xxx
             if request.user.member.balance < deposit:
+                xxx
                 error = "Credito insufficiente"
         #
         if trip.seats_left <= 0 and not trip.with_reservation:
+            xxx
             error = "Posti esauriti"
         if form.is_valid() and not error:
+            xxx
             name = '%s %s' % (form.cleaned_data['surname'], form.cleaned_data['name'])
             name = name.strip()
             participant = models.Participant(trip=trip,
@@ -322,12 +329,14 @@ def register(request, trip_id):
                                  to = [request.user.email])
 
             if trip.with_reservation:
+                xxx
                 body = (u"L'iscrizione di {name} per la gita a {destination} del "
                         u"{date} è stata effettuata CON RISERVA.\n"
                         u"In caso di conferma, verrai informato via email, oppure "
                         u"puoi controllare lo stato della tua iscrizione direttamente "
                         u'sul sito, nella pagina "Iscriviti online".\n')
             else:
+                xxx
                 body = (u"L'iscrizione di {name} per la gita a {destination} del "
                         u"{date} è stata effettuata con successo.\n")
             #
