@@ -89,10 +89,12 @@ class TestRegister(BaseTestView):
         testuser.member.save()
         self.login()
 
+        # note: we INTENTIONALLY use a deposit which is different than the one
+        # on the trip: since this is not a trusted user, the field is ignored
         resp = self.post('/trip/1/register/', {'name': 'Pippo',
                                                'surname': 'Pluto',
                                                'is_member': '1',
-                                               'deposit': '25'})
+                                               'deposit': '42'})
         assert resp.status_code == 200
 
         # check that we registered the participant
