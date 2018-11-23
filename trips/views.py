@@ -284,8 +284,7 @@ class Register(LoginRequiredView):
 
     def get(self, request, trip_id):
         trip = self.get_trip(trip_id)
-        form = RegisterForm.from_trip(trip)
-        return self.render(trip, form)
+        return self.render(trip)
 
     def post(self, request, trip_id):
         user = self.request
@@ -302,8 +301,10 @@ class Register(LoginRequiredView):
         #
         if trip.seats_left <= 0 and not trip.with_reservation:
             error = "Posti esauriti"
-        if not form.is_valid or error:
-            return self.render(trip, form, error=error)
+        if not form.is_valid() or error:
+            # pass form to render so that it can show the errors and
+            # pre-populate the already compiled fields
+            return self.render(trip, form=form, error=error)
         return self.on_form_validated(trip, form, deposit)
 
     def on_form_validated(self, trip, form, deposit):
@@ -330,11 +331,10 @@ class Register(LoginRequiredView):
             trip.save()
 
         self.send_confirmation_email(trip, participant)
-        form = RegisterForm.from_trip(trip)
+
         message = (u"L'iscrizione è andata a buon fine. Credito residuo: %s €" %
                    user.member.balance)
-        return self.render(trip, form, message=message)
-
+        return self.render(trip, message=message)
 
 
     # ---------------------
@@ -345,7 +345,9 @@ class Register(LoginRequiredView):
         except models.Trip.DoesNotExist:
             raise Http404
 
-    def render(self, trip, form, **kwargs):
+    def render(self, trip, form=None, **kwargs):
+        if form is None:
+            form = RegisterForm.from_trip(trip)
         registration_allowed = trip.closing_date >= datetime.now()
         participants = trip.participant_set.filter(registered_by=self.request.user)
         context = {'trip': trip,
