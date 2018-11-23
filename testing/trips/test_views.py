@@ -157,6 +157,39 @@ class TestRegister(BaseTestView):
 
 
     @freeze_time('2018-12-24')
+    def test_register_many(self, testuser):
+        testuser.member.balance = 60
+        testuser.member.save()
+        self.login()
+
+        # note: we INTENTIONALLY use a deposit which is different than the one
+        # on the trip: since this is not a trusted user, the field is ignored
+        data = [{'name': 'Pippo', 'surname': 'Pluto',
+                 'is_member': '1', 'deposit': '42'},
+                {'name': 'Mickey', 'surname': 'Mouse',
+                 'is_member': '1', 'deposit': '42'}]
+        resp = self.submit('/trip/1/register/', data)
+        assert resp.status_code == 200
+
+        participants = self.get_participants(self.trip)
+        assert participants == [('Pluto Pippo', True, 25, False),
+                                ('Mouse Mickey', True, 25, False)]
+
+        testuser.member.refresh_from_db()
+        assert testuser.member.balance == 10
+
+        assert len(mail.outbox) == 1
+        msg = mail.outbox[0]
+        assert msg.subject == 'Zena Ski Group: conferma iscrizione'
+        assert msg.to == ['test@user.com']
+        assert msg.body == (u"L'iscrizione delle seguenti persone per la gita a "
+                            u"Cervinia del 25/12/2018 è stata effettuata "
+                            u"con successo:\n"
+                            u"  - Pluto Pippo\n"
+                            u"  - Mouse Mickey\n")
+
+
+    @freeze_time('2018-12-24')
     def test_trusted_deposit(self, testuser):
         testuser.member.balance = 30
         testuser.member.trusted = True
