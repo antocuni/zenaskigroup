@@ -326,14 +326,14 @@ class TestRegister(BaseTestView):
         testuser.member.balance = 25
         testuser.member.save()
         self.login()
-        resp = self.post('/trip/1/register/', {'name': 'Pippo',
-                                               'surname': ''})
+        resp = self.submit('/trip/1/register/',
+                           [{'name': 'Pippo', 'surname': ''}])
         assert resp.status_code == 200
         participants = self.get_participants(self.trip)
         assert not participants
 
-        form = resp.context['form']
-        assert not form.is_valid()
+        formset = resp.context['formset']
+        assert not formset.is_valid()
 
         assert 'Pippo' in resp.content # check that the invalid form is
                                        # pre-populated
