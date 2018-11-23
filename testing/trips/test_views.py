@@ -202,4 +202,19 @@ class TestRegister(BaseTestView):
         msg = mail.outbox[0]
         assert 'CON RISERVA' in msg.body
 
+    @freeze_time('2018-12-24')
+    def test_form_invalid(self, testuser):
+        testuser.member.balance = 25
+        testuser.member.save()
+        self.login()
+        resp = self.post('/trip/1/register/', {'name': 'Pippo',
+                                               'surname': ''})
+        assert resp.status_code == 200
+        participants = self.get_participants(self.trip)
+        assert not participants
 
+        form = resp.context['form']
+        assert not form.is_valid()
+
+        assert 'Pippo' in resp.content # check that the invalid form is
+                                       # pre-populated
