@@ -7,7 +7,7 @@ from django.contrib.auth.models import User
 from django.core.files.uploadedfile import SimpleUploadedFile
 from django.core import mail
 from trips import models
-from trips.views import RegisterForm
+from trips.views import RegisterFormSet
 
 @pytest.fixture
 def trip(db):
@@ -29,6 +29,31 @@ def testuser(db):
     u.save()
     return u
 
+def encode_formset(formset_class, formsdata):
+    prefix = formset_class().prefix
+    data = {
+        '%s-INITIAL_FORMS' % prefix: '0',
+        '%s-TOTAL_FORMS' % prefix: str(len(formsdata))
+        }
+    for i, formdata in enumerate(formsdata):
+        for key, value in formdata.iteritems():
+            new_key = '%s-%d-%s' % (prefix, i, key)
+            data[new_key] = value
+    return data
+
+def test_encode_formset():
+    data = [{'a': 'aaa', 'b': 'bbb'},
+            {'a': 'xxx', 'b': 'yyy'}]
+    encoded = encode_formset(RegisterFormSet, data)
+    assert encoded == {
+        'form-INITIAL_FORMS': '0',
+        'form-TOTAL_FORMS': '2',
+        'form-0-a': 'aaa',
+        'form-0-b': 'bbb',
+        'form-1-a': 'xxx',
+        'form-1-b': 'yyy'
+        }
+
 class BaseTestView(object):
 
     @pytest.fixture(autouse=True)
@@ -47,7 +72,6 @@ class BaseTestView(object):
     def post(self, *args, **kwargs):
         return self.client.post(*args, **kwargs)
 
-
 class TestNextTrip(BaseTestView):
 
     def test_redirect(self):
@@ -58,6 +82,10 @@ class TestNextTrip(BaseTestView):
 
 
 class TestRegister(BaseTestView):
+
+    def submit(self, url, data):
+        encoded = encode_formset(RegisterFormSet, data)
+        return self.post(url, encoded)
 
     def get_participants(self, trip):
         res = []
@@ -91,10 +119,10 @@ class TestRegister(BaseTestView):
 
         # note: we INTENTIONALLY use a deposit which is different than the one
         # on the trip: since this is not a trusted user, the field is ignored
-        resp = self.post('/trip/1/register/', {'name': 'Pippo',
-                                               'surname': 'Pluto',
-                                               'is_member': '1',
-                                               'deposit': '42'})
+        resp = self.submit('/trip/1/register/', [{'name': 'Pippo',
+                                                 'surname': 'Pluto',
+                                                 'is_member': '1',
+                                                 'deposit': '42'}])
         assert resp.status_code == 200
 
         # check that we registered the participant
@@ -122,9 +150,10 @@ class TestRegister(BaseTestView):
         msg = mail.outbox[0]
         assert msg.subject == 'Zena Ski Group: conferma iscrizione'
         assert msg.to == ['test@user.com']
-        assert msg.body == (u"L'iscrizione di Pluto Pippo per la gita a "
+        assert msg.body == (u"L'iscrizione delle seguenti persone per la gita a "
                             u"Cervinia del 25/12/2018 è stata effettuata "
-                            "con successo.\n")
+                            u"con successo:\n"
+                            u"  - Pluto Pippo\n")
 
 
     @freeze_time('2018-12-24')

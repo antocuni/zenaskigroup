@@ -283,9 +283,8 @@ class Register(LoginRequiredView):
         user = self.request
         trip = self.get_trip(trip_id)
         formset = RegisterFormSet(request.POST)
-        xxx
         error = None
-        deposit = trip.deposit
+        deposit = self.compute_total_deposit(trip, formset)
         if request.user.member.trusted:
             if form.is_valid():
                 deposit = form.cleaned_data['deposit']
@@ -295,27 +294,40 @@ class Register(LoginRequiredView):
         #
         if trip.seats_left <= 0 and not trip.with_reservation:
             error = "Posti esauriti"
-        if not form.is_valid() or error:
+        if not formset.is_valid() or error:
             # pass form to render so that it can show the errors and
             # pre-populate the already compiled fields
             return self.render(trip, form=form, error=error)
-        return self.on_form_validated(trip, form, deposit)
+        return self.on_form_validated(trip, formset, deposit)
 
-    def on_form_validated(self, trip, form, deposit):
+    def on_form_validated(self, trip, formset, deposit):
         user = self.request.user
-        name = '%s %s' % (form.cleaned_data['surname'], form.cleaned_data['name'])
-        name = name.strip()
-        participant = models.Participant(trip=trip,
-                                         deposit=deposit,
-                                         name=name,
-                                         is_member=form.cleaned_data['is_member'],
-                                         sublist='Online',
-                                         registered_by=user,
-                                         with_reservation=trip.with_reservation)
+        participants = []
+        total_deposit = 0
+        for form in formset:
+            name = '%s %s' % (form.cleaned_data['surname'],
+                              form.cleaned_data['name'])
+            name = name.strip()
+            deposit = self.compute_one_deposit(trip, form)
+            total_deposit += deposit
+            p = models.Participant(
+                trip=trip,
+                deposit=deposit,
+                name=name,
+                is_member=form.cleaned_data['is_member'],
+                sublist='Online',
+                registered_by=user,
+                with_reservation=trip.with_reservation)
+            participants.append(p)
+
+        # sanity check
+        assert total_deposit == self.compute_total_deposit(trip, formset)
+
         with transaction.atomic():
-            trip.participant_set.add(participant)
-            user.member.balance -= deposit
-            descr = u'Iscrizione di %s a %s' % (participant.name, trip)
+            trip.participant_set.add(*participants)
+            user.member.balance -= total_deposit
+            names = ', '.join([p.name for p in participants])
+            descr = u'Iscrizione di %s a %s' % (names, trip)
             t = models.MoneyTransfer(member=user.member,
                                      value=-deposit,
                                      executed_by=user,
@@ -324,7 +336,7 @@ class Register(LoginRequiredView):
             user.member.save()
             trip.save()
 
-        self.send_confirmation_email(trip, participant)
+        self.send_confirmation_email(trip, participants)
 
         message = (u"L'iscrizione è andata a buon fine. Credito residuo: %s €" %
                    user.member.balance)
@@ -338,6 +350,12 @@ class Register(LoginRequiredView):
             return models.Trip.objects.get(pk=self.kwargs['trip_id'])
         except models.Trip.DoesNotExist:
             raise Http404
+
+    def compute_total_deposit(self, trip, formset):
+        return trip.deposit * len(formset)
+
+    def compute_one_deposit(self, trip, form):
+        return trip.deposit
 
     def new_formset(self, trip):
         deposit = trip.deposit
@@ -360,27 +378,32 @@ class Register(LoginRequiredView):
         compute_availability(self.request.user, context)
         return render(self.request, 'trips/register.html', context)
 
-    def send_confirmation_email(self, trip, participant):
+    def send_confirmation_email(self, trip, participants):
         user = self.request.user
         email = EmailMessage(subject = 'Zena Ski Group: conferma iscrizione',
                              to = [user.email])
 
         if trip.with_reservation:
+            xxx
             body = (u"L'iscrizione di {name} per la gita a {destination} del "
                     u"{date} è stata effettuata CON RISERVA.\n"
                     u"In caso di conferma, verrai informato via email, oppure "
                     u"puoi controllare lo stato della tua iscrizione direttamente "
                     u'sul sito, nella pagina "Iscriviti online".\n')
         else:
-            body = (u"L'iscrizione di {name} per la gita a {destination} del "
-                    u"{date} è stata effettuata con successo.\n")
+            body = (u"L'iscrizione delle seguenti persone per la gita a "
+                    u"{destination} del "
+                    u"{date} è stata effettuata con successo:\n"
+                    u"{participant_names}\n")
         #
-        email.body =  body.format(name = participant.name,
-                                  destination = trip.destination,
-                                  date = trip.date.strftime("%d/%m/%Y"))
+        participant_names = ['  - %s' % p.name for p in participants]
+        email.body =  body.format(
+            destination = trip.destination,
+            date = trip.date.strftime("%d/%m/%Y"),
+            participant_names = '\n'.join(participant_names),
+        )
         email.bcc = [settings.ADMIN_EMAIL]
         email.send(fail_silently=True)
-
 
 @staff_member_required
 def sendmail(request):
