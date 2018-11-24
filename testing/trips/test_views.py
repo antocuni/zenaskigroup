@@ -8,26 +8,8 @@ from django.core.files.uploadedfile import SimpleUploadedFile
 from django.core import mail
 from trips import models
 from trips.views import RegisterFormSet
+from testing.trips.test_models import trip, testuser
 
-@pytest.fixture
-def trip(db):
-    t = models.Trip.objects.create(
-        date=date(2018, 12, 25),
-        closing_date=datetime(2018, 12, 24, 12, 0, 0),
-        destination='Cervinia',
-        seats=50,
-        deposit=25,
-        poster=SimpleUploadedFile(name='test.jpg',
-                                  content='',
-                                  content_type='image/jpeg'))
-    return t
-
-@pytest.fixture
-def testuser(db):
-    u = User.objects.create(username='testuser', email='test@user.com')
-    u.set_password('12345')
-    u.save()
-    return u
 
 def encode_formset(formset_class, formsdata):
     prefix = formset_class().prefix

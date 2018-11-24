@@ -4,7 +4,7 @@ from datetime import date
 from collections import Counter
 from django.contrib import admin
 from django.contrib.auth.models import User
-from django.db import models
+from django.db import models, transaction
 from annoying.fields import AutoOneToOneField
 
 class Member(models.Model):
@@ -82,6 +82,25 @@ class Trip(models.Model):
         return '\n'.join(lines)
     sublist_table.short_description = 'Sottoliste'
     sublist_table.allow_tags = True
+
+    def add_participants(self, user, participants):
+        total_deposit = 0
+        for p in participants:
+            total_deposit += p.deposit
+
+        with transaction.atomic():
+            self.participant_set.add(*participants)
+            user.member.balance -= total_deposit
+            names = ', '.join([p.name for p in participants])
+            descr = u'Iscrizione di %s a %s' % (names, self)
+            t = MoneyTransfer(member=user.member,
+                              value=-total_deposit,
+                              executed_by=user,
+                              description=descr)
+            t.save()
+            user.member.save()
+            self.save()
+
 
 
 class Participant(models.Model):

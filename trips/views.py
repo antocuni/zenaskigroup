@@ -332,20 +332,7 @@ class Register(LoginRequiredView):
 
         # sanity check
         assert total_deposit == self.compute_total_deposit(trip, formset)
-
-        with transaction.atomic():
-            trip.participant_set.add(*participants)
-            user.member.balance -= total_deposit
-            names = ', '.join([p.name for p in participants])
-            descr = u'Iscrizione di %s a %s' % (names, trip)
-            t = models.MoneyTransfer(member=user.member,
-                                     value=-total_deposit,
-                                     executed_by=user,
-                                     description=descr)
-            t.save()
-            user.member.save()
-            trip.save()
-
+        trip.add_participants(user, participants)
         self.send_confirmation_email(trip, participants)
 
         message = (u"L'iscrizione è andata a buon fine. Credito residuo: %s €" %
