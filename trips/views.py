@@ -326,7 +326,6 @@ class Register(LoginRequiredView):
                 name=name,
                 is_member=form.cleaned_data['is_member'],
                 sublist='Online',
-                registered_by=user,
                 with_reservation=trip.with_reservation)
             participants.append(p)
 

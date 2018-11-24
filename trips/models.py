@@ -86,6 +86,7 @@ class Trip(models.Model):
     def add_participants(self, user, participants):
         total_deposit = 0
         for p in participants:
+            p.registered_by = user
             total_deposit += p.deposit
 
         with transaction.atomic():

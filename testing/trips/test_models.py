@@ -39,8 +39,9 @@ class TestTrip(object):
 
         assert list(trip.participant_set.all()) == [p1, p2]
         assert testuser.member.balance == 20
-        ## assert p1.registered_by == testuser
-        ## assert p2.registered_by == testuser
+
+        assert p1.registered_by == testuser
+        assert p2.registered_by == testuser
 
         transfers = testuser.moneytransfer_set.all()
         assert len(transfers) == 1
