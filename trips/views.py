@@ -280,6 +280,13 @@ class Register(LoginRequiredView):
         return self.render(trip)
 
     def post(self, request, trip_id):
+        if 'btn-balance' in request.POST:
+            print 'balance!'
+        elif 'btn-paypal' in request.POST:
+            print 'paypal!'
+        else:
+            print 'WTF?'
+        
         user = self.request.user
         trip = self.get_trip(trip_id)
         formset = RegisterFormSet(request.POST)
