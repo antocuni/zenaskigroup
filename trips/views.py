@@ -271,7 +271,7 @@ class RegisterForm(forms.Form):
                                  ))
 
 
-RegisterFormSet = forms.formset_factory(RegisterForm, extra=2)
+RegisterFormSet = forms.formset_factory(RegisterForm, extra=0)
 
 class Register(LoginRequiredView):
 
@@ -377,10 +377,13 @@ class Register(LoginRequiredView):
             formset = self.new_formset(trip)
         registration_allowed = trip.closing_date >= datetime.now()
         participants = trip.participant_set.filter(registered_by=self.request.user)
+        empty_form = formset.empty_form
+        empty_form.initial['deposit'] = trip.deposit
         context = {'trip': trip,
                    'user': self.request.user,
                    'participants': participants,
                    'formset': formset,
+                   'allforms': list(formset) + [empty_form],
                    'registration_allowed': registration_allowed}
         context.update(**kwargs)
         compute_availability(self.request.user, context)

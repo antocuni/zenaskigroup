@@ -1,10 +1,25 @@
 {% extends "trips/trip.html" %}
+{% load sekizai_tags %}
 
 {% block add-sublist %}{% endblock %}
 {% block trip-buttons %}{% endblock %}
 
-
 {% block registration %}
+
+{% addtoblock "js" %}
+<script>
+$(document).ready(function($) {
+    $("#addmore").click(function() {
+        var form_idx = $('#id_form-TOTAL_FORMS').val();
+        var new_form = $('#empty_form').html().replace(/__prefix__/g, form_idx);
+        var tr = $("<tr>").append(new_form);
+        tr.insertBefore("#tr_addmore");
+        $('#id_form-TOTAL_FORMS').val(parseInt(form_idx) + 1);
+    });
+});
+</script>
+{% endaddtoblock %}
+
 <h3>I miei dati</h3>
 <table class="table table-striped table-bordered table-hover table-condensed">
   <tr>
@@ -60,8 +75,12 @@
 
         {% if registration_allowed %}
           {{ formset.management_form }}
-          {% for form in formset %}
-            <tr>
+
+          {# allforms contain the actual forms + the empty form at last #}
+          {# the empty form has a special id and it's hidden #}
+
+          {% for form in allforms %}
+            <tr {% if forloop.last %} id="empty_form" class="hidden" {% endif %}>
               <td class="row-no-padding">
                 {{ form.surname.errors }}{{ form.name.errors }}
                 <div class="col-sm-6">{{ form.surname }}</div>
@@ -80,6 +99,17 @@
               <td></td>
             </tr>
           {% endfor %}
+        <tr id="tr_addmore">
+          <td class="text-center">
+            <a id="addmore" class="btn btn-primary btn-sm" >
+              <span class="glyphicon glyphicon-plus"></span>
+              Aggiungi partecipante
+            </a>
+          </td>
+          <td></td>
+          <td></td>
+          <td></td>
+        </tr>
         {% endif %}
       </table>
 
