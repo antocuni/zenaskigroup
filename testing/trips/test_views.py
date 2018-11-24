@@ -178,6 +178,16 @@ class TestRegister(BaseTestView):
         testuser.member.refresh_from_db()
         assert testuser.member.balance == 10
 
+        # check the money transfer
+        transfers = testuser.moneytransfer_set.all()
+        assert len(transfers) == 1
+        t = transfers[0]
+        assert t.description == ('Iscrizione di Pluto Pippo, Mouse Mickey '
+                                 'a Cervinia, 25/12/2018')
+        assert t.date == date(2018, 12, 24)
+        assert t.value == -50
+        assert t.executed_by == testuser
+
         assert len(mail.outbox) == 1
         msg = mail.outbox[0]
         assert msg.subject == 'Zena Ski Group: conferma iscrizione'

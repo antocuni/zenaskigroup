@@ -339,7 +339,7 @@ class Register(LoginRequiredView):
             names = ', '.join([p.name for p in participants])
             descr = u'Iscrizione di %s a %s' % (names, trip)
             t = models.MoneyTransfer(member=user.member,
-                                     value=-deposit,
+                                     value=-total_deposit,
                                      executed_by=user,
                                      description=descr)
             t.save()
