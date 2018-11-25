@@ -265,6 +265,7 @@ class RegisterForm(forms.Form):
                               ))
     is_member = forms.BooleanField(label='Socio?', initial=False, required=False)
     deposit = forms.DecimalField(label='Caparra',
+                                 required=False,
                                  widget=forms.TextInput(
                                      attrs={'class': 'form-control input-sm',
                                             'size': 5}

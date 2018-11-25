@@ -75,6 +75,14 @@ class TestRegisterForm(object):
         assert p.is_member
         assert p.deposit == 10
 
+    def test_deposit_not_required(self):
+        form = RegisterForm(data=dict(surname='Mickey',
+                                      name='Mouse'))
+        p = form.as_participant()
+        assert p.name == 'Mickey Mouse'
+        assert not p.is_member
+        assert p.deposit is None
+
 
 class TestRegister(BaseTestView):
 
@@ -156,18 +164,13 @@ class TestRegister(BaseTestView):
         testuser.member.balance = 60
         testuser.member.save()
         self.login()
-
-        # note: we INTENTIONALLY use a deposit which is different than the one
-        # on the trip: since this is not a trusted user, the field is ignored
-        data = [{'name': 'Pippo', 'surname': 'Pluto',
-                 'is_member': '1', 'deposit': '42'},
-                {'name': 'Mickey', 'surname': 'Mouse',
-                 'deposit': '42'}]
+        data = [{'name': 'Pippo', 'surname': 'Pluto'},
+                {'name': 'Mickey', 'surname': 'Mouse'}]
         resp = self.submit('/trip/1/register/', data)
         assert resp.status_code == 200
 
         participants = self.get_participants(self.trip)
-        assert participants == [('Pluto Pippo', True, 25, False),
+        assert participants == [('Pluto Pippo', False, 25, False),
                                 ('Mouse Mickey', False, 25, False)]
 
         testuser.member.refresh_from_db()
@@ -199,7 +202,6 @@ class TestRegister(BaseTestView):
         testuser.member.trusted = True
         testuser.member.save()
         self.login()
-
         # since the user is trusted, we use the deposit which was actually
         # specified in the form
         data = [{'name': 'Pippo', 'surname': 'Pluto',
@@ -234,8 +236,8 @@ class TestRegister(BaseTestView):
         trip.save()
         self.login()
         data = [
-            {'name': 'Mickey', 'surname': 'Mouse', 'deposit': '25'},
-            {'name': 'Donald', 'surname': 'Duck', 'deposit': '25'}
+            {'name': 'Mickey', 'surname': 'Mouse'},
+            {'name': 'Donald', 'surname': 'Duck'}
         ]
         resp = self.submit('/trip/1/register/', data)
         assert resp.status_code == 200
