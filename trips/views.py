@@ -270,6 +270,18 @@ class RegisterForm(forms.Form):
                                             'size': 5}
                                  ))
 
+    def as_participant(self):
+        assert self.is_valid()
+        name = '%s %s' % (self.cleaned_data['surname'],
+                          self.cleaned_data['name'])
+        name = name.strip()
+        return models.Participant(
+            name=name,
+            deposit=self.cleaned_data['deposit'],
+            is_member=self.cleaned_data['is_member'],
+            sublist='Online')
+        #    with_reservation=trip.with_reservation)
+
 
 RegisterFormSet = forms.formset_factory(RegisterForm, extra=0)
 
@@ -302,32 +314,12 @@ class Register(LoginRequiredView):
 
     def on_form_validated(self, trip, formset):
         user = self.request.user
-        participants = []
-        total_deposit = 0
-        for form in formset:
-            name = '%s %s' % (form.cleaned_data['surname'],
-                              form.cleaned_data['name'])
-            name = name.strip()
-            deposit = self.compute_one_deposit(trip, form)
-            total_deposit += deposit
-            p = models.Participant(
-                trip=trip,
-                deposit=deposit,
-                name=name,
-                is_member=form.cleaned_data['is_member'],
-                sublist='Online',
-                with_reservation=trip.with_reservation)
-            participants.append(p)
-
-        # sanity check
-        assert total_deposit == self.compute_total_deposit(trip, formset)
+        participants = [form.as_participant() for form in formset]
         trip.add_participants(user, participants)
         self.send_confirmation_email(trip, participants)
-
         message = (u"L'iscrizione è andata a buon fine. Credito residuo: %s €" %
                    user.member.balance)
         return self.render(trip, message=message)
-
 
     # ---------------------
 

@@ -7,7 +7,7 @@ from django.contrib.auth.models import User
 from django.core.files.uploadedfile import SimpleUploadedFile
 from django.core import mail
 from trips import models
-from trips.views import RegisterFormSet
+from trips.views import RegisterForm, RegisterFormSet
 from testing.trips.test_models import trip, testuser
 
 
@@ -62,6 +62,18 @@ class TestNextTrip(BaseTestView):
         assert resp.status_code == 302 # redirect
         assert resp.url == 'http://testserver/trip/1/'
 
+
+class TestRegisterForm(object):
+
+    def test_as_participant(self):
+        form = RegisterForm(data=dict(surname='Mickey',
+                                      name='Mouse',
+                                      is_member='1',
+                                      deposit='10'))
+        p = form.as_participant()
+        assert p.name == 'Mickey Mouse'
+        assert p.is_member
+        assert p.deposit == 10
 
 class TestRegister(BaseTestView):
 
