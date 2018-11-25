@@ -24,6 +24,11 @@ class Member(models.Model):
         else:
             return ""
 
+
+class TripError(Exception):
+    pass
+
+
 class Trip(models.Model):
     class Meta:
         verbose_name = 'Gita'
@@ -90,6 +95,8 @@ class Trip(models.Model):
             total_deposit += p.deposit
 
         with transaction.atomic():
+            if user.member.balance < total_deposit and not user.member.trusted:
+                raise TripError("Credito insufficiente")
             self.participant_set.add(*participants)
             user.member.balance -= total_deposit
             names = ', '.join([p.name for p in participants])

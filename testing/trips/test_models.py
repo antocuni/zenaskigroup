@@ -51,3 +51,18 @@ class TestTrip(object):
         assert t.date == date(2018, 12, 24)
         assert t.value == -30
         assert t.executed_by == testuser
+
+    def test_no_credit(self, db, trip, testuser):
+        testuser.member.balance = 25
+        testuser.member.save()
+        p1 = models.Participant(name='Mickey Mouse', deposit=10)
+        p2 = models.Participant(name='Donald Duck', deposit=20)
+        with pytest.raises(models.TripError) as exc:
+            trip.add_participants(testuser, [p1, p2])
+        assert exc.value.message == 'Credito insufficiente'
+        #
+        testuser.member.trusted = True
+        testuser.member.save()
+        trip.add_participants(testuser, [p1, p2])
+        assert list(trip.participant_set.all()) == [p1, p2]
+        assert testuser.member.balance == -5

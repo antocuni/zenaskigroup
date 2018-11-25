@@ -292,6 +292,7 @@ class Register(LoginRequiredView):
         formset = RegisterFormSet(request.POST)
         error = None
         deposit = self.compute_total_deposit(trip, formset)
+        # XXX: eventually remove this check, as it's done inside add_participants
         if user.member.balance < deposit and not user.member.trusted:
             error = "Credito insufficiente"
         #
