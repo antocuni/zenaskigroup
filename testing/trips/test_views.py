@@ -128,19 +128,9 @@ class TestRegister(BaseTestView):
         # check that we registered the participant
         participants = self.get_participants(self.trip)
         assert participants == [('Pluto Pippo', 25, False)]
-
         # that the money was taken
         testuser.member.refresh_from_db()
         assert testuser.member.balance == 5
-
-        # and the money transfer registered
-        transfers = testuser.moneytransfer_set.all()
-        assert len(transfers) == 1
-        t = transfers[0]
-        assert t.description == 'Iscrizione di Pluto Pippo a Cervinia, 25/12/2018'
-        assert t.date == date(2018, 12, 24)
-        assert t.value == -25
-        assert t.executed_by == testuser
 
         assert resp.context['message'] == (u"L'iscrizione è andata a buon fine. "
                                            u"Credito residuo: 5.00 €")
@@ -169,19 +159,8 @@ class TestRegister(BaseTestView):
         participants = self.get_participants(self.trip)
         assert participants == [('Pluto Pippo', 25, False),
                                 ('Mouse Mickey', 25, False)]
-
         testuser.member.refresh_from_db()
         assert testuser.member.balance == 10
-
-        # check the money transfer
-        transfers = testuser.moneytransfer_set.all()
-        assert len(transfers) == 1
-        t = transfers[0]
-        assert t.description == ('Iscrizione di Pluto Pippo, Mouse Mickey '
-                                 'a Cervinia, 25/12/2018')
-        assert t.date == date(2018, 12, 24)
-        assert t.value == -50
-        assert t.executed_by == testuser
 
         assert len(mail.outbox) == 1
         msg = mail.outbox[0]
