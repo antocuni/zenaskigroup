@@ -10,6 +10,7 @@
 <script>
 $(document).ready(function($) {
     $("#addmore").click(function() {
+        $('#remind-to-register').show();
         var form_idx = $('#id_form-TOTAL_FORMS').val();
         var new_form = $('#empty_form').html().replace(/__prefix__/g, form_idx);
         var tr = $("<tr>").append(new_form);
@@ -114,6 +115,12 @@ $(document).ready(function($) {
       </table>
 
       {% if registration_allowed %}
+      <div id="remind-to-register" class="alert alert-warning collapse">
+        ATTENZIONE: l'iscrizione <b>NON</b> è ancora completata. Dopo aver
+        compilato i nomi di tutti i partecipanti, premere uno dei due pulsanti
+        sotto per completarla
+      </div>
+      
       <div class="text-center">
         <button type="submit" name="btn-balance" class="btn btn-info" >
           <span class="glyphicon glyphicon-euro"></span>
