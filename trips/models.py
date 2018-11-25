@@ -97,6 +97,16 @@ class Trip(models.Model):
         with transaction.atomic():
             if user.member.balance < total_deposit and not user.member.trusted:
                 raise TripError("Credito insufficiente")
+
+            if self.seats_left < len(participants) and not self.with_reservation:
+                if self.seats_left == 0:
+                    raise TripError("Posti esauriti")
+                else:
+                    raise TripError(
+                        'Non ci sono abbastanza posti per iscrivere '
+                        'tutte le persone richieste. Numero massimo di '
+                        'posti disponibili: %d' % self.seats_left)
+
             self.participant_set.add(*participants)
             user.member.balance -= total_deposit
             names = ', '.join([p.name for p in participants])

@@ -4,11 +4,11 @@ from datetime import date, datetime
 from django.contrib.auth.models import User
 from django.core.files.uploadedfile import SimpleUploadedFile
 from django.core import mail
-from trips import models
+from trips.models import Trip, Participant, TripError
 
 @pytest.fixture
 def trip(db):
-    t = models.Trip.objects.create(
+    t = Trip.objects.create(
         date=date(2018, 12, 25),
         closing_date=datetime(2018, 12, 24, 12, 0, 0),
         destination='Cervinia',
@@ -33,8 +33,8 @@ class TestTrip(object):
     def test_add_participants(self, db, trip, testuser):
         testuser.member.balance = 50
         testuser.member.save()
-        p1 = models.Participant(name='Mickey Mouse', deposit=10, is_member=True)
-        p2 = models.Participant(name='Donald Duck', deposit=20, is_member=False)
+        p1 = Participant(name='Mickey Mouse', deposit=10, is_member=True)
+        p2 = Participant(name='Donald Duck', deposit=20, is_member=False)
         trip.add_participants(testuser, [p1, p2])
 
         assert list(trip.participant_set.all()) == [p1, p2]
@@ -55,14 +55,39 @@ class TestTrip(object):
     def test_no_credit(self, db, trip, testuser):
         testuser.member.balance = 25
         testuser.member.save()
-        p1 = models.Participant(name='Mickey Mouse', deposit=10)
-        p2 = models.Participant(name='Donald Duck', deposit=20)
-        with pytest.raises(models.TripError) as exc:
+        p1 = Participant(name='Mickey Mouse', deposit=10)
+        p2 = Participant(name='Donald Duck', deposit=20)
+        with pytest.raises(TripError) as exc:
             trip.add_participants(testuser, [p1, p2])
         assert exc.value.message == 'Credito insufficiente'
+        assert trip.participant_set.count() == 0
+        assert testuser.member.balance == 25
         #
         testuser.member.trusted = True
         testuser.member.save()
         trip.add_participants(testuser, [p1, p2])
         assert list(trip.participant_set.all()) == [p1, p2]
         assert testuser.member.balance == -5
+
+    def test_no_seats_left(self, db, trip, testuser):
+        testuser.member.balance = 50
+        trip.seats = 0
+        testuser.member.save()
+        trip.save()
+        p1 = Participant(name='Mickey Mouse', deposit=25)
+        p2 = Participant(name='Donald Duck', deposit=25)
+        with pytest.raises(TripError) as exc:
+            trip.add_participants(testuser, [p1])
+        assert exc.value.message == 'Posti esauriti'
+        assert trip.participant_set.count() == 0
+        assert testuser.member.balance == 50
+
+        trip.seats = 1
+        trip.save()
+        with pytest.raises(TripError) as exc:
+            trip.add_participants(testuser, [p1, p2])
+        assert exc.value.message == (
+            'Non ci sono abbastanza posti per iscrivere tutte le persone '
+            'richieste. Numero massimo di posti disponibili: 1')
+        assert trip.participant_set.count() == 0
+        assert testuser.member.balance == 50
