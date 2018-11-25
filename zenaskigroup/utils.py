@@ -1,3 +1,5 @@
+import py
+from django.conf import settings
 from django import forms
 from django.contrib.auth.models import User
 from django.contrib.auth.forms import PasswordResetForm
@@ -22,3 +24,14 @@ class EmailValidationOnForgotPassword(PasswordResetForm):
         if not User.objects.filter(email__iexact=email, is_active=True).exists():
             raise forms.ValidationError("Non esiste nessun utente con questo indirizzo email")
         return email
+
+try:
+    HG_BRANCH = py.path.local(settings.BASE_DIR).join('.hg', 'branch').read().strip()
+except py.error.ENOENT:
+    HG_BRANCH = 'default'
+
+def additional_context(request):
+    data = {}
+    data['BRANCH'] = HG_BRANCH
+    data['BETA'] = HG_BRANCH != 'default'
+    return data

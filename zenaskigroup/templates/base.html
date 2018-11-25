@@ -40,6 +40,17 @@
       </div>
       <div class="navbar-collapse collapse">
         <ul class="nav navbar-nav">
+          {% if BETA %}
+          <li class="dropdown">
+            <a class="dropdown-toggle bg-primary" data-toggle="dropdown">
+              Versione di sviluppo<span class="caret"></span>
+            </a>
+            <ul class="dropdown-menu">
+              <li><a>{{ BRANCH }}</a></li>
+            </ul>
+          </li>
+          <li><a class="bg-primary">NON USARE</a></li>
+          {% endif %}
           {% show_menu 0 1 100 100 "menu.html" %}
         </ul>
         <ul class="nav navbar-nav navbar-right">
