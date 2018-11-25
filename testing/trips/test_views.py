@@ -93,7 +93,7 @@ class TestRegister(BaseTestView):
     def get_participants(self, trip):
         res = []
         for p in trip.participant_set.all():
-            res.append((p.name, p.is_member, p.deposit, p.with_reservation))
+            res.append((p.name, p.deposit, p.with_reservation))
         return res
 
     def test_login_required(self):
@@ -119,18 +119,15 @@ class TestRegister(BaseTestView):
         testuser.member.balance = 30
         testuser.member.save()
         self.login()
-
         # note: we INTENTIONALLY use a deposit which is different than the one
         # on the trip: since this is not a trusted user, the field is ignored
-        resp = self.submit('/trip/1/register/', [{'name': 'Pippo',
-                                                 'surname': 'Pluto',
-                                                 'is_member': '1',
-                                                 'deposit': '42'}])
+        p1 = {'name': 'Pippo', 'surname': 'Pluto', 'deposit': '42'}
+        resp = self.submit('/trip/1/register/', [p1])
         assert resp.status_code == 200
 
         # check that we registered the participant
         participants = self.get_participants(self.trip)
-        assert participants == [('Pluto Pippo', True, 25, False)]
+        assert participants == [('Pluto Pippo', 25, False)]
 
         # that the money was taken
         testuser.member.refresh_from_db()
@@ -170,8 +167,8 @@ class TestRegister(BaseTestView):
         assert resp.status_code == 200
 
         participants = self.get_participants(self.trip)
-        assert participants == [('Pluto Pippo', False, 25, False),
-                                ('Mouse Mickey', False, 25, False)]
+        assert participants == [('Pluto Pippo', 25, False),
+                                ('Mouse Mickey', 25, False)]
 
         testuser.member.refresh_from_db()
         assert testuser.member.balance == 10
@@ -204,15 +201,15 @@ class TestRegister(BaseTestView):
         self.login()
         # since the user is trusted, we use the deposit which was actually
         # specified in the form
-        data = [{'name': 'Pippo', 'surname': 'Pluto',
-                 'is_member': '1', 'deposit': '10'},
-                {'name': 'Mickey', 'surname': 'Mouse',
-                 'is_member': '1', 'deposit': '12'}]
+        data = [
+            {'name': 'Pippo', 'surname': 'Pluto', 'deposit': '10'},
+            {'name': 'Mickey', 'surname': 'Mouse', 'deposit': '12'}
+        ]
         resp = self.submit('/trip/1/register/', data)
         assert resp.status_code == 200
         participants = self.get_participants(self.trip)
-        assert participants == [('Pluto Pippo', True, 10, False),
-                                ('Mouse Mickey', True, 12, False)]
+        assert participants == [('Pluto Pippo', 10, False),
+                                ('Mouse Mickey', 12, False)]
         testuser.member.refresh_from_db()
         assert testuser.member.balance == -22
 
@@ -242,8 +239,8 @@ class TestRegister(BaseTestView):
         resp = self.submit('/trip/1/register/', data)
         assert resp.status_code == 200
         participants = self.get_participants(self.trip)
-        assert participants == [('Mouse Mickey', False, 25, True),
-                                ('Duck Donald', False, 25, True)]
+        assert participants == [('Mouse Mickey', 25, True),
+                                ('Duck Donald', 25, True)]
         msg = mail.outbox[0]
         assert 'CON RISERVA' in msg.body
         assert 'Mouse Mickey' in msg.body
