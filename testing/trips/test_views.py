@@ -202,63 +202,15 @@ class TestRegister(BaseTestView):
         assert testuser.member.balance == -22
 
     @freeze_time('2018-12-24')
-    def test_no_credit(self):
+    def test_TripError(self):
+        # test that when we raise TripError we do the correct thing
         self.login()
-        resp = self.submit('/trip/1/register/',
-                           [{'name': 'Pippo', 'surname': 'Pluto'}])
+        p1 = {'name': 'Pippo', 'surname': 'Pluto', 'deposit': '10'}
+        resp = self.submit('/trip/1/register/', [p1])
         assert resp.status_code == 200
         participants = self.get_participants(self.trip)
         assert not participants
         assert resp.context['error'] == 'Credito insufficiente'
-
-    @freeze_time('2018-12-24')
-    def test_no_credit_many(self, testuser):
-        # we have enough credit for one, but not for two. Check that we refuse
-        # the whole transation
-        testuser.member.balance = 40
-        testuser.member.save()
-        self.login()
-        data = [{'name': 'Pippo', 'surname': 'Pluto'},
-                {'name': 'Mickey', 'surname': 'Mouse'}]
-        
-        resp = self.submit('/trip/1/register/', data)
-        assert resp.status_code == 200
-        participants = self.get_participants(self.trip)
-        assert not participants
-        assert resp.context['error'] == 'Credito insufficiente'
-        testuser.member.refresh_from_db()
-        assert testuser.member.balance == 40
-
-    @freeze_time('2018-12-24')
-    def test_no_seats_left(self, trip, testuser):
-        testuser.member.balance = 25
-        trip.seats = 0
-        testuser.member.save()
-        trip.save()
-        self.login()
-        resp = self.submit('/trip/1/register/',
-                           [{'name': 'Pippo', 'surname': 'Pluto'}])
-        assert resp.status_code == 200
-        participants = self.get_participants(self.trip)
-        assert not participants
-        assert resp.context['error'] == 'Posti esauriti'
-
-    @freeze_time('2018-12-24')
-    def test_no_seats_left_many(self, trip, testuser):
-        testuser.member.balance = 50
-        trip.seats = 1
-        testuser.member.save()
-        trip.save()
-        self.login()
-        data = [{'name': 'Pippo', 'surname': 'Pluto'},
-                {'name': 'Mickey', 'surname': 'Mouse'}]
-        resp = self.submit('/trip/1/register/', data)
-        assert resp.status_code == 200
-        participants = self.get_participants(self.trip)
-        assert not participants
-        assert resp.context['error'] == (
-            'Non ci sono abbastanza posti per iscrivere tutte le persone '
-            'richieste. Numero massimo di posti disponibili: 1')
 
     @freeze_time('2018-12-24')
     def test_with_reservation(self, trip, testuser):

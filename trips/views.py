@@ -286,32 +286,21 @@ class Register(LoginRequiredView):
             print 'paypal!'
         else:
             print 'WTF?'
-        
-        user = self.request.user
+
         trip = self.get_trip(trip_id)
         formset = RegisterFormSet(request.POST)
-        error = None
-        deposit = self.compute_total_deposit(trip, formset)
-        # XXX: eventually remove this check, as it's done inside add_participants
-        if user.member.balance < deposit and not user.member.trusted:
-            error = "Credito insufficiente"
-        #
-        n_participants = len(formset)
-        if trip.seats_left < n_participants and not trip.with_reservation:
-            if trip.seats_left == 0:
-                error = "Posti esauriti"
-            else:
-                error = ('Non ci sono abbastanza posti per iscrivere '
-                         'tutte le persone richieste. Numero massimo di '
-                         'posti disponibili: %d' % trip.seats_left)
-
-        if not formset.is_valid() or error:
+        if not formset.is_valid():
             # pass form to render so that it can show the errors and
             # pre-populate the already compiled fields
+            error = "Correggere gli errori evidenziati"
             return self.render(trip, formset=formset, error=error)
-        return self.on_form_validated(trip, formset, deposit)
 
-    def on_form_validated(self, trip, formset, deposit):
+        try:
+            return self.on_form_validated(trip, formset)
+        except models.TripError as exc:
+            return self.render(trip, formset=formset, error=str(exc))
+
+    def on_form_validated(self, trip, formset):
         user = self.request.user
         participants = []
         total_deposit = 0
