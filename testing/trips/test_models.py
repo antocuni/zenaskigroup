@@ -92,15 +92,25 @@ class TestTrip(object):
         assert trip.participant_set.count() == 0
         assert testuser.member.balance == 50
 
-        trip.seats = 1
+    def test_no_seats_left_even_with_reservation(self, db, trip, testuser):
+        # if we have 2 seats left but try to register 3 people, we want to
+        # reject the whole transation, even if we have "with_reservation"
+        testuser.member.balance = 75
+        trip.seats = 2
+        trip.allow_extra_seats = True
+        testuser.member.save()
         trip.save()
+
+        p1 = Participant(name='Mickey Mouse')
+        p2 = Participant(name='Donald Duck')
+        p3 = Participant(name='Uncle Scrooge')
         with pytest.raises(TripError) as exc:
-            trip.add_participants(testuser, [p1, p2])
+            trip.add_participants(testuser, [p1, p2, p3])
         assert exc.value.message == (
             'Non ci sono abbastanza posti per iscrivere tutte le persone '
-            'richieste. Numero massimo di posti disponibili: 1')
+            'richieste. Numero massimo di posti disponibili: 2')
         assert trip.participant_set.count() == 0
-        assert testuser.member.balance == 50
+        assert testuser.member.balance == 75
 
     def test_with_reservation(self, db, trip, testuser):
         testuser.member.balance = 75
@@ -124,3 +134,4 @@ class TestTrip(object):
         assert p2.with_reservation
         assert p3.with_reservation
         assert p2.deposit == p3.deposit == 25
+
