@@ -75,6 +75,7 @@ class TestRegisterForm(object):
         assert p.is_member
         assert p.deposit == 10
 
+
 class TestRegister(BaseTestView):
 
     def submit(self, url, data):
@@ -226,19 +227,12 @@ class TestRegister(BaseTestView):
 
     @freeze_time('2018-12-24')
     def test_with_reservation(self, trip, testuser):
-        testuser.member.balance = 75
-        trip.seats = 1
+        testuser.member.balance = 50
+        trip.seats = 0
         trip.allow_extra_seats = True
         testuser.member.save()
         trip.save()
         self.login()
-        data = [{'name': 'Pippo', 'surname': 'Pluto', 'deposit': '25'}]
-        resp = self.submit('/trip/1/register/', data)
-        assert resp.status_code == 200
-        participants = self.get_participants(self.trip)
-        assert participants == [('Pluto Pippo', False, 25, False)]
-
-        mail.outbox = []
         data = [
             {'name': 'Mickey', 'surname': 'Mouse', 'deposit': '25'},
             {'name': 'Donald', 'surname': 'Duck', 'deposit': '25'}
@@ -246,8 +240,7 @@ class TestRegister(BaseTestView):
         resp = self.submit('/trip/1/register/', data)
         assert resp.status_code == 200
         participants = self.get_participants(self.trip)
-        assert participants == [('Pluto Pippo', False, 25, False),
-                                ('Mouse Mickey', False, 25, True),
+        assert participants == [('Mouse Mickey', False, 25, True),
                                 ('Duck Donald', False, 25, True)]
         msg = mail.outbox[0]
         assert 'CON RISERVA' in msg.body

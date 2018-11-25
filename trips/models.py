@@ -95,6 +95,7 @@ class Trip(models.Model):
             if not user.member.trusted or p.deposit is None:
                 p.deposit = self.deposit
             p.registered_by = user
+            p.with_reservation = self.with_reservation
             total_deposit += p.deposit
 
         with transaction.atomic():

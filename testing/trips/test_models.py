@@ -101,3 +101,26 @@ class TestTrip(object):
             'richieste. Numero massimo di posti disponibili: 1')
         assert trip.participant_set.count() == 0
         assert testuser.member.balance == 50
+
+    def test_with_reservation(self, db, trip, testuser):
+        testuser.member.balance = 75
+        trip.seats = 1
+        trip.allow_extra_seats = True
+        testuser.member.save()
+        trip.save()
+
+        # normal registration
+        p1 = Participant(name='Mickey Mouse', deposit=25)
+        trip.add_participants(testuser, [p1])
+        assert list(trip.participant_set.all()) == [p1]
+        assert not p1.with_reservation
+
+        # now we go into "with_reservation" mode
+        p2 = Participant(name='Donald Duck', deposit=25)
+        p3 = Participant(name='Uncle Scrooge', deposit=25)
+        trip.add_participants(testuser, [p2, p3])
+        assert list(trip.participant_set.all()) == [p1, p2, p3]
+        assert not p1.with_reservation
+        assert p2.with_reservation
+        assert p3.with_reservation
+        assert p2.deposit == p3.deposit == 25
