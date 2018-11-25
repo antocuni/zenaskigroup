@@ -91,6 +91,9 @@ class Trip(models.Model):
     def add_participants(self, user, participants):
         total_deposit = 0
         for p in participants:
+            # if we user is not trusted, we always use the trip deposit
+            if not user.member.trusted or p.deposit is None:
+                p.deposit = self.deposit
             p.registered_by = user
             total_deposit += p.deposit
 
