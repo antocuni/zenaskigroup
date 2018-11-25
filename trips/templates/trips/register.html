@@ -55,22 +55,20 @@ $(document).ready(function($) {
           <th>Stato</th>
         </tr>
 
-        {% for participant in participants %}
+        {% for p in participants %}
         <tr>
-          <td>{{ participant.name }}</td>
+          <td>{{ p.name }}</td>
           <td class="text-center">
-            {% if participant.is_member %}
+            {% if p.is_member %}
               <span class="glyphicon glyphicon-ok-sign text-success"></span>
             {% else %}
               <span class="glyphicon glyphicon-minus-sign text-danger"></span>
             {% endif %}
           </td>
-          <td class="text-center">{{ participant.deposit }} €</td>
-          {% if participant.with_reservation %}
-            <td class="text-warning">Con riserva</td>
-          {% else %}
-            <td class="text-success">Confermato</td>
-          {% endif %}
+          <td class="text-center">{{ p.deposit }} €</td>
+          <td class={% if p.is_confirmed %}"text-success"{% else %}"text-warning"{% endif %}>
+            {{ p.status }}
+          </td>
         </tr>
         {% endfor %}
 
@@ -103,7 +101,7 @@ $(document).ready(function($) {
           <td class="text-center" colspan="4">
             <a id="addmore" class="btn btn-primary btn-sm" >
               <span class="glyphicon glyphicon-plus"></span>
-              Aggiungi partecipante
+              Aggiungi ulteriori partecipanti
             </a>
           </td>
         </tr>

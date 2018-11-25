@@ -26,6 +26,16 @@ def testuser(db):
     u.save()
     return u
 
+class TestParticipant(object):
+
+    def test_status(self):
+        p = Participant('Mickey Mouse')
+        assert p.status == 'Confermato'
+        assert p.is_confirmed
+        p.with_reservation = True
+        assert p.status == 'Con riserva'
+        assert not p.is_confirmed
+
 
 class TestTrip(object):
 

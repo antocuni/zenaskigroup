@@ -144,6 +144,17 @@ class Participant(models.Model):
     def __unicode__(self):
         return self.name
 
+    @property
+    def status(self):
+        if self.with_reservation:
+            return 'Con riserva'
+        else:
+            return 'Confermato'
+
+    @property
+    def is_confirmed(self):
+        return self.status == 'Confermato'
+
 
 class MoneyTransfer(models.Model):
     class Meta:
