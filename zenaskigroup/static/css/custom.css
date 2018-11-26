@@ -33,3 +33,7 @@ body {
     padding-left:0;
     padding-right:0;
 }
+
+.text-large {
+    font-size: 200%;
+}

@@ -12,5 +12,4 @@ class PayPalView(TripView):
         context = {'trip': trip,
                    'user': self.request.user,
                    'participants': participants}
-        context.update(**kwargs)
         return render(self.request, 'trips/paypal.html', context)

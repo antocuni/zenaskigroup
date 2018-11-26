@@ -176,6 +176,10 @@ class Participant(models.Model):
     def waiting_paypal(self):
         return self.paypal_deadline is not None
 
+    @property
+    def paypal_fee(self):
+        return 1
+
     def get_status(self):
         # bah, HTML logic should not be here, but I couldn't find any other
         # simple way to do it :(
