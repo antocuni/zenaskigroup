@@ -1,15 +1,10 @@
 # -*- encoding: utf-8 -*-
 
-import pytest
 from freezegun import freeze_time
-from datetime import date, datetime
-from django.contrib.auth.models import User
-from django.core.files.uploadedfile import SimpleUploadedFile
 from django.core import mail
-from trips import models
 from trips.register import RegisterForm, RegisterFormSet
 from testing.trips.test_models import trip, testuser
-
+from testing.trips.test_views import BaseTestView
 
 def encode_formset(formset_class, formsdata):
     prefix = formset_class().prefix
@@ -35,33 +30,6 @@ def test_encode_formset():
         'form-1-a': 'xxx',
         'form-1-b': 'yyy'
         }
-
-class BaseTestView(object):
-
-    @pytest.fixture(autouse=True)
-    def init(self, db, client, testuser, trip):
-        self.trip = trip
-        self.testuser = testuser
-        self.db = db
-        self.client = client
-
-    def login(self):
-        assert self.client.login(username='testuser', password='12345')
-
-    def get(self, *args, **kwargs):
-        return self.client.get(*args, **kwargs)
-
-    def post(self, *args, **kwargs):
-        return self.client.post(*args, **kwargs)
-
-class TestNextTrip(BaseTestView):
-
-    def test_redirect(self):
-        assert self.trip.id == 1
-        resp = self.get('/trip/')
-        assert resp.status_code == 302 # redirect
-        assert resp.url == 'http://testserver/trip/1/'
-
 
 class TestRegisterForm(object):
 
