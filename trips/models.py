@@ -140,20 +140,30 @@ class Participant(models.Model):
     sublist = models.CharField(max_length=20, verbose_name='Lista')
     with_reservation = models.BooleanField(default=False, blank=False,
                                            verbose_name='Con riserva?')
+    paypal_deadline = models.DateTimeField(verbose_name='Scadenza Paypal',
+                                           null=True, blank=True)
 
     def __unicode__(self):
         return self.name
 
     @property
     def status(self):
-        if self.with_reservation:
-            return 'Con riserva'
-        else:
-            return 'Confermato'
+        t, cls = self.get_status()
+        return t
 
     @property
-    def is_confirmed(self):
-        return self.status == 'Confermato'
+    def status_class(self):
+        t, cls = self.get_status()
+        return cls
+
+    def get_status(self):
+        # bah, HTML logic should not be here, but I couldn't find any other
+        # simple way to do it :(
+        if self.with_reservation:
+            return 'Con riserva', 'text-warning'
+        else:
+            return 'Confermato', 'text-success'
+        
 
 
 class MoneyTransfer(models.Model):

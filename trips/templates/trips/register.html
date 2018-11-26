@@ -66,9 +66,7 @@ $(document).ready(function($) {
             {% endif %}
           </td>
           <td class="text-center">{{ p.deposit }} €</td>
-          <td class={% if p.is_confirmed %}"text-success"{% else %}"text-warning"{% endif %}>
-            {{ p.status }}
-          </td>
+          <td class="{{ p.status_class }}">{{ p.status }}</td>
         </tr>
         {% endfor %}
 

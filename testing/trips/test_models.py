@@ -31,10 +31,10 @@ class TestParticipant(object):
     def test_status(self):
         p = Participant('Mickey Mouse')
         assert p.status == 'Confermato'
-        assert p.is_confirmed
+        assert p.status_class == 'text-success'
         p.with_reservation = True
         assert p.status == 'Con riserva'
-        assert not p.is_confirmed
+        assert p.status_class == 'text-warning'
 
 
 class TestTrip(object):
