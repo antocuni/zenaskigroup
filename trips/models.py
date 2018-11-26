@@ -88,6 +88,12 @@ class Trip(models.Model):
     sublist_table.short_description = 'Sottoliste'
     sublist_table.allow_tags = True
 
+    def get_participants(self, user):
+        return self.participant_set.filter(registered_by=user)
+
+    def get_paypal_participants(self, user):
+        return self.get_participants(user).filter(paypal_deadline__isnull=False)
+
     def add_participants(self, user, participants, paypal=False):
         paypal_deadline = datetime.now() + timedelta(minutes=10)
         total_deposit = 0

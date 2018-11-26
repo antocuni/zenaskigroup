@@ -1,6 +1,7 @@
 from django.conf.urls import patterns, url
 from trips import views
 from trips.register import RegisterView
+from trips.paypal import PayPalView
 
 urlpatterns = patterns('',
     url(r'^balance/topup/$', views.topup, name='topup'),
@@ -13,6 +14,7 @@ urlpatterns = patterns('',
     url(r'^trip/register/$', views.next_trip_register, name='next_trip_register'),
     url(r'^trip/(?P<trip_id>\d+)/$', views.trip, name='trip'),
     url(r'^trip/(?P<trip_id>\d+)/register/$', RegisterView.as_view(), name='register'),
+    url(r'^trip/(?P<trip_id>\d+)/paypal/$', PayPalView.as_view(), name='paypal'),
     url(r'^trip/(?P<trip_id>\d+)/detail/$', views.detail, name='detail'),
     url(r'^accounts/profile/$', views.profile, name='profile'),
     url(r'^accounts/profile/edit/$', views.editprofile, name='editprofile'),

@@ -52,8 +52,16 @@ class LoginRequiredView(View):
     def dispatch(self, *args, **kwargs):
         return super(LoginRequiredView, self).dispatch(*args, **kwargs)
 
+class TripView(LoginRequiredView):
 
-class RegisterView(LoginRequiredView):
+    def get_trip(self, trip_id):
+        try:
+            return models.Trip.objects.get(pk=self.kwargs['trip_id'])
+        except models.Trip.DoesNotExist:
+            raise Http404
+
+
+class RegisterView(TripView):
 
     def get(self, request, trip_id):
         trip = self.get_trip(trip_id)
@@ -86,12 +94,6 @@ class RegisterView(LoginRequiredView):
 
     # ---------------------
 
-    def get_trip(self, trip_id):
-        try:
-            return models.Trip.objects.get(pk=self.kwargs['trip_id'])
-        except models.Trip.DoesNotExist:
-            raise Http404
-
     def compute_total_deposit(self, trip, formset):
         total = 0
         for form in formset:
@@ -114,7 +116,7 @@ class RegisterView(LoginRequiredView):
         if formset is None:
             formset = self.new_formset(trip)
         registration_allowed = trip.closing_date >= datetime.now()
-        participants = trip.participant_set.filter(registered_by=self.request.user)
+        participants = trip.get_participants(self.request.user)
         empty_form = formset.empty_form
         empty_form.initial['deposit'] = trip.deposit
         context = {'trip': trip,

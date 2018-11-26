@@ -44,6 +44,26 @@ class TestParticipant(object):
 
 class TestTrip(object):
 
+    def test_get_participants(self, db, trip, testuser):
+        p1 = Participant(name='Mickey Mouse', deposit=0, registered_by=testuser)
+        p2 = Participant(name='Donald Duck', deposit=0, registered_by=None)
+        p3 = Participant(name='Uncle Scrooge', deposit=0, registered_by=testuser)
+        trip.participant_set.add(p1, p2, p3)
+        participants = trip.get_participants(testuser)
+        assert list(participants) == [p1, p3]
+
+    def test_get_paypal_participants(self, db, trip, testuser):
+        def P(name, **kwargs):
+            return Participant(name=name, deposit=0, **kwargs)
+        d = datetime(2014, 12, 24) # just a random non-NULL date
+        p1 = P('Mickey Mouse',  registered_by=testuser, paypal_deadline=d)
+        p2 = P('Donald Duck',   registered_by=testuser, paypal_deadline=None)
+        p3 = P('Uncle Scrooge', registered_by=testuser, paypal_deadline=d)
+        p4 = P('Goofy',         registered_by=None,     paypal_deadline=d)
+        trip.participant_set.add(p1, p2, p3, p4)
+        participants = trip.get_paypal_participants(testuser)
+        assert list(participants) == [p1, p3]
+
     @freeze_time('2018-12-24')
     def test_add_participants(self, db, trip, testuser):
         testuser.member.balance = 70
