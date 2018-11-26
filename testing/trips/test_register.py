@@ -7,7 +7,7 @@ from django.contrib.auth.models import User
 from django.core.files.uploadedfile import SimpleUploadedFile
 from django.core import mail
 from trips import models
-from trips.views import RegisterForm, RegisterFormSet
+from trips.register import RegisterForm, RegisterFormSet
 from testing.trips.test_models import trip, testuser
 
 
