@@ -8,8 +8,13 @@ class PayPalView(TripView):
         return self.render(trip)
 
     def render(self, trip):
-        participants = trip.get_paypal_participants(self.request.user)
+        user = self.request.user
+        participants = trip.get_paypal_participants(user)
+        deposit, fees = trip.compute_paypal_total(user)
         context = {'trip': trip,
                    'user': self.request.user,
-                   'participants': participants}
+                   'participants': participants,
+                   'total_deposit': deposit,
+                   'paypal_fees': fees,
+                   'grand_total': deposit + fees}
         return render(self.request, 'trips/paypal.html', context)

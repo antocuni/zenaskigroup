@@ -172,7 +172,7 @@ class TestTrip(object):
         assert p2.deposit == p3.deposit == 25
 
     @freeze_time('2018-12-24 12:00')
-    def test_paypal(self, db, trip, testuser):
+    def test_pay_with_paypal(self, db, trip, testuser):
         p1 = Participant(name='Mickey Mouse')
         p2 = Participant(name='Donald Duck')
         trip.add_participants(testuser, [p1, p2], paypal=True)
@@ -180,3 +180,7 @@ class TestTrip(object):
         assert testuser.member.balance == 0
         deadline = datetime(2018, 12, 24, 12, 10, 0)
         assert p1.paypal_deadline == p2.paypal_deadline == deadline
+
+        tot, fees = trip.compute_paypal_total(testuser)
+        assert tot == 50
+        assert fees == 2

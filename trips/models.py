@@ -94,6 +94,14 @@ class Trip(models.Model):
     def get_paypal_participants(self, user):
         return self.get_participants(user).filter(paypal_deadline__isnull=False)
 
+    def compute_paypal_total(self, user):
+        tot = 0
+        fees = 0
+        for p in self.get_paypal_participants(user):
+            tot += p.deposit
+            fees += p.paypal_fee
+        return tot, fees
+
     def add_participants(self, user, participants, paypal=False):
         paypal_deadline = datetime.now() + timedelta(minutes=10)
         total_deposit = 0
