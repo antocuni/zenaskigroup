@@ -86,8 +86,12 @@ class TestRegisterForm(object):
 
 class TestRegister(BaseTestView):
 
-    def submit(self, url, data):
+    def submit(self, url, data, paypal=False):
         encoded = encode_formset(RegisterFormSet, data)
+        if paypal:
+            encoded['btn-paypal'] = ''
+        else:
+            encoded['btn-balance'] = ''
         return self.post(url, encoded)
 
     def get_participants(self, trip):
@@ -241,3 +245,18 @@ class TestRegister(BaseTestView):
 
         assert 'Pippo' in resp.content # check that the invalid form is
                                        # pre-populated
+
+    @freeze_time('2018-12-24')
+    def test_paypal(self, testuser):
+        self.login()
+        data = [{'name': 'Pippo', 'surname': 'Pluto'},
+                {'name': 'Mickey', 'surname': 'Mouse'}]
+        resp = self.submit('/trip/1/register/', data, paypal=True)
+        assert resp.status_code == 200
+
+        participants = self.get_participants(self.trip)
+        assert participants == [('Pluto Pippo', 25, False),
+                                ('Mouse Mickey', 25, False)]
+        testuser.member.refresh_from_db()
+        assert testuser.member.balance == 0
+        assert mail.outbox == []

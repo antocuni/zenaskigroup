@@ -39,7 +39,7 @@ class TestParticipant(object):
 
         p.paypal_deadline = datetime(2018, 1, 1, 0, 0, 0)
         assert p.status == 'In attesa di PayPal'
-        assert p.status_class == 'text-error'
+        assert p.status_class == 'text-danger'
 
 
 class TestTrip(object):

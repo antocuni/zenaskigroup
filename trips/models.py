@@ -174,7 +174,7 @@ class Participant(models.Model):
         # bah, HTML logic should not be here, but I couldn't find any other
         # simple way to do it :(
         if self.waiting_paypal:
-            return 'In attesa di PayPal', 'text-error'
+            return 'In attesa di PayPal', 'text-danger'
         elif self.with_reservation:
             return 'Con riserva', 'text-warning'
         else:

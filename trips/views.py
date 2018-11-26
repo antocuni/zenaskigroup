@@ -291,13 +291,6 @@ class Register(LoginRequiredView):
         return self.render(trip)
 
     def post(self, request, trip_id):
-        if 'btn-balance' in request.POST:
-            print 'balance!'
-        elif 'btn-paypal' in request.POST:
-            print 'paypal!'
-        else:
-            print 'WTF?'
-
         trip = self.get_trip(trip_id)
         formset = RegisterFormSet(request.POST)
         if not formset.is_valid():
@@ -314,8 +307,10 @@ class Register(LoginRequiredView):
     def on_form_validated(self, trip, formset):
         user = self.request.user
         participants = [form.as_participant() for form in formset]
-        trip.add_participants(user, participants)
-        self.send_confirmation_email(trip, participants)
+        paypal = 'btn-paypal' in self.request.POST
+        trip.add_participants(user, participants, paypal=paypal)
+        if not paypal:
+            self.send_confirmation_email(trip, participants)
         message = (u"L'iscrizione è andata a buon fine. Credito residuo: %s €" %
                    user.member.balance)
         return self.render(trip, message=message)
