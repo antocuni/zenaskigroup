@@ -279,8 +279,7 @@ class RegisterForm(forms.Form):
         return models.Participant(
             name=name,
             deposit=self.cleaned_data['deposit'],
-            is_member=self.cleaned_data['is_member'],
-            sublist='Online')
+            is_member=self.cleaned_data['is_member'])
 
 
 RegisterFormSet = forms.formset_factory(RegisterForm, extra=0)

@@ -56,6 +56,7 @@ class TestTrip(object):
         assert testuser.member.balance == 20
         assert p1.trip == p2.trip == trip
         assert p1.registered_by == p2.registered_by == testuser
+        assert p1.sublist == p2.sublist == 'Online'
 
         transfers = testuser.moneytransfer_set.all()
         assert len(transfers) == 1
@@ -150,3 +151,12 @@ class TestTrip(object):
         assert p3.with_reservation
         assert p2.deposit == p3.deposit == 25
 
+    @freeze_time('2018-12-24 12:00')
+    def test_paypal(self, db, trip, testuser):
+        p1 = Participant(name='Mickey Mouse')
+        p2 = Participant(name='Donald Duck')
+        trip.add_participants(testuser, [p1, p2], paypal=True)
+        assert list(trip.participant_set.all()) == [p1, p2]
+        assert testuser.member.balance == 0
+        deadline = datetime(2018, 12, 24, 12, 10, 0)
+        assert p1.paypal_deadline == p2.paypal_deadline == deadline

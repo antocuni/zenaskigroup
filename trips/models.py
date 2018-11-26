@@ -1,6 +1,6 @@
 # -*- encoding: utf-8 -*-
 
-from datetime import date
+from datetime import date, datetime, timedelta
 from collections import Counter
 from django.contrib import admin
 from django.contrib.auth.models import User
@@ -88,18 +88,26 @@ class Trip(models.Model):
     sublist_table.short_description = 'Sottoliste'
     sublist_table.allow_tags = True
 
-    def add_participants(self, user, participants):
+    def add_participants(self, user, participants, paypal=False):
+        paypal_deadline = datetime.now() + timedelta(minutes=10)
         total_deposit = 0
         for p in participants:
             # if we user is not trusted, we always use the trip deposit
             if not user.member.trusted or p.deposit is None:
                 p.deposit = self.deposit
+            total_deposit += p.deposit
             p.registered_by = user
             p.with_reservation = self.with_reservation
-            total_deposit += p.deposit
+            if paypal:
+                p.sublist = 'PayPal'
+                p.paypal_deadline = paypal_deadline
+            else:
+                p.sublist = 'Online'
 
         with transaction.atomic():
-            if user.member.balance < total_deposit and not user.member.trusted:
+            if (not paypal and
+                user.member.balance < total_deposit and
+                not user.member.trusted):
                 raise TripError("Credito insufficiente")
 
             if self.seats_left < len(participants) and not self.with_reservation:
@@ -112,15 +120,17 @@ class Trip(models.Model):
                         'posti disponibili: %d' % self.seats_left)
 
             self.participant_set.add(*participants)
-            user.member.balance -= total_deposit
-            names = ', '.join([p.name for p in participants])
-            descr = u'Iscrizione di %s a %s' % (names, self)
-            t = MoneyTransfer(member=user.member,
-                              value=-total_deposit,
-                              executed_by=user,
-                              description=descr)
-            t.save()
-            user.member.save()
+
+            if not paypal:
+                user.member.balance -= total_deposit
+                names = ', '.join([p.name for p in participants])
+                descr = u'Iscrizione di %s a %s' % (names, self)
+                t = MoneyTransfer(member=user.member,
+                                  value=-total_deposit,
+                                  executed_by=user,
+                                  description=descr)
+                t.save()
+                user.member.save()
             self.save()
 
 
