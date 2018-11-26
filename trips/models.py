@@ -156,10 +156,16 @@ class Participant(models.Model):
         t, cls = self.get_status()
         return cls
 
+    @property
+    def waiting_paypal(self):
+        return self.paypal_deadline is not None
+
     def get_status(self):
         # bah, HTML logic should not be here, but I couldn't find any other
         # simple way to do it :(
-        if self.with_reservation:
+        if self.waiting_paypal:
+            return 'In attesa di PayPal', 'text-error'
+        elif self.with_reservation:
             return 'Con riserva', 'text-warning'
         else:
             return 'Confermato', 'text-success'

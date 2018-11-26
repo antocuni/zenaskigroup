@@ -32,9 +32,14 @@ class TestParticipant(object):
         p = Participant('Mickey Mouse')
         assert p.status == 'Confermato'
         assert p.status_class == 'text-success'
+
         p.with_reservation = True
         assert p.status == 'Con riserva'
         assert p.status_class == 'text-warning'
+
+        p.paypal_deadline = datetime(2018, 1, 1, 0, 0, 0)
+        assert p.status == 'In attesa di PayPal'
+        assert p.status_class == 'text-error'
 
 
 class TestTrip(object):
