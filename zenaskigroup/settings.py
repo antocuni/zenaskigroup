@@ -41,9 +41,10 @@ ROOT_URLCONF = 'zenaskigroup.urls'
 WSGI_APPLICATION = 'zenaskigroup.wsgi.application'
 
 
-# Database
-# https://docs.djangoproject.com/en/1.8/ref/settings/#databases
-
+# PayPal settings
+# ================
+PAYPAL_TEST = True
+PAYPAL_BUSINESS_ID = "CGSM9YV3BSKZY"
 
 
 
@@ -170,6 +171,7 @@ INSTALLED_APPS = (
     'djangocms_teaser',
     'djangocms_video',
     'reversion',
+    'paypal.standard.ipn',
     'zenaskigroup',
     'trips',
     'registration'
