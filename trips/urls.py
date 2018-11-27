@@ -1,7 +1,7 @@
 from django.conf.urls import patterns, url
 from trips import views
 from trips.register import RegisterView
-from trips.paypal import PayPalView
+from trips.paypal_view import PayPalView
 
 urlpatterns = patterns('',
     url(r'^balance/topup/$', views.topup, name='topup'),

@@ -1,0 +1,56 @@
+from django.shortcuts import render
+from django.conf import settings
+from trips.register import TripView
+
+class PayPalView(TripView):
+
+    def get(self, request, trip_id):
+        trip = self.get_trip(trip_id)
+        return self.render(trip)
+
+    def render(self, trip):
+        user = self.request.user
+        participants = trip.get_paypal_participants(user)
+        paypal = self.make_paypal_data(trip, participants)
+        context = {
+            'trip': trip,
+            'user': self.request.user,
+            'participants': participants,
+            'paypal': paypal,
+        }
+        return render(self.request, 'trips/paypal.html', context)
+
+    @staticmethod
+    def make_paypal_data(trip, participants):
+        p_ids = []
+        total_amount = 0
+        fees = 0
+        for p in participants:
+            p_ids.append(str(p.id))
+            total_amount += p.deposit
+            fees += p.paypal_fee
+
+        quantity = len(participants)
+        # in theory, all participants have the same deposit, so this is just a
+        # complicate way to say "amount = p.deposit". This however guarantees
+        # that we charge the correct total amount even if by chance we have
+        # uneven deposits (which shouldn't happen anyway)
+        amount = total_amount / quantity
+        item_name = 'Iscrizione gita a %s' % trip
+
+        # pass p_ids to custom so that we know which participants we are
+        # paying for
+        custom = ','.join(p_ids)
+
+        data = {
+            "url": settings.PAYPAL_URL,
+            "business": settings.PAYPAL_BUSINESS_ID,
+            "item_name": item_name,
+            "amount": amount,
+            "quantity": quantity,
+            "shipping": fees,
+            "custom": custom,
+            "total_amount": total_amount,
+            "grand_total": total_amount + fees,
+        }
+        return data

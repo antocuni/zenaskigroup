@@ -180,7 +180,3 @@ class TestTrip(object):
         assert testuser.member.balance == 0
         deadline = datetime(2018, 12, 24, 12, 10, 0)
         assert p1.paypal_deadline == p2.paypal_deadline == deadline
-
-        tot, fees = trip.compute_paypal_total(testuser)
-        assert tot == 50
-        assert fees == 2

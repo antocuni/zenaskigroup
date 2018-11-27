@@ -43,9 +43,8 @@ WSGI_APPLICATION = 'zenaskigroup.wsgi.application'
 
 # PayPal settings
 # ================
-PAYPAL_TEST = True
+PAYPAL_URL = 'https://www.sandbox.paypal.com'
 PAYPAL_BUSINESS_ID = "CGSM9YV3BSKZY"
-
 
 
 # Internationalization
