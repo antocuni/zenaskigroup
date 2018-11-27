@@ -5,6 +5,27 @@
 
 {% addtoblock "js" %}
 <script>
+ $(document).ready(function($) { 
+     function updateCountdown() {
+         var countdown = $("#countdown");
+	     var end = new Date(countdown.attr("data-deadline"));
+	     var now = new Date();
+	     var seconds_left = (end - now) / 1000;
+         var prefix = "";
+         if (seconds_left < 0) {
+             prefix = "-";
+             seconds_left = -seconds_left;
+             countdown.addClass("text-danger");
+         }
+	     var minutes = Math.floor(seconds_left / 60);
+	     var seconds = Math.floor(seconds_left % 60);
+	     if (minutes < "10") { minutes = "0" + minutes; }
+	     if (seconds < "10") { seconds = "0" + seconds; }
+         countdown.html(prefix + minutes + ":" + seconds);
+     }
+     updateCountdown();
+     setInterval(function() { updateCountdown(); }, 1000);
+ });
 </script>
 {% endaddtoblock %}
 
@@ -23,7 +44,8 @@
         <br>
         <br>
         <div style="font-size: 200%">
-          <span class="glyphicon glyphicon-time"></span> 10:00
+          <span class="glyphicon glyphicon-time"></span>
+          <span id="countdown" data-deadline="{{ deadline }}"></span>
         </div>
       </div>
 

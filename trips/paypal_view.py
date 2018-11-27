@@ -11,12 +11,14 @@ class PayPalView(TripView):
     def render(self, trip):
         user = self.request.user
         participants = trip.get_paypal_participants(user)
+        deadline = min([p.paypal_deadline for p in participants])
         paypal = self.make_paypal_data(trip, participants)
         context = {
             'trip': trip,
             'user': self.request.user,
             'participants': participants,
             'paypal': paypal,
+            'deadline': deadline.strftime('%Y-%m-%dT%H:%M:%S'),
         }
         return render(self.request, 'trips/paypal.html', context)
 
