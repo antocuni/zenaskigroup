@@ -1,5 +1,8 @@
+from django.core.urlresolvers import reverse
 from django.shortcuts import render
 from django.conf import settings
+from paypal.standard.models import ST_PP_COMPLETED
+from paypal.standard.ipn.signals import valid_ipn_received
 from trips.register import TripView
 
 class PayPalView(TripView):
@@ -13,6 +16,8 @@ class PayPalView(TripView):
         participants = trip.get_paypal_participants(user)
         deadline = min([p.paypal_deadline for p in participants])
         paypal = self.make_paypal_data(trip, participants)
+        paypal['notify_url'] = self.request.build_absolute_uri(
+            reverse('paypal-ipn'))
         context = {
             'trip': trip,
             'user': self.request.user,
@@ -56,3 +61,16 @@ class PayPalView(TripView):
             "grand_total": total_amount + fees,
         }
         return data
+
+
+def ipn_received(sender, **kwargs):
+    ipn_obj = sender
+    if ipn_obj.receiver_id != settings.PAYPAL_BUSINESS_ID:
+        print 'wrong!'
+        return
+    print 'paypal received', ipn_obj
+    # TODO
+
+def setup_signals():
+    # this is called from apps.TripsConfig.ready()
+    valid_ipn_received.connect(ipn_received)

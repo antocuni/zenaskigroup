@@ -172,7 +172,7 @@ INSTALLED_APPS = (
     'reversion',
     'paypal.standard.ipn',
     'zenaskigroup',
-    'trips',
+    'trips.apps.TripsConfig',
     'registration'
 )
 

@@ -27,6 +27,7 @@ urlpatterns = patterns('',
         {'sitemaps': {'cmspages': CMSSitemap}}),
     url(r'^select2/', include('django_select2.urls')),
     url(r'^accounts/', include('registration.backends.default.urls')),
+    url(r'^paypal/', include('paypal.standard.ipn.urls')),
     url(r'^', include('cms.urls')),
 )
 
