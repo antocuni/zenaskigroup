@@ -220,8 +220,10 @@ class TestRegister(BaseTestView):
         data = [{'name': 'Pippo', 'surname': 'Pluto'},
                 {'name': 'Mickey', 'surname': 'Mouse'}]
         resp = self.submit('/trip/1/register/', data, paypal=True)
-        assert resp.status_code == 200
+        assert resp.status_code == 302 # redirect
+        assert resp.url == 'http://testserver/pay/1/'
 
+        # check that the participants are added to the trip
         participants = self.get_participants(self.trip)
         assert participants == [('Pluto Pippo', 25, False),
                                 ('Mouse Mickey', 25, False)]
@@ -229,14 +231,8 @@ class TestRegister(BaseTestView):
         assert testuser.member.balance == 0
         assert mail.outbox == []
 
-    @freeze_time('2018-12-24')
-    def test_pending_paypal(self, testuser):
-        self.login()
-        data = [{'name': 'Pippo', 'surname': 'Pluto'},
-                {'name': 'Mickey', 'surname': 'Mouse'}]
-        resp = self.submit('/trip/1/register/', data, paypal=True)
-        assert resp.status_code == 200
-
+        # check that if we try to get the register/ page, we are redirected to
+        # the pay/ page because it's pending
         resp = self.get('/trip/1/register/')
         assert resp.status_code == 302 # redirect
         assert resp.url == 'http://testserver/pay/1/'

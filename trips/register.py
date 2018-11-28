@@ -71,8 +71,7 @@ class RegisterView(TripView):
         # appropriate page
         ppts = models.PayPalTransaction.get_pending(self.request.user, trip)
         if ppts:
-            url = reverse('trips-paypal-pay', args=[ppts[0].id])
-            return redirect(url)
+            return self.redirect_to_ppt(ppts[0])
         return self.render(trip)
 
     def post(self, request, trip_id):
@@ -93,12 +92,17 @@ class RegisterView(TripView):
         user = self.request.user
         participants = [form.as_participant() for form in formset]
         paypal = 'btn-paypal' in self.request.POST
-        trip.add_participants(user, participants, paypal=paypal)
-        if not paypal:
+        
+        if paypal:
+            ppt = trip.add_participants(user, participants, paypal=True)
+            return self.redirect_to_ppt(ppt)
+        else:
+            trip.add_participants(user, participants)
             mails.registration_confirmed(user, trip, participants)
-        message = (u"L'iscrizione è andata a buon fine. Credito residuo: %s €" %
-                   user.member.balance)
-        return self.render(trip, message=message)
+            message = (u"L'iscrizione è andata a buon fine. "
+                       u"Credito residuo: %s €" %
+                       user.member.balance)
+            return self.render(trip, message=message)
 
     # ---------------------
 
@@ -136,3 +140,7 @@ class RegisterView(TripView):
         context.update(**kwargs)
         compute_availability(self.request.user, context)
         return render(self.request, 'trips/register.html', context)
+
+    def redirect_to_ppt(self, ppt):
+        url = reverse('trips-paypal-pay', args=[ppt.id])
+        return redirect(url)
