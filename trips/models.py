@@ -309,4 +309,5 @@ class PayPalTransaction(models.Model):
                 self.status = self.Status.waiting_ipn
             else:
                 # if the IPN already arrived, do nothing
-                return
+                pass
+        self.save()

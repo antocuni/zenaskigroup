@@ -226,6 +226,7 @@ class TestPayPal(object):
         assert trip.seats_left == 48
         assert ppt.is_pending
         ppt.cancel()
+        ppt.refresh_from_db()
         assert not ppt.is_pending
         assert ppt.status == ppt.Status.canceled
         assert trip.seats_left == 50
@@ -246,6 +247,7 @@ class TestPayPal(object):
         p2 = Participant(name='Donald Duck')
         ppt = trip.add_participants(testuser, [p1, p2], paypal=True)
         ppt.mark_waiting()
+        ppt.refresh_from_db()
         assert ppt.status == ppt.Status.waiting_ipn
 
         ppt.status = ppt.Status.canceled
