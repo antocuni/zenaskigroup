@@ -45,7 +45,8 @@ WSGI_APPLICATION = 'zenaskigroup.wsgi.application'
 # ================
 PAYPAL_URL = 'https://www.sandbox.paypal.com'
 PAYPAL_BUSINESS_ID = "CGSM9YV3BSKZY"
-
+PAYPAL_FEE = 1 # 1 EUR per participant
+PAYPAL_DEADLINE = 20 # minutes
 
 # Internationalization
 # https://docs.djangoproject.com/en/1.8/topics/i18n/

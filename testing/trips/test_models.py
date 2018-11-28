@@ -1,10 +1,11 @@
 import pytest
 from freezegun import freeze_time
 from datetime import date, datetime
+from decimal import Decimal
 from django.contrib.auth.models import User
 from django.core.files.uploadedfile import SimpleUploadedFile
 from django.core import mail
-from trips.models import Trip, Participant, TripError
+from trips.models import Trip, Participant, TripError, PayPalTransaction
 
 @pytest.fixture
 def trip(db):
@@ -180,3 +181,26 @@ class TestTrip(object):
         assert testuser.member.balance == 0
         deadline = datetime(2018, 12, 24, 12, 10, 0)
         assert p1.paypal_deadline == p2.paypal_deadline == deadline
+
+
+class TestPayPalTransaction(object):
+
+    @freeze_time('2018-12-24 12:00')
+    def test_make(self, db, trip, testuser):
+        def P(name, deposit):
+            return Participant(name=name, deposit=Decimal(deposit), trip=trip)
+        p1 = P('Mickey Mouse', 25)
+        p2 = P('Donald Duck', 30)
+        ppt = PayPalTransaction.make(testuser, trip, [p1, p2])
+        assert ppt.user == testuser
+        assert ppt.trip == trip
+        assert ppt.amount == 27.5
+        assert ppt.quantity == 2
+        assert ppt.deadline == datetime(2018, 12, 24, 12, 20, 0)
+        assert ppt.ipn is None
+        assert not ppt.is_paid
+        assert list(ppt.participant_set.all()) == [p1, p2]
+        assert ppt.fees == 2
+        assert ppt.total_amount == 55
+        assert ppt.grand_total == 57
+        assert ppt.item_name == 'Iscrizione gita a Cervinia, 25/12/2018'

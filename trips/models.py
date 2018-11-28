@@ -2,10 +2,12 @@
 
 from datetime import date, datetime, timedelta
 from collections import Counter
+from django.conf import settings
 from django.contrib import admin
 from django.contrib.auth.models import User
 from django.db import models, transaction
 from annoying.fields import AutoOneToOneField
+from paypal.standard.ipn.models import PayPalIPN
 
 class Member(models.Model):
     user = AutoOneToOneField(User)
@@ -156,8 +158,7 @@ class Participant(models.Model):
     sublist = models.CharField(max_length=20, verbose_name='Lista')
     with_reservation = models.BooleanField(default=False, blank=False,
                                            verbose_name='Con riserva?')
-    paypal_deadline = models.DateTimeField(verbose_name='Scadenza Paypal',
-                                           null=True, blank=True)
+    paypal_transaction = models.ForeignKey('PayPalTransaction', null=True)
 
     def __unicode__(self):
         return self.name
@@ -174,11 +175,12 @@ class Participant(models.Model):
 
     @property
     def waiting_paypal(self):
-        return self.paypal_deadline is not None
+        return 'XXX'
+        #return self.paypal_deadline is not None
 
     @property
     def paypal_fee(self):
-        return 1
+        return 'XXX'
 
     def get_status(self):
         # bah, HTML logic should not be here, but I couldn't find any other
@@ -218,3 +220,48 @@ class JacketSubscribe(models.Model):
 
     def __unicode__(self):
         return u'%s <%s>' % (self.name, self.email)
+
+
+class PayPalTransaction(models.Model):
+    class Meta:
+        verbose_name = 'Transazione PayPal'
+        verbose_name_plural = 'Transazioni PayPal'
+
+    user = models.ForeignKey(User)
+    trip = models.ForeignKey(Trip)
+    # the price of a single item in the paypal transaction
+    amount = models.DecimalField(max_digits=10, decimal_places=2)
+    quantity = models.IntegerField() # number of items
+    deadline = models.DateTimeField()
+    is_paid = models.BooleanField(default=False, blank=False)
+    ipn = models.ForeignKey(PayPalIPN, null=True)
+
+    @classmethod
+    def make(cls, user, trip, participants):
+        self = cls()
+        self.user = user
+        self.trip = trip
+        self.quantity = len(participants)
+        total_amount = sum([p.deposit for p in participants])
+        self.amount = total_amount / self.quantity
+        self.deadline = (datetime.now() +
+                         timedelta(minutes=settings.PAYPAL_DEADLINE))
+        self.save()
+        self.participant_set.add(*participants)
+        return self
+
+    @property
+    def fees(self):
+        return self.quantity * settings.PAYPAL_FEE
+
+    @property
+    def total_amount(self):
+        return self.amount * self.quantity
+
+    @property
+    def grand_total(self):
+        return self.total_amount + self.fees
+
+    @property
+    def item_name(self):
+        return 'Iscrizione gita a %s' % self.trip
