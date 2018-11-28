@@ -174,6 +174,7 @@ class TestPayPal(object):
         assert ppt.quantity == 2
         assert ppt.deadline == datetime(2018, 12, 24, 12, 20, 0)
         assert ppt.ipn is None
+        assert ppt.is_pending
         assert not ppt.is_paid
         assert list(ppt.participant_set.all()) == [p1, p2]
         assert ppt.fees == 2
@@ -213,6 +214,6 @@ class TestPayPal(object):
         ppt = qs[0]
         assert ppt.total_amount == 50
         assert ppt.trip == trip
-        ppt.is_paid = True
+        ppt.is_pending = False
         ppt.save()
         assert not PayPalTransaction.get_pending(testuser, trip)

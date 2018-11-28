@@ -227,6 +227,10 @@ class PayPalTransaction(models.Model):
     amount = models.DecimalField(max_digits=10, decimal_places=2)
     quantity = models.IntegerField() # number of items
     deadline = models.DateTimeField()
+    # pending means that the user didn't act on it: no payment, no
+    # cancelation, no deadline, etc. Paid means that the user paid AND the ipn
+    # has been checked
+    is_pending = models.BooleanField(default=True, blank=False)
     is_paid = models.BooleanField(default=False, blank=False)
     ipn = models.ForeignKey(PayPalIPN, null=True)
 
@@ -246,7 +250,7 @@ class PayPalTransaction(models.Model):
 
     @classmethod
     def get_pending(cls, user, trip):
-        return cls.objects.filter(user=user, trip=trip, is_paid=False)
+        return cls.objects.filter(user=user, trip=trip, is_pending=True)
 
     @property
     def fees(self):
