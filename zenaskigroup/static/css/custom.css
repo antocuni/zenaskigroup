@@ -46,3 +46,11 @@ body {
 .paypal-form input {
     border-width: 0;
 }
+
+.my-toolbar {
+    text-align: center;
+}
+
+.my-toolbar .btn {
+    margin-bottom: 3px;
+}
