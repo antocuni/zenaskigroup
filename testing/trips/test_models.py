@@ -230,4 +230,4 @@ class TestPayPal(object):
         ppt.status = ppt.Status.paid
         ppt.save()
         assert not PayPalTransaction.get_pending(testuser, trip)
-        # XXX
+        
