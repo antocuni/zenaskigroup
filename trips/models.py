@@ -259,6 +259,9 @@ class PayPalTransaction(models.Model):
         self.participant_set.add(*participants)
         return self
 
+    def __unicode__(self):
+        return '%s %s [%s]' % (self.user, self.grand_total, self.trip)
+
     @classmethod
     def get_pending(cls, user, trip):
         return cls.objects.filter(user=user, trip=trip,
