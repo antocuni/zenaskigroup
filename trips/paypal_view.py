@@ -1,5 +1,5 @@
 from django.core.urlresolvers import reverse
-from django.shortcuts import render
+from django.shortcuts import render, redirect
 from django.conf import settings
 from django.http import Http404
 from trips.models import PayPalTransaction
@@ -10,11 +10,23 @@ from paypal.standard.ipn.signals import valid_ipn_received
 class PayPalView(LoginRequiredView):
 
     def get(self, request, transaction_id):
+        ppt = self.get_ppt(transaction_id)
+        return self.render(ppt)
+
+    def post(self, request, transaction_id):
+        ppt = self.get_ppt(transaction_id)
+        if 'btn-cancel' in request.POST:
+            ppt.cancel()
+            url = reverse('trips-register', args=[ppt.trip.id])
+            return redirect(url)
+        # this should never happen!
+        return self.render(ppt)
+
+    def get_ppt(self, transaction_id):
         try:
-            ppt = PayPalTransaction.objects.get(pk=transaction_id)
+            return PayPalTransaction.objects.get(pk=transaction_id)
         except PayPalTransaction.DoesNotExist:
             raise Http404
-        return self.render(ppt)
 
     def render(self, ppt):
         notify_url = self.request.build_absolute_uri(reverse('paypal-ipn'))

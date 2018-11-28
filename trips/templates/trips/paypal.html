@@ -115,10 +115,13 @@
       </div>
 
       <div class="col-sm-6 col-lg-4 text-center">
-        <button type="submit" name="btn-cancel" class="btn btn-danger" >
-          <span class="glyphicon glyphicon-remove-circle"></span>
-          Annulla
-        </button>
+        <form action="" method="post">
+          {% csrf_token %}
+          <button type="submit" name="btn-cancel" class="btn btn-danger" >
+            <span class="glyphicon glyphicon-remove-circle"></span>
+            Annulla
+          </button>
+        </form>
       </div>
     </div>
   </div>
