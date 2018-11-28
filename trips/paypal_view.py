@@ -36,6 +36,8 @@ class PayPalView(LoginRequiredView):
         notify_url = request.build_absolute_uri(reverse('paypal-ipn'))
         return_url = request.build_absolute_uri(
             reverse('trips-paypal-return', args=[ppt.id]))
+        cancel_url = request.build_absolute_uri(
+            reverse('trips-paypal-pay', args=[ppt.id]))
 
         status = ppt.Status(ppt.status).name
         context = {
@@ -43,6 +45,7 @@ class PayPalView(LoginRequiredView):
             'status': status,
             'notify_url': notify_url,
             'return_url': return_url,
+            'cancel_url': cancel_url,
             'paypal_url': settings.PAYPAL_URL,
             'paypal_business_id': settings.PAYPAL_BUSINESS_ID,
         }
