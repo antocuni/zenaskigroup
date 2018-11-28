@@ -180,15 +180,22 @@ class Participant(models.Model):
                 self.paypal_transaction.is_pending)
 
     def get_status(self):
-        # bah, HTML logic should not be here, but I couldn't find any other
-        # simple way to do it :(
-        if self.paypal_pending:
-            return 'In attesa di PayPal', 'text-danger'
-        elif self.with_reservation:
+        ppt = self.paypal_transaction
+        if ppt:
+            st = ppt.status
+            if st == ppt.Status.pending:
+                return 'Da pagare', 'text-danger'
+            elif st == ppt.Status.canceled:
+                return 'Annullato', 'text-danger'
+            elif st == ppt.Status.waiting_ipn:
+                return 'In attesa di PayPal', 'text-warning'
+            elif st == ppt.Status.failed:
+                return 'Transazione fallita', 'text-danger'
+            # elif st == paid: fallthrough
+        if self.with_reservation:
             return 'Con riserva', 'text-warning'
         else:
             return 'Confermato', 'text-success'
-        
 
 
 class MoneyTransfer(models.Model):

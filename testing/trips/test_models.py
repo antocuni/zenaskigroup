@@ -202,8 +202,24 @@ class TestPayPal(object):
         p1 = self.P('Mickey Mouse', 25, trip)
         assert p1.status == 'Confermato'
         ppt = PayPalTransaction.make(testuser, trip, [p1])
-        assert p1.status == 'In attesa di PayPal'
+        assert p1.status == 'Da pagare'
         assert p1.status_class == 'text-danger'
+        
+        ppt.status = ppt.Status.canceled
+        assert p1.status_class == 'text-danger'
+        assert p1.status == 'Annullato'
+
+        ppt.status = ppt.Status.waiting_ipn
+        assert p1.status == 'In attesa di PayPal'
+        assert p1.status_class == 'text-warning'
+
+        ppt.status = ppt.Status.failed
+        assert p1.status == 'Transazione fallita'
+        assert p1.status_class == 'text-danger'
+
+        ppt.status = ppt.Status.paid
+        assert p1.status == 'Confermato'
+        assert p1.status_class == 'text-success'
 
     def test_paypal_pending(self, db, trip, testuser):
         p1 = Participant(name='Mickey Mouse')

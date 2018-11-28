@@ -69,7 +69,7 @@
           <td>{{ p.name }}</td>
           <td class="text-right">{{ p.deposit }} €</td>
           <td class="text-right">{{ ppt.FEE }} €</td>
-          <td class="text-danger">Da Pagare</td>
+          <td class="{{ p.status_class }}">{{ p.status }}</td>
         </tr>
         {% endfor %}
 
