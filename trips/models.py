@@ -2,6 +2,7 @@
 
 from datetime import date, datetime, timedelta
 from collections import Counter
+from enum import IntEnum
 from django.conf import settings
 from django.contrib import admin
 from django.contrib.auth.models import User
@@ -124,8 +125,10 @@ class Trip(models.Model):
 
             self.participant_set.add(*participants)
 
+            result = None
             if paypal:
                 ppt = PayPalTransaction.make(user, self, participants)
+                result = ppt
             else:
                 user.member.balance -= total_deposit
                 names = ', '.join([p.name for p in participants])
@@ -136,7 +139,9 @@ class Trip(models.Model):
                                   description=descr)
                 t.save()
                 user.member.save()
+                result = t
             self.save()
+            return result
 
 
 class Participant(models.Model):
@@ -170,14 +175,14 @@ class Participant(models.Model):
         return cls
 
     @property
-    def waiting_paypal(self):
+    def paypal_pending(self):
         return (self.paypal_transaction is not None and
-                not self.paypal_transaction.is_paid)
+                self.paypal_transaction.is_pending)
 
     def get_status(self):
         # bah, HTML logic should not be here, but I couldn't find any other
         # simple way to do it :(
-        if self.waiting_paypal:
+        if self.paypal_pending:
             return 'In attesa di PayPal', 'text-danger'
         elif self.with_reservation:
             return 'Con riserva', 'text-warning'
@@ -215,23 +220,29 @@ class JacketSubscribe(models.Model):
 
 
 class PayPalTransaction(models.Model):
+    FEE = settings.PAYPAL_FEE
+
     class Meta:
         verbose_name = 'Transazione PayPal'
         verbose_name_plural = 'Transazioni PayPal'
 
-    FEE = settings.PAYPAL_FEE
+    class Status(IntEnum):
+        pending = 0      # just created
+        canceled = 1     # canceled by user or deadline
+        waiting_ipn = 2  # landed after paypal but IPN not received yet
+        paid = 3         # IPN received and correct
+        failed = 4       # IPN received but incorrect
 
     user = models.ForeignKey(User)
-    trip = models.ForeignKey(Trip)
+    trip = models.ForeignKey(Trip, null=True)
     # the price of a single item in the paypal transaction
     amount = models.DecimalField(max_digits=10, decimal_places=2)
     quantity = models.IntegerField() # number of items
     deadline = models.DateTimeField()
-    # pending means that the user didn't act on it: no payment, no
-    # cancelation, no deadline, etc. Paid means that the user paid AND the ipn
-    # has been checked
-    is_pending = models.BooleanField(default=True, blank=False)
-    is_paid = models.BooleanField(default=False, blank=False)
+    status = models.IntegerField(
+        default=int(Status.pending),
+        choices=[(int(tag), tag.name) for tag in Status]
+    )
     ipn = models.ForeignKey(PayPalIPN, null=True)
 
     @classmethod
@@ -250,7 +261,8 @@ class PayPalTransaction(models.Model):
 
     @classmethod
     def get_pending(cls, user, trip):
-        return cls.objects.filter(user=user, trip=trip, is_pending=True)
+        return cls.objects.filter(user=user, trip=trip,
+                                  status=cls.Status.pending)
 
     @property
     def fees(self):
@@ -267,3 +279,7 @@ class PayPalTransaction(models.Model):
     @property
     def item_name(self):
         return 'Iscrizione gita a %s' % self.trip
+
+    @property
+    def is_pending(self):
+        return self.status == self.Status.pending

@@ -175,7 +175,6 @@ class TestPayPal(object):
         assert ppt.deadline == datetime(2018, 12, 24, 12, 20, 0)
         assert ppt.ipn is None
         assert ppt.is_pending
-        assert not ppt.is_paid
         assert list(ppt.participant_set.all()) == [p1, p2]
         assert ppt.fees == 2
         assert ppt.total_amount == 55
@@ -189,8 +188,8 @@ class TestPayPal(object):
         trip.add_participants(testuser, [p1, p2], paypal=True)
         assert list(trip.participant_set.all()) == [p1, p2]
         assert testuser.member.balance == 0
-        assert p1.waiting_paypal
-        assert p2.waiting_paypal
+        assert p1.paypal_pending
+        assert p2.paypal_pending
         assert p1.sublist == p2.sublist == 'PayPal'
         transactions = trip.paypaltransaction_set.all()
         assert len(transactions) == 1
@@ -214,6 +213,7 @@ class TestPayPal(object):
         ppt = qs[0]
         assert ppt.total_amount == 50
         assert ppt.trip == trip
-        ppt.is_pending = False
+        ppt.status = ppt.Status.paid
         ppt.save()
         assert not PayPalTransaction.get_pending(testuser, trip)
+        # XXX
