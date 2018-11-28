@@ -204,6 +204,20 @@ class TestPayPal(object):
         assert p1.status == 'In attesa di PayPal'
         assert p1.status_class == 'text-danger'
 
+    def test_cancel(self, db, trip, testuser):
+        assert trip.seats_left == 50
+        p1 = Participant(name='Mickey Mouse')
+        p2 = Participant(name='Donald Duck')
+        ppt = trip.add_participants(testuser, [p1, p2], paypal=True)
+        assert trip.seats_left == 48
+        assert ppt.is_pending
+        ppt.cancel()
+        assert not ppt.is_pending
+        assert ppt.status == ppt.Status.canceled
+        assert trip.seats_left == 50
+        assert trip.participant_set.count() == 0
+        assert list(ppt.participant_set.all()) == [p1, p2]
+
     def test_paypal_pending(self, db, trip, testuser):
         p1 = Participant(name='Mickey Mouse')
         p2 = Participant(name='Donald Duck')

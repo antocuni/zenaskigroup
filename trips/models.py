@@ -149,7 +149,7 @@ class Participant(models.Model):
         verbose_name = 'Partecipante'
         verbose_name_plural = 'Partecipanti'
 
-    trip = models.ForeignKey(Trip)
+    trip = models.ForeignKey(Trip, null=True)
     name = models.CharField(max_length=200, verbose_name='Nome')
     deposit = models.DecimalField(max_digits=10, decimal_places=2, verbose_name='Caparra')
     is_member = models.BooleanField(default=True, blank=False,
@@ -234,7 +234,7 @@ class PayPalTransaction(models.Model):
         failed = 4       # IPN received but incorrect
 
     user = models.ForeignKey(User)
-    trip = models.ForeignKey(Trip, null=True)
+    trip = models.ForeignKey(Trip)
     # the price of a single item in the paypal transaction
     amount = models.DecimalField(max_digits=10, decimal_places=2)
     quantity = models.IntegerField() # number of items
@@ -283,3 +283,11 @@ class PayPalTransaction(models.Model):
     @property
     def is_pending(self):
         return self.status == self.Status.pending
+
+    def cancel(self):
+        with transaction.atomic():
+            self.status = self.Status.canceled
+            for p in self.participant_set.all():
+                p.trip = None
+                p.save()
+        self.save()
