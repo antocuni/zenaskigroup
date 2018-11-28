@@ -218,6 +218,8 @@ class JacketSubscribe(models.Model):
     def __unicode__(self):
         return u'%s <%s>' % (self.name, self.email)
 
+class PayPalTransactionError(Exception):
+    pass
 
 class PayPalTransaction(models.Model):
     FEE = settings.PAYPAL_FEE
@@ -289,8 +291,22 @@ class PayPalTransaction(models.Model):
 
     def cancel(self):
         with transaction.atomic():
+            if self.status != self.Status.pending:
+                raise PayPalTransactionError(
+                    u'Impossibile annullare la transazione')
             self.status = self.Status.canceled
             for p in self.participant_set.all():
                 p.trip = None
                 p.save()
         self.save()
+
+    def mark_waiting(self):
+        with transaction.atomic():
+            st = self.status
+            if st == self.Status.canceled:
+                raise PayPalTransactionError(u'Transazione già annullata')
+            elif st == self.Status.pending:
+                self.status = self.Status.waiting_ipn
+            else:
+                # if the IPN already arrived, do nothing
+                return

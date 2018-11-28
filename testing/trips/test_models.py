@@ -5,7 +5,8 @@ from decimal import Decimal
 from django.contrib.auth.models import User
 from django.core.files.uploadedfile import SimpleUploadedFile
 from django.core import mail
-from trips.models import Trip, Participant, TripError, PayPalTransaction
+from trips.models import (Trip, Participant, TripError, PayPalTransaction,
+                          PayPalTransactionError)
 
 @pytest.fixture
 def trip(db):
@@ -204,6 +205,19 @@ class TestPayPal(object):
         assert p1.status == 'In attesa di PayPal'
         assert p1.status_class == 'text-danger'
 
+    def test_paypal_pending(self, db, trip, testuser):
+        p1 = Participant(name='Mickey Mouse')
+        p2 = Participant(name='Donald Duck')
+        trip.add_participants(testuser, [p1, p2], paypal=True)
+        qs = PayPalTransaction.get_pending(testuser, trip)
+        assert len(qs) == 1
+        ppt = qs[0]
+        assert ppt.total_amount == 50
+        assert ppt.trip == trip
+        ppt.status = ppt.Status.paid
+        ppt.save()
+        assert not PayPalTransaction.get_pending(testuser, trip)
+
     def test_cancel(self, db, trip, testuser):
         assert trip.seats_left == 50
         p1 = Participant(name='Mickey Mouse')
@@ -218,16 +232,27 @@ class TestPayPal(object):
         assert trip.participant_set.count() == 0
         assert list(ppt.participant_set.all()) == [p1, p2]
 
-    def test_paypal_pending(self, db, trip, testuser):
+    def test_cannot_cancel(self, db, trip, testuser):
         p1 = Participant(name='Mickey Mouse')
         p2 = Participant(name='Donald Duck')
-        trip.add_participants(testuser, [p1, p2], paypal=True)
-        qs = PayPalTransaction.get_pending(testuser, trip)
-        assert len(qs) == 1
-        ppt = qs[0]
-        assert ppt.total_amount == 50
-        assert ppt.trip == trip
+        ppt = trip.add_participants(testuser, [p1, p2], paypal=True)
+        ppt.mark_waiting()
+        with pytest.raises(PayPalTransactionError):
+            ppt.cancel()
+        assert ppt.status == ppt.Status.waiting_ipn
+
+    def test_mark_waiting(self, db, trip, testuser):
+        p1 = Participant(name='Mickey Mouse')
+        p2 = Participant(name='Donald Duck')
+        ppt = trip.add_participants(testuser, [p1, p2], paypal=True)
+        ppt.mark_waiting()
+        assert ppt.status == ppt.Status.waiting_ipn
+
+        ppt.status = ppt.Status.canceled
+        with pytest.raises(PayPalTransactionError):
+            ppt.mark_waiting()
+        assert ppt.status == ppt.Status.canceled
+
         ppt.status = ppt.Status.paid
-        ppt.save()
-        assert not PayPalTransaction.get_pending(testuser, trip)
-        
+        ppt.mark_waiting()
+        assert ppt.status == ppt.Status.paid
