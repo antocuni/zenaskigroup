@@ -32,7 +32,7 @@
 <div class="container">
   <div class="row">
     <div class="col-sm-6">
-      <img class="img-responsive img-thumbnail" src="{{trip.poster.url}}">
+      <img class="img-responsive img-thumbnail" src="{{ppt.trip.poster.url}}">
       <br>
       <br>
     </div>
@@ -45,23 +45,23 @@
         <br>
         <div style="font-size: 200%">
           <span class="glyphicon glyphicon-time"></span>
-          <span id="countdown" data-deadline="{{ deadline }}"></span>
+          <span id="countdown" data-deadline="{{ ppt.deadline|date:'c' }}"></span>
         </div>
       </div>
 
       <table class="table table-striped table-bordered table-hover table-condensed vertical-middle">
         <tr>
           <th>Cognome e nome</th>
-          <th>Caparra</th>
-          <th>Commissioni</th>
+          <th class="text-right">Caparra</th>
+          <th class="text-right">Commissioni</th>
           <th>Stato</th>
         </tr>
 
-        {% for p in participants %}
+        {% for p in ppt.participant_set.all %}
         <tr>
           <td>{{ p.name }}</td>
-          <td class="text-center">{{ p.deposit }} €</td>
-          <td class="text-center">{{ p.paypal_fee }} €</td>
+          <td class="text-right">{{ p.deposit }} €</td>
+          <td class="text-right">{{ ppt.FEE }} €</td>
           <td class="text-danger">Da Pagare</td>
         </tr>
         {% endfor %}
@@ -72,33 +72,33 @@
         </tr>
         <tr>
           <th>Caparre</th>
-          <td class="text-right">{{ paypal.total_amount }} €</td>
+          <td class="text-right">{{ ppt.total_amount }} €</td>
         </tr>
 
         <tr>
           <th>Commissioni PayPal</th>
-          <td class="text-right">{{ paypal.shipping }} €</td>
+          <td class="text-right">{{ ppt.fees }} €</td>
         </tr>
 
         <tr>
           <th>Totale</th>
-          <td class="text-right">{{ paypal.grand_total }} €</td>
+          <td class="text-right">{{ ppt.grand_total }} €</td>
         </tr>
       </table>
 
       <div class="col-sm-6 text-center">
         <!-- PayPal form -->
-        <form action="{{ paypal.url }}/cgi-bin/webscr"
+        <form action="{{ paypal_url }}/cgi-bin/webscr"
               method="post" target="_top" class="paypal-form">
           <input type="hidden" name="cmd" value="_xclick">
           <!-- Codice conto: in settings/dati aziendali -->
-          <input type="hidden" name="business" value="{{ paypal.business }}">
-          <input type="hidden" name="item_name" value="{{ paypal.item_name }}">
-          <input type="hidden" name="amount" value="{{ paypal.amount }}">
-          <input type="hidden" name="quantity" value="{{ paypal.quantity }}">
-          <input type="hidden" name="shipping" value="{{ paypal.shipping }}">
-          <input type="hidden" name="custom" value="{{ paypal.custom }}">
-          <input type="hidden" name="notify_url" value="{{ paypal.notify_url }}">
+          <input type="hidden" name="business" value="{{ paypal_business_id }}">
+          <input type="hidden" name="item_name" value="{{ ppt.item_name }}">
+          <input type="hidden" name="amount" value="{{ ppt.amount }}">
+          <input type="hidden" name="quantity" value="{{ ppt.quantity }}">
+          <input type="hidden" name="shipping" value="{{ ppt.fees }}">
+          <input type="hidden" name="custom" value="{{ ppt.id }}">
+          <input type="hidden" name="notify_url" value="{{ notify_url }}">
 
           <input type="hidden" name="lc" value="IT">
           <input type="hidden" name="currency_code" value="EUR">
@@ -109,8 +109,8 @@
           <input type="hidden" name="return" value="http://zenaskigroup.it">
           <input type="hidden" name="cancel_return" value="http://google.it">
           <input type="hidden" name="bn" value="PP-BuyNowBF:btn_buynowCC_LG.gif:NonHosted">
-          <input type="image" src="{{ paypal.url }}/it_IT/IT/i/btn/btn_buynowCC_LG.gif" border="0" name="submit" alt="PayPal è il metodo rapido e sicuro per pagare e farsi pagare online.">
-          <img alt="" border="0" src="{{ paypal.url }}/it_IT/i/scr/pixel.gif" width="1" height="1">
+          <input type="image" src="{{ paypal_url }}/it_IT/IT/i/btn/btn_buynowCC_LG.gif" border="0" name="submit" alt="PayPal è il metodo rapido e sicuro per pagare e farsi pagare online.">
+          <img alt="" border="0" src="{{ paypal_url }}/it_IT/i/scr/pixel.gif" width="1" height="1">
         </form>
       </div>
 

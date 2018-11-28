@@ -5,6 +5,7 @@ from django import forms
 from django.conf import settings
 from django.core.mail import EmailMessage
 from django.views.generic import View
+from django.http import Http404
 from django.shortcuts import render, redirect
 from django.utils.decorators import method_decorator
 from django.contrib.auth.decorators import login_required

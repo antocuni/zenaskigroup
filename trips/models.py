@@ -174,10 +174,6 @@ class Participant(models.Model):
         return (self.paypal_transaction is not None and
                 not self.paypal_transaction.is_paid)
 
-    @property
-    def paypal_fee(self):
-        return 'XXX'
-
     def get_status(self):
         # bah, HTML logic should not be here, but I couldn't find any other
         # simple way to do it :(
@@ -223,6 +219,8 @@ class PayPalTransaction(models.Model):
         verbose_name = 'Transazione PayPal'
         verbose_name_plural = 'Transazioni PayPal'
 
+    FEE = settings.PAYPAL_FEE
+
     user = models.ForeignKey(User)
     trip = models.ForeignKey(Trip)
     # the price of a single item in the paypal transaction
@@ -248,7 +246,7 @@ class PayPalTransaction(models.Model):
 
     @property
     def fees(self):
-        return self.quantity * settings.PAYPAL_FEE
+        return self.quantity * self.FEE
 
     @property
     def total_amount(self):
