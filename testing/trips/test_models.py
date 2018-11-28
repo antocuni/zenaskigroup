@@ -203,3 +203,16 @@ class TestPayPal(object):
         ppt = PayPalTransaction.make(testuser, trip, [p1])
         assert p1.status == 'In attesa di PayPal'
         assert p1.status_class == 'text-danger'
+
+    def test_paypal_pending(self, db, trip, testuser):
+        p1 = Participant(name='Mickey Mouse')
+        p2 = Participant(name='Donald Duck')
+        trip.add_participants(testuser, [p1, p2], paypal=True)
+        qs = PayPalTransaction.get_pending(testuser, trip)
+        assert len(qs) == 1
+        ppt = qs[0]
+        assert ppt.total_amount == 50
+        assert ppt.trip == trip
+        ppt.is_paid = True
+        ppt.save()
+        assert not PayPalTransaction.get_pending(testuser, trip)

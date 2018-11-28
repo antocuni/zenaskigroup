@@ -228,3 +228,15 @@ class TestRegister(BaseTestView):
         testuser.member.refresh_from_db()
         assert testuser.member.balance == 0
         assert mail.outbox == []
+
+    @freeze_time('2018-12-24')
+    def test_pending_paypal(self, testuser):
+        self.login()
+        data = [{'name': 'Pippo', 'surname': 'Pluto'},
+                {'name': 'Mickey', 'surname': 'Mouse'}]
+        resp = self.submit('/trip/1/register/', data, paypal=True)
+        assert resp.status_code == 200
+
+        resp = self.get('/trip/1/register/')
+        assert resp.status_code == 302 # redirect
+        assert resp.url == 'http://testserver/pay/1/'

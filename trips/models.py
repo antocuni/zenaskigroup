@@ -244,6 +244,10 @@ class PayPalTransaction(models.Model):
         self.participant_set.add(*participants)
         return self
 
+    @classmethod
+    def get_pending(cls, user, trip):
+        return cls.objects.filter(user=user, trip=trip, is_paid=False)
+
     @property
     def fees(self):
         return self.quantity * self.FEE

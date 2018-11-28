@@ -4,6 +4,7 @@ from datetime import datetime
 from django import forms
 from django.conf import settings
 from django.core.mail import EmailMessage
+from django.core.urlresolvers import reverse
 from django.views.generic import View
 from django.http import Http404
 from django.shortcuts import render, redirect
@@ -66,6 +67,12 @@ class RegisterView(TripView):
 
     def get(self, request, trip_id):
         trip = self.get_trip(trip_id)
+        # if we have a pending paypal transaction, we redirect to the
+        # appropriate page
+        ppts = models.PayPalTransaction.get_pending(self.request.user, trip)
+        if ppts:
+            url = reverse('trips-paypal-pay', args=[ppts[0].id])
+            return redirect(url)
         return self.render(trip)
 
     def post(self, request, trip_id):

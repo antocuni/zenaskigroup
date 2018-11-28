@@ -2,12 +2,12 @@ from django.core.urlresolvers import reverse
 from django.shortcuts import render
 from django.conf import settings
 from django.http import Http404
-from django.views.generic import View
 from trips.models import PayPalTransaction
+from trips.register import LoginRequiredView
 from paypal.standard.models import ST_PP_COMPLETED
 from paypal.standard.ipn.signals import valid_ipn_received
 
-class PayPalView(View):
+class PayPalView(LoginRequiredView):
 
     def get(self, request, transaction_id):
         try:
