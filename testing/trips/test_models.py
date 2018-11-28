@@ -38,10 +38,6 @@ class TestParticipant(object):
         assert p.status == 'Con riserva'
         assert p.status_class == 'text-warning'
 
-        p.paypal_deadline = datetime(2018, 1, 1, 0, 0, 0)
-        assert p.status == 'In attesa di PayPal'
-        assert p.status_class == 'text-danger'
-
 
 class TestTrip(object):
 
@@ -51,18 +47,6 @@ class TestTrip(object):
         p3 = Participant(name='Uncle Scrooge', deposit=0, registered_by=testuser)
         trip.participant_set.add(p1, p2, p3)
         participants = trip.get_participants(testuser)
-        assert list(participants) == [p1, p3]
-
-    def test_get_paypal_participants(self, db, trip, testuser):
-        def P(name, **kwargs):
-            return Participant(name=name, deposit=0, **kwargs)
-        d = datetime(2014, 12, 24) # just a random non-NULL date
-        p1 = P('Mickey Mouse',  registered_by=testuser, paypal_deadline=d)
-        p2 = P('Donald Duck',   registered_by=testuser, paypal_deadline=None)
-        p3 = P('Uncle Scrooge', registered_by=testuser, paypal_deadline=d)
-        p4 = P('Goofy',         registered_by=None,     paypal_deadline=d)
-        trip.participant_set.add(p1, p2, p3, p4)
-        participants = trip.get_paypal_participants(testuser)
         assert list(participants) == [p1, p3]
 
     @freeze_time('2018-12-24')
@@ -172,25 +156,17 @@ class TestTrip(object):
         assert p3.with_reservation
         assert p2.deposit == p3.deposit == 25
 
-    @freeze_time('2018-12-24 12:00')
-    def test_pay_with_paypal(self, db, trip, testuser):
-        p1 = Participant(name='Mickey Mouse')
-        p2 = Participant(name='Donald Duck')
-        trip.add_participants(testuser, [p1, p2], paypal=True)
-        assert list(trip.participant_set.all()) == [p1, p2]
-        assert testuser.member.balance == 0
-        deadline = datetime(2018, 12, 24, 12, 10, 0)
-        assert p1.paypal_deadline == p2.paypal_deadline == deadline
 
+class TestPayPal(object):
 
-class TestPayPalTransaction(object):
+    @staticmethod
+    def P(name, deposit, trip):
+        return Participant(name=name, deposit=Decimal(deposit), trip=trip)
 
     @freeze_time('2018-12-24 12:00')
-    def test_make(self, db, trip, testuser):
-        def P(name, deposit):
-            return Participant(name=name, deposit=Decimal(deposit), trip=trip)
-        p1 = P('Mickey Mouse', 25)
-        p2 = P('Donald Duck', 30)
+    def test_transaction_make(self, db, trip, testuser):
+        p1 = self.P('Mickey Mouse', 25, trip)
+        p2 = self.P('Donald Duck', 30, trip)
         ppt = PayPalTransaction.make(testuser, trip, [p1, p2])
         assert ppt.user == testuser
         assert ppt.trip == trip
@@ -204,3 +180,26 @@ class TestPayPalTransaction(object):
         assert ppt.total_amount == 55
         assert ppt.grand_total == 57
         assert ppt.item_name == 'Iscrizione gita a Cervinia, 25/12/2018'
+
+    @freeze_time('2018-12-24 12:00')
+    def test_pay_with_paypal(self, db, trip, testuser):
+        p1 = Participant(name='Mickey Mouse')
+        p2 = Participant(name='Donald Duck')
+        trip.add_participants(testuser, [p1, p2], paypal=True)
+        assert list(trip.participant_set.all()) == [p1, p2]
+        assert testuser.member.balance == 0
+        assert p1.waiting_paypal
+        assert p2.waiting_paypal
+        assert p1.sublist == p2.sublist == 'PayPal'
+        transactions = trip.paypaltransaction_set.all()
+        assert len(transactions) == 1
+        ppt = transactions[0]
+        assert list(ppt.participant_set.all()) == [p1, p2]
+        assert ppt.total_amount == trip.deposit * 2
+
+    def test_participant_status(self, db, trip, testuser):
+        p1 = self.P('Mickey Mouse', 25, trip)
+        assert p1.status == 'Confermato'
+        ppt = PayPalTransaction.make(testuser, trip, [p1])
+        assert p1.status == 'In attesa di PayPal'
+        assert p1.status_class == 'text-danger'

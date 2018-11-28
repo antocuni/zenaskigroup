@@ -93,11 +93,7 @@ class Trip(models.Model):
     def get_participants(self, user):
         return self.participant_set.filter(registered_by=user)
 
-    def get_paypal_participants(self, user):
-        return self.get_participants(user).filter(paypal_deadline__isnull=False)
-
     def add_participants(self, user, participants, paypal=False):
-        paypal_deadline = datetime.now() + timedelta(minutes=10)
         total_deposit = 0
         for p in participants:
             # if we user is not trusted, we always use the trip deposit
@@ -108,7 +104,6 @@ class Trip(models.Model):
             p.with_reservation = self.with_reservation
             if paypal:
                 p.sublist = 'PayPal'
-                p.paypal_deadline = paypal_deadline
             else:
                 p.sublist = 'Online'
 
@@ -129,7 +124,9 @@ class Trip(models.Model):
 
             self.participant_set.add(*participants)
 
-            if not paypal:
+            if paypal:
+                ppt = PayPalTransaction.make(user, self, participants)
+            else:
                 user.member.balance -= total_deposit
                 names = ', '.join([p.name for p in participants])
                 descr = u'Iscrizione di %s a %s' % (names, self)
@@ -140,7 +137,6 @@ class Trip(models.Model):
                 t.save()
                 user.member.save()
             self.save()
-
 
 
 class Participant(models.Model):
@@ -175,8 +171,8 @@ class Participant(models.Model):
 
     @property
     def waiting_paypal(self):
-        return 'XXX'
-        #return self.paypal_deadline is not None
+        return (self.paypal_transaction is not None and
+                not self.paypal_transaction.is_paid)
 
     @property
     def paypal_fee(self):
