@@ -2,9 +2,11 @@ import pytest
 from freezegun import freeze_time
 from datetime import date, datetime
 from decimal import Decimal
+from django.conf import settings
 from django.contrib.auth.models import User
 from django.core.files.uploadedfile import SimpleUploadedFile
 from django.core import mail
+from paypal.standard.ipn.models import PayPalIPN
 from trips.models import (Trip, Participant, TripError, PayPalTransaction,
                           PayPalTransactionError)
 
@@ -27,6 +29,16 @@ def testuser(db):
     u.set_password('12345')
     u.save()
     return u
+
+def make_ipn(custom, grand_total):
+    return PayPalIPN(
+        receiver_email=settings.PAYPAL_BUSINESS_EMAIL,
+        receiver_id=settings.PAYPAL_BUSINESS_ID,
+        mc_currency='EUR',
+        payment_status='Completed',
+        custom=str(custom),
+        mc_gross=Decimal(grand_total))
+
 
 class TestParticipant(object):
 
@@ -274,3 +286,25 @@ class TestPayPal(object):
         ppt.status = ppt.Status.paid
         ppt.mark_waiting()
         assert ppt.status == ppt.Status.paid
+
+    def test_mark_paid(self, db, trip, testuser):
+        assert trip.seats_left == 50
+        p1 = Participant(name='Mickey Mouse')
+        p2 = Participant(name='Donald Duck')
+        ppt = trip.add_participants(testuser, [p1, p2], paypal=True)
+        assert ppt.id == 1
+        assert ppt.grand_total == 52
+
+        invalid_ipn = make_ipn(custom='1', grand_total=0)
+        with pytest.raises(PayPalTransactionError):
+            ppt.mark_paid(invalid_ipn)
+        assert ppt.status == ppt.Status.failed
+        assert p1.status == p2.status == 'Transazione fallita'
+        # we do NOT cancel the registration: we will handle this case manually
+        assert trip.seats_left == 48
+
+        ipn = make_ipn(custom='1', grand_total=52)
+        ppt.mark_paid(ipn)
+        assert ppt.status == ppt.Status.paid
+        assert p1.status == p2.status == 'Confermato'
+        assert trip.seats_left == 48

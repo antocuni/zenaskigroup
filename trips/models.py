@@ -318,3 +318,18 @@ class PayPalTransaction(models.Model):
                 # if the IPN already arrived, do nothing
                 pass
         self.save()
+
+    def mark_paid(self, ipn):
+        if (ipn.receiver_email != settings.PAYPAL_BUSINESS_EMAIL or
+            ipn.receiver_id != settings.PAYPAL_BUSINESS_ID or
+            ipn.mc_currency != 'EUR' or
+            ipn.payment_status != 'Completed' or
+            ipn.custom != str(self.id) or
+            ipn.mc_gross != self.grand_total):
+            self.status = self.Status.failed
+            self.save()
+            # send_email?
+            raise PayPalTransactionError("Invalid IPN: %s" % ipn.id)
+        else:
+            self.status = self.Status.paid
+            self.save()

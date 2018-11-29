@@ -67,12 +67,12 @@ class PayPalReturn(View):
         return redirect(url)
 
 def ipn_received(sender, **kwargs):
-    ipn_obj = sender
-    if ipn_obj.receiver_id != settings.PAYPAL_BUSINESS_ID:
-        print 'wrong!'
-        return
-    print 'paypal received', ipn_obj
-    # TODO
+    ipn = sender
+    print 'IPN received from PayPal: custom=%s' % ipn.custom
+    ppt_id = int(ipn.custom)
+    ppt = PayPalTransaction.objects.get(pk=ppt_id)
+    ppt.mark_paid(ipn)
+    print 'mark_paid done: new status: %s' % (ppt.Status(ppt.status))
 
 def setup_signals():
     # this is called from apps.TripsConfig.ready()

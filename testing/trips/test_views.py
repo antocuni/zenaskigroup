@@ -4,7 +4,7 @@ import pytest
 from freezegun import freeze_time
 from django.conf import settings
 from trips.models import Participant
-from testing.trips.test_models import trip, testuser
+from testing.trips.test_models import trip, testuser, make_ipn
 
 class BaseTestView(object):
 
@@ -75,3 +75,15 @@ class TestPayPal(BaseTestView):
         assert resp.url == 'http://testserver/trip/1/register/'
         ppt.refresh_from_db()
         assert ppt.status == ppt.Status.canceled
+
+    def test_ipn_received(self, db, trip, testuser):
+        from trips.paypal_view import ipn_received
+        # this is not strictly a view test because it's a signal
+        p1 = Participant(name='Mickey Mouse')
+        p2 = Participant(name='Donald Duck')
+        ppt = trip.add_participants(testuser, [p1, p2], paypal=True)
+        assert ppt.status == ppt.Status.pending
+        ipn = make_ipn(custom=ppt.id, grand_total=ppt.grand_total)
+        ipn_received(ipn)
+        ppt.refresh_from_db()
+        assert ppt.status == ppt.Status.paid
