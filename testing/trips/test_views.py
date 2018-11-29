@@ -3,6 +3,7 @@
 import pytest
 from freezegun import freeze_time
 from django.conf import settings
+from django.core import mail
 from trips.models import Participant
 from testing.trips.test_models import trip, testuser, make_ipn
 
@@ -87,3 +88,41 @@ class TestPayPal(BaseTestView):
         ipn_received(ipn)
         ppt.refresh_from_db()
         assert ppt.status == ppt.Status.paid
+
+        assert len(mail.outbox) == 1
+        msg = mail.outbox[0]
+        assert msg.subject == 'Zena Ski Group: conferma iscrizione'
+        assert msg.to == ['test@user.com']
+        assert msg.body == (u"L'iscrizione delle seguenti persone per la gita a "
+                            u"Cervinia del 25/12/2018 è stata effettuata "
+                            u"con successo:\n"
+                            u"  - Mickey Mouse\n"
+                            u"  - Donald Duck\n")
+
+    def test_ipn_received_invalid(self, db, trip, testuser):
+        from trips.paypal_view import ipn_received
+        # this is not strictly a view test because it's a signal
+        p1 = Participant(name='Mickey Mouse')
+        p2 = Participant(name='Donald Duck')
+        ppt = trip.add_participants(testuser, [p1, p2], paypal=True)
+        assert ppt.status == ppt.Status.pending
+        ipn = make_ipn(custom=ppt.id, grand_total=0)
+        ipn.save()
+        assert ipn.id == 1
+        ipn_received(ipn)
+        ppt.refresh_from_db()
+        assert ppt.status == ppt.Status.failed
+
+        assert len(mail.outbox) == 1
+        msg = mail.outbox[0]
+        assert msg.subject == 'Zena Ski Group: problemi con il pagamento'
+        assert msg.to == ['test@user.com']
+        assert msg.body == (
+            u"C'è stato un problema con la seguente transazione PayPal:\n"
+            u"Gita: Cervinia, 25/12/2018\n"
+            u"Partecipanti:\n"
+            u"  - Mickey Mouse\n"
+            u"  - Donald Duck\n"
+            u"\n"
+            u"Riferimento IPN interno: 1\n"
+            u"Si prega di contattare lo staff per risolvere il problema")

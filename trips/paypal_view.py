@@ -7,8 +7,9 @@ from django.utils.decorators import method_decorator
 from django.views.generic import View
 from paypal.standard.models import ST_PP_COMPLETED
 from paypal.standard.ipn.signals import valid_ipn_received
-from trips.models import PayPalTransaction
+from trips.models import PayPalTransaction, PayPalTransactionError
 from trips.register import LoginRequiredView
+from trips import mails
 
 class PayPalView(LoginRequiredView):
 
@@ -71,8 +72,15 @@ def ipn_received(sender, **kwargs):
     print 'IPN received from PayPal: custom=%s' % ipn.custom
     ppt_id = int(ipn.custom)
     ppt = PayPalTransaction.objects.get(pk=ppt_id)
-    ppt.mark_paid(ipn)
-    print 'mark_paid done: new status: %s' % (ppt.Status(ppt.status))
+    try:
+        ppt.mark_paid(ipn)
+        print 'mark_paid done: new status: %s' % (ppt.Status(ppt.status))
+        mails.registration_confirmed(ppt.user, ppt.trip,
+                                     ppt.participant_set.all())
+    except PayPalTransactionError as e:
+        print 'mark_paid failed: %s' % e
+        mails.ipn_failed(ipn, ppt)
+
 
 def setup_signals():
     # this is called from apps.TripsConfig.ready()
