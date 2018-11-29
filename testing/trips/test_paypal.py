@@ -2,6 +2,7 @@
 
 import pytest
 from freezegun import freeze_time
+from datetime import timedelta
 from django.conf import settings
 from django.core import mail
 from trips.models import Participant
@@ -52,6 +53,29 @@ class TestPayPalView(BaseTestView):
         assert resp.url == 'http://testserver/trip/1/register/'
         ppt.refresh_from_db()
         assert ppt.status == ppt.Status.canceled
+
+    def test_deadline(self, db, trip, testuser):
+        with freeze_time('2018-12-24 12:00') as freezer:
+            self.login()
+            p1 = Participant(name='Mickey Mouse')
+            p2 = Participant(name='Donald Duck')
+            ppt = trip.add_participants(testuser, [p1, p2], paypal=True)
+            assert ppt.id == 1
+            resp = self.get('/pay/1/')
+            assert resp.status_code == 200
+            assert resp.context['status'] == 'pending'
+
+            # move slightly before the timeout
+            freezer.tick(timedelta(minutes=settings.PAYPAL_DEADLINE - 1))
+            resp = self.get('/pay/1/')
+            assert resp.status_code == 200
+            assert resp.context['status'] == 'pending'
+
+            # move at the timeout
+            freezer.tick(timedelta(minutes=1))
+            resp = self.get('/pay/1/')
+            assert resp.status_code == 200
+            assert resp.context['status'] == 'canceled'
 
 
 class TestSignals(object):

@@ -121,6 +121,7 @@ MIDDLEWARE_CLASSES = (
     'cms.middleware.toolbar.ToolbarMiddleware',
     'cms.middleware.language.LanguageCookieMiddleware',
     'zenaskigroup.utils.UserTracebackMiddleware',
+    'trips.paypal_view.DeadlineMiddleware',
 )
 
 

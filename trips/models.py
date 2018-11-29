@@ -266,6 +266,9 @@ class PayPalTransaction(models.Model):
                          timedelta(minutes=settings.PAYPAL_DEADLINE))
         self.save()
         self.participant_set.add(*participants)
+        # add self to the pending transactions
+        pending_ppt = PendingPayPalTransactions(ppt=self)
+        pending_ppt.save()
         return self
 
     def __unicode__(self):
@@ -296,16 +299,32 @@ class PayPalTransaction(models.Model):
     def is_pending(self):
         return self.status == self.Status.pending
 
+    def _set_status(self, newstatus):
+        """
+        Set the status, save and remove self from PendingPayPalTransactions
+        """
+        self.status = newstatus
+        if self.status != self.Status.pending:
+            PendingPayPalTransactions.objects.filter(ppt=self).delete()
+        self.save()
+
+    def cancel_maybe(self):
+        with transaction.atomic():
+            if (self.status == self.Status.pending and
+                datetime.now() >= self.deadline):
+                print 'Automatic cancelation of ppt %s due to deadline: %s' % (
+                    self, self.deadline)
+                self.cancel()
+
     def cancel(self):
         with transaction.atomic():
             if self.status != self.Status.pending:
                 raise PayPalTransactionError(
                     u'Impossibile annullare la transazione')
-            self.status = self.Status.canceled
             for p in self.participant_set.all():
                 p.trip = None
                 p.save()
-        self.save()
+            self._set_status(self.Status.canceled)
 
     def mark_waiting(self):
         with transaction.atomic():
@@ -313,11 +332,10 @@ class PayPalTransaction(models.Model):
             if st == self.Status.canceled:
                 raise PayPalTransactionError(u'Transazione già annullata')
             elif st == self.Status.pending:
-                self.status = self.Status.waiting_ipn
+                self._set_status(self.Status.waiting_ipn)
             else:
                 # if the IPN already arrived, do nothing
                 pass
-        self.save()
 
     def mark_paid(self, ipn):
         if (ipn.receiver_email != settings.PAYPAL_BUSINESS_EMAIL or
@@ -326,10 +344,16 @@ class PayPalTransaction(models.Model):
             ipn.payment_status != 'Completed' or
             ipn.custom != str(self.id) or
             ipn.mc_gross != self.grand_total):
-            self.status = self.Status.failed
-            self.save()
-            # send_email?
+            self._set_status(self.Status.failed)
             raise PayPalTransactionError("Invalid IPN: %s" % ipn.id)
         else:
-            self.status = self.Status.paid
-            self.save()
+            self._set_status(self.Status.paid)
+
+
+class PendingPayPalTransactions(models.Model):
+    """
+    This is basically a self-managed index to contain all the pending
+    transactions, so that they can be efficiently checked by
+    DeadlineMiddleware
+    """
+    ppt = models.ForeignKey(PayPalTransaction, related_name='+')

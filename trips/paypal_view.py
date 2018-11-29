@@ -7,7 +7,8 @@ from django.utils.decorators import method_decorator
 from django.views.generic import View
 from paypal.standard.models import ST_PP_COMPLETED
 from paypal.standard.ipn.signals import valid_ipn_received
-from trips.models import PayPalTransaction, PayPalTransactionError
+from trips.models import (PayPalTransaction, PayPalTransactionError,
+                          PendingPayPalTransactions)
 from trips.register import LoginRequiredView
 from trips import mails
 
@@ -85,3 +86,10 @@ def ipn_received(sender, **kwargs):
 def setup_signals():
     # this is called from apps.TripsConfig.ready()
     valid_ipn_received.connect(ipn_received)
+
+
+class DeadlineMiddleware(object):
+    def process_request(self, request):
+        if request.path.startswith('/trip/') or request.path.startswith('/pay/'):
+            for t in PendingPayPalTransactions.objects.all():
+                t.ppt.cancel_maybe()

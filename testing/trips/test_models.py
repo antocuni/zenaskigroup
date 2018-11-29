@@ -1,6 +1,6 @@
 import pytest
 from freezegun import freeze_time
-from datetime import date, datetime
+from datetime import date, datetime, timedelta
 from decimal import Decimal
 from django.conf import settings
 from django.contrib.auth.models import User
@@ -8,7 +8,7 @@ from django.core.files.uploadedfile import SimpleUploadedFile
 from django.core import mail
 from paypal.standard.ipn.models import PayPalIPN
 from trips.models import (Trip, Participant, TripError, PayPalTransaction,
-                          PayPalTransactionError)
+                          PayPalTransactionError, PendingPayPalTransactions)
 
 @pytest.fixture
 def trip(db):
@@ -242,9 +242,14 @@ class TestPayPal(object):
         ppt = qs[0]
         assert ppt.total_amount == 50
         assert ppt.trip == trip
-        ppt.status = ppt.Status.paid
-        ppt.save()
+
+        pending_ppts = PendingPayPalTransactions.objects.all()
+        assert len(pending_ppts) == 1
+        assert pending_ppts[0].ppt == ppt
+
+        ppt._set_status(ppt.Status.paid)
         assert not PayPalTransaction.get_pending(testuser, trip)
+        assert PendingPayPalTransactions.objects.count() == 0
 
     def test_cancel(self, db, trip, testuser):
         assert trip.seats_left == 50
@@ -260,6 +265,19 @@ class TestPayPal(object):
         assert trip.seats_left == 50
         assert trip.participant_set.count() == 0
         assert list(ppt.participant_set.all()) == [p1, p2]
+
+    def test_cancel_maybe(self, db, trip, testuser):
+        with freeze_time('2018-12-24 12:00') as freezer:
+            p1 = Participant(name='Mickey Mouse')
+            p2 = Participant(name='Donald Duck')
+            ppt = trip.add_participants(testuser, [p1, p2], paypal=True)
+            assert ppt.is_pending
+            ppt.cancel_maybe()
+            assert ppt.is_pending
+            freezer.tick(timedelta(minutes=settings.PAYPAL_DEADLINE))
+            ppt.cancel_maybe()
+            assert not ppt.is_pending
+            assert ppt.status == ppt.Status.canceled
 
     def test_cannot_cancel(self, db, trip, testuser):
         p1 = Participant(name='Mickey Mouse')
