@@ -1,3 +1,4 @@
+from datetime import datetime
 from django.core.urlresolvers import reverse
 from django.shortcuts import render, redirect
 from django.conf import settings
@@ -42,9 +43,11 @@ class PayPalView(LoginRequiredView):
             reverse('trips-paypal-pay', args=[ppt.id]))
 
         status = ppt.Status(ppt.status).name
+        countdown = (ppt.deadline - datetime.now()).total_seconds
         context = {
             'ppt': ppt,
             'status': status,
+            'countdown': countdown,
             'notify_url': notify_url,
             'return_url': return_url,
             'cancel_url': cancel_url,
@@ -52,6 +55,7 @@ class PayPalView(LoginRequiredView):
             'paypal_business_id': settings.PAYPAL_BUSINESS_ID,
         }
         return render(request, 'trips/paypal.html', context)
+
 
 
 class PayPalReturn(View):

@@ -8,9 +8,13 @@
  $(document).ready(function($) { 
      function updateCountdown() {
          var countdown = $("#countdown");
-	     var end = new Date(countdown.attr("data-deadline"));
-	     var now = new Date();
-	     var seconds_left = (end - now) / 1000;
+	     var seconds_left = parseInt(countdown.attr("data-seconds"));
+
+         if (seconds_left <= 0)
+             // when the countdown is done, reload the page. Hopefully the
+             // transaction will be canceled
+             window.location.href = window.location.href;
+
          var prefix = "";
          if (seconds_left < 0) {
              prefix = "-";
@@ -19,9 +23,12 @@
          }
 	     var minutes = Math.floor(seconds_left / 60);
 	     var seconds = Math.floor(seconds_left % 60);
-	     if (minutes < "10") { minutes = "0" + minutes; }
-	     if (seconds < "10") { seconds = "0" + seconds; }
+	     if (minutes < "10")
+             minutes = "0" + minutes;
+	     if (seconds < "10")
+             seconds = "0" + seconds;
          countdown.html(prefix + minutes + ":" + seconds);
+         countdown.attr("data-seconds", seconds_left - 1);
      }
      updateCountdown();
      setInterval(function() { updateCountdown(); }, 1000);
@@ -46,7 +53,7 @@
         <br>
         <div style="font-size: 200%">
           <span class="glyphicon glyphicon-time"></span>
-          <span id="countdown" data-deadline="{{ ppt.deadline|date:'c' }}"></span>
+          <span id="countdown" data-seconds="{{ countdown }}"></span>
         </div>
       </div>
       {% elif status == 'waiting_ipn' %}

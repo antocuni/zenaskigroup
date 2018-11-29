@@ -265,6 +265,10 @@ class TestPayPal(object):
         assert trip.seats_left == 50
         assert trip.participant_set.count() == 0
         assert list(ppt.participant_set.all()) == [p1, p2]
+        # check that we can cancel twice, just in case
+        ppt.cancel()
+        assert not ppt.is_pending
+        assert ppt.status == ppt.Status.canceled
 
     def test_cancel_maybe(self, db, trip, testuser):
         with freeze_time('2018-12-24 12:00') as freezer:
@@ -326,3 +330,19 @@ class TestPayPal(object):
         assert ppt.status == ppt.Status.paid
         assert p1.status == p2.status == 'Confermato'
         assert trip.seats_left == 48
+
+    def test_mark_paid_after_cancel(self, db, trip, testuser):
+        assert trip.seats_left == 50
+        p1 = Participant(name='Mickey Mouse')
+        p2 = Participant(name='Donald Duck')
+        ppt = trip.add_participants(testuser, [p1, p2], paypal=True)
+        assert ppt.id == 1
+        assert ppt.grand_total == 52
+        ppt.cancel()
+
+        ipn = make_ipn(custom='1', grand_total=52)
+        with pytest.raises(PayPalTransactionError):
+            ppt.mark_paid(ipn)
+        assert ppt.status == ppt.Status.failed
+        assert p1.status == p2.status == 'Transazione fallita'
+        assert trip.seats_left == 50

@@ -318,6 +318,8 @@ class PayPalTransaction(models.Model):
 
     def cancel(self):
         with transaction.atomic():
+            if self.status == self.Status.canceled:
+                return
             if self.status != self.Status.pending:
                 raise PayPalTransactionError(
                     u'Impossibile annullare la transazione')
@@ -345,7 +347,12 @@ class PayPalTransaction(models.Model):
             ipn.custom != str(self.id) or
             ipn.mc_gross != self.grand_total):
             self._set_status(self.Status.failed)
-            raise PayPalTransactionError("Invalid IPN: %s" % ipn.id)
+            raise PayPalTransactionError(
+                "Invalid IPN: %s; ppt: %s" % (ipn.id, self))
+        elif self.status == self.Status.canceled:
+            self._set_status(self.Status.failed)
+            raise PayPalTransactionError(
+                "Transaction already canceled: %s" % self)
         else:
             self._set_status(self.Status.paid)
 
