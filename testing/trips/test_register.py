@@ -54,13 +54,13 @@ class TestRegisterForm(object):
 
 class TestRegister(BaseTestView):
 
-    def submit(self, url, data, paypal=False):
+    def submit(self, url, data, paypal=False, follow=False):
         encoded = encode_formset(RegisterFormSet, data)
         if paypal:
             encoded['btn-paypal'] = ''
         else:
             encoded['btn-balance'] = ''
-        return self.post(url, encoded)
+        return self.post(url, encoded, follow=follow)
 
     def get_participants(self, trip):
         res = []
@@ -95,7 +95,10 @@ class TestRegister(BaseTestView):
         # on the trip: since this is not a trusted user, the field is ignored
         p1 = {'name': 'Pippo', 'surname': 'Pluto', 'deposit': '42'}
         resp = self.submit('/trip/1/register/', [p1])
-        assert resp.status_code == 200
+        assert resp.status_code == 302 # redirect
+        assert resp.url == 'http://testserver/trip/1/register/'
+        # manually follow the redirect
+        resp = self.get(resp.url)
 
         # check that we registered the participant
         participants = self.get_participants(self.trip)
@@ -126,7 +129,7 @@ class TestRegister(BaseTestView):
         self.login()
         data = [{'name': 'Pippo', 'surname': 'Pluto'},
                 {'name': 'Mickey', 'surname': 'Mouse'}]
-        resp = self.submit('/trip/1/register/', data)
+        resp = self.submit('/trip/1/register/', data, follow=True)
         assert resp.status_code == 200
 
         participants = self.get_participants(self.trip)
@@ -157,7 +160,7 @@ class TestRegister(BaseTestView):
             {'name': 'Pippo', 'surname': 'Pluto', 'deposit': '10'},
             {'name': 'Mickey', 'surname': 'Mouse', 'deposit': '12'}
         ]
-        resp = self.submit('/trip/1/register/', data)
+        resp = self.submit('/trip/1/register/', data, follow=True)
         assert resp.status_code == 200
         participants = self.get_participants(self.trip)
         assert participants == [('Pluto Pippo', 10, False),
@@ -188,7 +191,7 @@ class TestRegister(BaseTestView):
             {'name': 'Mickey', 'surname': 'Mouse'},
             {'name': 'Donald', 'surname': 'Duck'}
         ]
-        resp = self.submit('/trip/1/register/', data)
+        resp = self.submit('/trip/1/register/', data, follow=True)
         assert resp.status_code == 200
         participants = self.get_participants(self.trip)
         assert participants == [('Mouse Mickey', 25, True),

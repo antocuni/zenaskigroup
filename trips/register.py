@@ -83,7 +83,6 @@ class RegisterView(TripView):
             # pre-populate the already compiled fields
             messages.error(request, "Correggere gli errori evidenziati")
             return self.render(trip, formset=formset)
-
         try:
             return self.on_form_validated(trip, formset)
         except models.TripError as exc:
@@ -105,7 +104,9 @@ class RegisterView(TripView):
                  u"Credito residuo: %s €" %
                  user.member.balance)
             messages.success(self.request, m)
-            return self.render(trip)
+            # redirect back to register/xx/
+            url = reverse('trips-register', args=[trip.id])
+            return redirect(url)
 
     # ---------------------
 
