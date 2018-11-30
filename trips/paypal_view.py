@@ -43,7 +43,7 @@ class PayPalView(LoginRequiredView):
             reverse('trips-paypal-pay', args=[ppt.id]))
 
         status = ppt.Status(ppt.status).name
-        countdown = (ppt.deadline - datetime.now()).total_seconds
+        countdown = int((ppt.deadline - datetime.now()).total_seconds())
         context = {
             'ppt': ppt,
             'status': status,

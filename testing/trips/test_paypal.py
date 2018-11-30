@@ -28,7 +28,7 @@ class TestPayPalView(BaseTestView):
         assert resp.status_code == 200
 
         tags = [
-            '<span id="countdown" data-deadline="2018-12-24T12:20:00">',
+            '<span id="countdown" data-seconds="1200">',
             '<input type="hidden" name="notify_url" value="http://testserver/paypal/">',
             '<input type="hidden" name="business" value="%s">' % settings.PAYPAL_BUSINESS_ID,
             '<input type="hidden" name="custom" value="1">']
