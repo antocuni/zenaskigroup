@@ -159,7 +159,8 @@ class Participant(models.Model):
     sublist = models.CharField(max_length=20, verbose_name='Lista')
     with_reservation = models.BooleanField(default=False, blank=False,
                                            verbose_name='Con riserva?')
-    paypal_transaction = models.ForeignKey('PayPalTransaction', null=True)
+    paypal_transaction = models.ForeignKey('PayPalTransaction', null=True,
+                                           blank=True)
 
     def __unicode__(self):
         return self.name
