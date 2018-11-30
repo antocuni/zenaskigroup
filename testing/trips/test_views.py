@@ -21,6 +21,13 @@ class BaseTestView(object):
     def post(self, *args, **kwargs):
         return self.client.post(*args, **kwargs)
 
+    def get_messages(self, resp, tags=False):
+        messages = list(resp.context['messages'])
+        if tags:
+            return [(unicode(m), m.tags) for m in messages]
+        else:
+            return [unicode(m) for m in messages]
+
 
 class TestNextTrip(BaseTestView):
 

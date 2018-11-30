@@ -104,8 +104,9 @@ class TestRegister(BaseTestView):
         testuser.member.refresh_from_db()
         assert testuser.member.balance == 5
 
-        assert resp.context['message'] == (u"L'iscrizione è andata a buon fine. "
-                                           u"Credito residuo: 5.00 €")
+        messages = self.get_messages(resp)
+        assert messages == [(u"L'iscrizione è andata a buon fine. "
+                             u"Credito residuo: 5.00 €")]
 
         # check the email which has been sent
         assert len(mail.outbox) == 1
@@ -173,7 +174,7 @@ class TestRegister(BaseTestView):
         assert resp.status_code == 200
         participants = self.get_participants(self.trip)
         assert not participants
-        assert resp.context['error'] == 'Credito insufficiente'
+        assert self.get_messages(resp) == ['Credito insufficiente']
 
     @freeze_time('2018-12-24')
     def test_with_reservation(self, trip, testuser):

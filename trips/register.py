@@ -9,6 +9,7 @@ from django.http import Http404
 from django.shortcuts import render, redirect
 from django.utils.decorators import method_decorator
 from django.contrib.auth.decorators import login_required
+from django.contrib import messages
 from trips import models
 from trips.views import compute_availability
 from trips import mails
@@ -80,13 +81,14 @@ class RegisterView(TripView):
         if not formset.is_valid():
             # pass form to render so that it can show the errors and
             # pre-populate the already compiled fields
-            error = "Correggere gli errori evidenziati"
-            return self.render(trip, formset=formset, error=error)
+            messages.error(request, "Correggere gli errori evidenziati")
+            return self.render(trip, formset=formset)
 
         try:
             return self.on_form_validated(trip, formset)
         except models.TripError as exc:
-            return self.render(trip, formset=formset, error=str(exc))
+            messages.error(request, str(exc))
+            return self.render(trip, formset=formset)
 
     def on_form_validated(self, trip, formset):
         user = self.request.user
@@ -99,10 +101,11 @@ class RegisterView(TripView):
         else:
             trip.add_participants(user, participants)
             mails.registration_confirmed(user, trip, participants)
-            message = (u"L'iscrizione è andata a buon fine. "
-                       u"Credito residuo: %s €" %
-                       user.member.balance)
-            return self.render(trip, message=message)
+            m = (u"L'iscrizione è andata a buon fine. "
+                 u"Credito residuo: %s €" %
+                 user.member.balance)
+            messages.success(self.request, m)
+            return self.render(trip)
 
     # ---------------------
 

@@ -37,16 +37,8 @@ $(document).ready(function($) {
 
     <form action="" method="post">
       {% csrf_token %}
-      {% if error %}
-        <div class="alert alert-danger">
-          {{ error }}
-        </div>
-      {% endif %}
-      {% if message %}
-        <div class="alert alert-success">
-          {{ message }}
-        </div>
-      {% endif %}
+      {% include 'partials/messages.html' %}
+
       <table class="table table-striped table-bordered table-hover table-condensed vertical-middle">
         <tr>
           <th>Cognome e nome</th>
