@@ -5,6 +5,7 @@ from django.core.mail import send_mail, EmailMessage
 from django.conf import settings
 from django.shortcuts import render, redirect
 from django.http import HttpResponse, Http404
+from django.views.decorators.csrf import csrf_exempt
 from django.contrib.auth.decorators import login_required
 from django.contrib.admin.views.decorators import staff_member_required
 import django.contrib.auth.models as auth_models
@@ -390,13 +391,43 @@ def jacket(request):
         }
     return render(request, 'trips/tuta.html', context)
 
+class SendEmailForm(forms.Form):
+    to = forms.CharField(label='To', initial=settings.ADMIN_EMAIL)
 
+
+@csrf_exempt
 @staff_member_required
 def sendmail(request):
-    send_mail('Zena Ski Group: Test Email',
-              'This is a test email',
-              settings.DEFAULT_FROM_EMAIL,
-              [settings.ADMIN_EMAIL],
-              fail_silently=True)
-    #
-    return HttpResponse("email sent to " + settings.ADMIN_EMAIL)
+    if request.method == 'POST':
+        form = SendEmailForm(request.POST)
+        if form.is_valid():
+            data = form.clean()
+            to = data['to']
+            sendmail.n += 1
+            subject = 'Zena Ski Group: Test Email #%s' % sendmail.n
+            body = ("This is a test email to check the SMTP.\n"
+                    "Date sent: %s\n" % datetime.now())
+            send_mail(subject,
+                      body,
+                      settings.DEFAULT_FROM_EMAIL,
+                      [to],
+                      fail_silently=True)
+            #
+            content = "To: %s\n\n%s\n%s\n " % (to, subject, body)
+            return HttpResponse(content, content_type="text/plain")
+    else:
+        form = SendEmailForm()
+        content = """
+        <html>
+          <body>
+           <h4>Send test email</h4>
+            <form method="POST">
+              %s
+            <input type="submit">
+            </form>
+          </body>
+        </html>
+        """ % form.as_table()
+        return HttpResponse(content)
+
+sendmail.n = 0
