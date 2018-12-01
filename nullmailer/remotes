@@ -1,1 +1,2 @@
+smtps.aruba.it smtp --port=465 --ssl --insecure --auth-login --user=sendmail@15-agosto.it --pass=jcnffkdkxd2r4b6w
 smtp.unbit.it smtp --user=mail@zenaskigroup.it --pass=zena1997
