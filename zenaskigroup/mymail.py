@@ -11,7 +11,16 @@ from nullmailer.backend import EmailBackend as NullMailerBackend
 # https://github.com/20tab/django-nullmailer/pull/3
 import os
 import threading
+import rfc822
 from nullmailer.backend import to_utf8
+
+def get_email_address(s):
+    """
+    Extract "foo@bar.com" from "Mr. Foo <foo@bar.com>"
+    """
+    name, email = rfc822.parseaddr(s)
+    return to_utf8(email)
+
 class MyNullMailerBackend(NullMailerBackend):
 
     def send_messages(self, email_messages):
@@ -26,8 +35,8 @@ class MyNullMailerBackend(NullMailerBackend):
             bcc = email_message.bcc or []
             recipients = to + cc + bcc
             #
-            from_email = to_utf8(email_message.from_email)
-            to_lines = '\n'.join([to_utf8(addr) for addr in recipients])
+            from_email = get_email_address(email_message.from_email)
+            to_lines = '\n'.join([get_email_address(addr) for addr in recipients])
             msg = "%s\n%s\n\n%s" % ( from_email, to_lines, email_message.message().as_string())
             if self._send(msg, pid, tid):
                 num_sent += 1
