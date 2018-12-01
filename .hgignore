@@ -1,8 +1,8 @@
 syntax: glob
 
-backup/*
+backup
 media
-/static
+static/*
 project.db
 django.log
 *.pyc
