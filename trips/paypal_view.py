@@ -53,6 +53,7 @@ class PayPalView(LoginRequiredView):
             'cancel_url': cancel_url,
             'paypal_url': settings.PAYPAL_URL,
             'paypal_business_id': settings.PAYPAL_BUSINESS_ID,
+            'paypal_use_sandbox': settings.PAYPAL_USE_SANDBOX,
         }
         return render(request, 'trips/paypal.html', context)
 

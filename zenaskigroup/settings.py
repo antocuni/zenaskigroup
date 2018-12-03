@@ -44,9 +44,17 @@ WSGI_APPLICATION = 'zenaskigroup.wsgi.application'
 
 # PayPal settings
 # ================
-PAYPAL_URL = 'https://www.sandbox.paypal.com'
-PAYPAL_BUSINESS_ID = "CGSM9YV3BSKZY"
-PAYPAL_BUSINESS_EMAIL = "paypalsandbox@zenaskigroup.it"
+PAYPAL_USE_SANDBOX = DEBUG
+
+if PAYPAL_USE_SANDBOX:
+    PAYPAL_URL = 'https://www.sandbox.paypal.com'
+    PAYPAL_BUSINESS_ID = "CGSM9YV3BSKZY"
+    PAYPAL_BUSINESS_EMAIL = "paypalsandbox@zenaskigroup.it"
+else:
+    PAYPAL_URL = "https://www.paypal.com"
+    PAYPAL_BUSINESS_ID = "DX7DKCUT6HB4A"
+    PAYPAL_BUSINESS_EMAIL = "paypal@zenaskigroup.it"
+
 
 PAYPAL_FEE = Decimal('0.90') # 0.90 EUR per participant
 PAYPAL_DEADLINE = 20 # minutes
