@@ -1,6 +1,7 @@
 # -*- encoding: utf-8 -*-
 
 from datetime import date, datetime, timedelta
+from decimal import Decimal
 from collections import Counter
 from enum import IntEnum
 from django.conf import settings
@@ -230,8 +231,6 @@ class PayPalTransactionError(Exception):
     pass
 
 class PayPalTransaction(models.Model):
-    FEE = settings.PAYPAL_FEE
-
     class Meta:
         verbose_name = 'Transazione PayPal'
         verbose_name_plural = 'Transazioni PayPal'
@@ -279,6 +278,13 @@ class PayPalTransaction(models.Model):
     def get_pending(cls, user, trip):
         return cls.objects.filter(user=user, trip=trip,
                                   status=cls.Status.pending)
+
+    @property
+    def FEE(self):
+        """
+        The fee for ONE participant
+        """
+        return Decimal(settings.PAYPAL_FEE, 2)
 
     @property
     def fees(self):

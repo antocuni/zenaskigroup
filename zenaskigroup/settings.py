@@ -47,7 +47,7 @@ PAYPAL_URL = 'https://www.sandbox.paypal.com'
 PAYPAL_BUSINESS_ID = "CGSM9YV3BSKZY"
 PAYPAL_BUSINESS_EMAIL = "paypalsandbox@zenaskigroup.it"
 
-PAYPAL_FEE = 1 # 1 EUR per participant
+PAYPAL_FEE = 0.90 # 0.90 EUR per participant
 PAYPAL_DEADLINE = 20 # minutes
 
 # Internationalization

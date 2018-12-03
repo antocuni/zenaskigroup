@@ -2,7 +2,6 @@ import pytest
 from freezegun import freeze_time
 from datetime import date, datetime, timedelta
 from decimal import Decimal
-from django.conf import settings
 from django.contrib.auth.models import User
 from django.core.files.uploadedfile import SimpleUploadedFile
 from django.core import mail
@@ -31,6 +30,7 @@ def testuser(db):
     return u
 
 def make_ipn(custom, grand_total):
+    from django.conf import settings
     return PayPalIPN(
         receiver_email=settings.PAYPAL_BUSINESS_EMAIL,
         receiver_id=settings.PAYPAL_BUSINESS_ID,
@@ -177,7 +177,8 @@ class TestPayPal(object):
         return Participant(name=name, deposit=Decimal(deposit), trip=trip)
 
     @freeze_time('2018-12-24 12:00')
-    def test_transaction_make(self, db, trip, testuser):
+    def test_transaction_make(self, db, trip, testuser, settings):
+        settings.PAYPAL_FEE = 0.75
         p1 = self.P('Mickey Mouse', 25, trip)
         p2 = self.P('Donald Duck', 30, trip)
         ppt = PayPalTransaction.make(testuser, trip, [p1, p2])
@@ -189,9 +190,9 @@ class TestPayPal(object):
         assert ppt.ipn is None
         assert ppt.is_pending
         assert list(ppt.participant_set.all()) == [p1, p2]
-        assert ppt.fees == 2
+        assert ppt.fees == 1.5
         assert ppt.total_amount == 55
-        assert ppt.grand_total == 57
+        assert ppt.grand_total == 56.5
         assert ppt.item_name == 'Iscrizione gita a Cervinia, 25/12/2018'
 
     @freeze_time('2018-12-24 12:00')
@@ -270,7 +271,8 @@ class TestPayPal(object):
         assert not ppt.is_pending
         assert ppt.status == ppt.Status.canceled
 
-    def test_cancel_maybe(self, db, trip, testuser):
+    def test_cancel_maybe(self, db, trip, testuser, settings):
+        settings.PAYPAL_DEADLINE = 12
         with freeze_time('2018-12-24 12:00') as freezer:
             p1 = Participant(name='Mickey Mouse')
             p2 = Participant(name='Donald Duck')
@@ -278,7 +280,7 @@ class TestPayPal(object):
             assert ppt.is_pending
             ppt.cancel_maybe()
             assert ppt.is_pending
-            freezer.tick(timedelta(minutes=settings.PAYPAL_DEADLINE))
+            freezer.tick(timedelta(minutes=12))
             ppt.cancel_maybe()
             assert not ppt.is_pending
             assert ppt.status == ppt.Status.canceled
@@ -309,7 +311,8 @@ class TestPayPal(object):
         ppt.mark_waiting()
         assert ppt.status == ppt.Status.paid
 
-    def test_mark_paid(self, db, trip, testuser):
+    def test_mark_paid(self, db, trip, testuser, settings):
+        settings.PAYPAL_FEE = 1
         assert trip.seats_left == 50
         p1 = Participant(name='Mickey Mouse')
         p2 = Participant(name='Donald Duck')
@@ -331,7 +334,8 @@ class TestPayPal(object):
         assert p1.status == p2.status == 'Confermato'
         assert trip.seats_left == 48
 
-    def test_mark_paid_after_cancel(self, db, trip, testuser):
+    def test_mark_paid_after_cancel(self, db, trip, testuser, settings):
+        settings.PAYPAL_FEE = 1
         assert trip.seats_left == 50
         p1 = Participant(name='Mickey Mouse')
         p2 = Participant(name='Donald Duck')
