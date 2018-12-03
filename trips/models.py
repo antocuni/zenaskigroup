@@ -284,7 +284,7 @@ class PayPalTransaction(models.Model):
         """
         The fee for ONE participant
         """
-        return Decimal(settings.PAYPAL_FEE, 2)
+        return settings.PAYPAL_FEE
 
     @property
     def fees(self):

@@ -1,5 +1,6 @@
 import os
 import socket
+from decimal import Decimal
 gettext = lambda s: s
 DATA_DIR = os.path.dirname(os.path.dirname(__file__))
 """
@@ -47,7 +48,7 @@ PAYPAL_URL = 'https://www.sandbox.paypal.com'
 PAYPAL_BUSINESS_ID = "CGSM9YV3BSKZY"
 PAYPAL_BUSINESS_EMAIL = "paypalsandbox@zenaskigroup.it"
 
-PAYPAL_FEE = 0.90 # 0.90 EUR per participant
+PAYPAL_FEE = Decimal('0.90') # 0.90 EUR per participant
 PAYPAL_DEADLINE = 20 # minutes
 
 # Internationalization

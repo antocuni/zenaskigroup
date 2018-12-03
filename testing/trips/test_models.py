@@ -178,7 +178,7 @@ class TestPayPal(object):
 
     @freeze_time('2018-12-24 12:00')
     def test_transaction_make(self, db, trip, testuser, settings):
-        settings.PAYPAL_FEE = 0.75
+        settings.PAYPAL_FEE = Decimal('0.75')
         p1 = self.P('Mickey Mouse', 25, trip)
         p2 = self.P('Donald Duck', 30, trip)
         ppt = PayPalTransaction.make(testuser, trip, [p1, p2])
