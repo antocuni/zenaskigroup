@@ -1,5 +1,6 @@
 import os
 import socket
+from decimal import Decimal
 gettext = lambda s: s
 DATA_DIR = os.path.dirname(os.path.dirname(__file__))
 """
@@ -19,6 +20,8 @@ import os
 
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
+SILENCED_SYSTEM_CHECKS = ["fields.W342"]
+
 
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/1.8/howto/deployment/checklist/
@@ -27,7 +30,7 @@ BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 SECRET_KEY = '*t&jdu(o2$=0m*bl1j5*k_5rfpdk)&btsx0fm&u==1dx=tg30a'
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = socket.gethostname() in ('homer', 'viper2')
+DEBUG = socket.gethostname() in ('homer', 'viper2', 'bart')
 
 ALLOWED_HOSTS = ['*']
 
@@ -35,23 +38,26 @@ DATETIME_FORMAT = 'd/m/Y H:i'
 DATE_FORMAT = 'd/m/Y'
 
 # Application definition
-
-
-
-
-
 ROOT_URLCONF = 'zenaskigroup.urls'
-
-
-
 WSGI_APPLICATION = 'zenaskigroup.wsgi.application'
 
 
-# Database
-# https://docs.djangoproject.com/en/1.8/ref/settings/#databases
+# PayPal settings
+# ================
+PAYPAL_USE_SANDBOX = DEBUG
+
+if PAYPAL_USE_SANDBOX:
+    PAYPAL_URL = 'https://www.sandbox.paypal.com'
+    PAYPAL_BUSINESS_ID = "CGSM9YV3BSKZY"
+    PAYPAL_BUSINESS_EMAIL = "paypalsandbox@zenaskigroup.it"
+else:
+    PAYPAL_URL = "https://www.paypal.com"
+    PAYPAL_BUSINESS_ID = "DX7DKCUT6HB4A"
+    PAYPAL_BUSINESS_EMAIL = "paypal@zenaskigroup.it"
 
 
-
+PAYPAL_FEE = Decimal('0.90') # 0.90 EUR per participant
+PAYPAL_DEADLINE = 20 # minutes
 
 # Internationalization
 # https://docs.djangoproject.com/en/1.8/topics/i18n/
@@ -80,6 +86,16 @@ STATICFILES_DIRS = (
 SITE_ID = 1
 
 
+from django.contrib.messages import constants as messages
+MESSAGE_TAGS = {
+    messages.DEBUG: 'alert-info',
+    messages.INFO: 'alert-info',
+    messages.SUCCESS: 'alert-success',
+    messages.WARNING: 'alert-warning',
+    messages.ERROR: 'alert-danger',
+}
+
+
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
@@ -88,21 +104,22 @@ TEMPLATES = [
             'debug': DEBUG,
             'context_processors': [
                 'django.contrib.auth.context_processors.auth',
-    'django.contrib.messages.context_processors.messages',
-    'django.core.context_processors.i18n',
-    'django.core.context_processors.debug',
-    'django.core.context_processors.request',
-    'django.core.context_processors.media',
-    'django.core.context_processors.csrf',
-    'django.core.context_processors.tz',
-    'sekizai.context_processors.sekizai',
-    'django.core.context_processors.static',
-    'cms.context_processors.cms_settings'
+                'django.contrib.messages.context_processors.messages',
+                'django.core.context_processors.i18n',
+                'django.core.context_processors.debug',
+                'django.core.context_processors.request',
+                'django.core.context_processors.media',
+                'django.core.context_processors.csrf',
+                'django.core.context_processors.tz',
+                'sekizai.context_processors.sekizai',
+                'django.core.context_processors.static',
+                'cms.context_processors.cms_settings',
+                'zenaskigroup.utils.additional_context',
             ],
             'loaders': [
                 'django.template.loaders.filesystem.Loader',
-    'django.template.loaders.app_directories.Loader',
-    'django.template.loaders.eggs.Loader'
+                'django.template.loaders.app_directories.Loader',
+                'django.template.loaders.eggs.Loader'
             ],
         },
     },
@@ -123,6 +140,7 @@ MIDDLEWARE_CLASSES = (
     'cms.middleware.toolbar.ToolbarMiddleware',
     'cms.middleware.language.LanguageCookieMiddleware',
     'zenaskigroup.utils.UserTracebackMiddleware',
+    'trips.paypal_view.DeadlineMiddleware',
 )
 
 
@@ -175,8 +193,9 @@ INSTALLED_APPS = (
     'djangocms_teaser',
     'djangocms_video',
     'reversion',
+    'paypal.standard.ipn',
     'zenaskigroup',
-    'trips',
+    'trips.apps.TripsConfig',
     'registration'
 )
 
@@ -232,7 +251,12 @@ DATABASES = {
         'NAME': os.path.join(BASE_DIR, 'project.db'),
         'PASSWORD': '',
         'PORT': '',
-        'USER': ''
+        'USER': '',
+
+        'TEST': {
+            'ENGINE': 'django.db.backends.sqlite3',
+            'NAME': os.path.join(BASE_DIR, 'testing', 'tests.db'),
+        }
     }
 }
 

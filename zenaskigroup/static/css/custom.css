@@ -33,3 +33,24 @@ body {
     padding-left:0;
     padding-right:0;
 }
+
+.text-large {
+    font-size: 200%;
+}
+
+/* https://stackoverflow.com/questions/10687306/why-do-twitter-bootstrap-tables-always-have-100-width */
+.table-nonfluid {
+   width: auto !important;
+}
+
+.paypal-form input {
+    border-width: 0;
+}
+
+.my-toolbar {
+    text-align: center;
+}
+
+.my-toolbar .btn {
+    margin-bottom: 3px;
+}

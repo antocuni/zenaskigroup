@@ -2,8 +2,10 @@ syntax: glob
 
 backup
 media
-static/*
+static
 project.db
 django.log
 *.pyc
 *~
+.pytest_cache
+testing/tests.db

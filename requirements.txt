@@ -34,3 +34,8 @@ pkg-resources==0.0.0
 pytz==2015.6
 six==1.10.0
 Unidecode==0.4.19
+pytest==4.0.0
+pytest-django==3.4.4
+django-paypal==0.5.0
+enum34==1.1.6
+py==1.7.0
