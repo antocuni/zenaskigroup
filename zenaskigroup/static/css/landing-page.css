@@ -75,7 +75,7 @@ h6 {
 .intro-message > h3 {
     font-family: "Venus Rising","Lato","Helvetica Neue",Helvetica,Arial,sans-serif;
     text-shadow: 2px 2px 3px rgba(0,0,0,0.6);
-    font-size: 0.9em;
+    font-size: 0.8em;
 }
 
 @media(max-width:767px) {
