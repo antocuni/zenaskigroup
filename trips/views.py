@@ -47,7 +47,7 @@ def trip(request, trip_id):
         raise Http404
 
     registration_allowed = trip.closing_date >= datetime.now()
-    
+
     if request.method == 'POST':
         form = TripForm(request.POST)
         if form.is_valid():
@@ -88,8 +88,8 @@ def compute_availability(user, context):
         # staff and trusted users always see the actual number of seats left
         show_seats = True
     context['show_seats'] = show_seats
-    
-    
+
+
 
 # ----------------------------------
 # faq & pictures
@@ -121,8 +121,10 @@ def detail(request, trip_id):
     reserves = trip.participant_set.filter(with_reservation=True)
     reserves = list(reserves.all())
     #
-    tables = [('Partecipanti', participants),
-              ('Riserve', reserves)]
+    header = '%s %s' % (trip.destination, trip.date)
+    tables = [(header, participants)]
+    if reserves:
+        tables.append(('Riserve', reserves))
     context = {'trip': trip,
                'tables': tables}
     return render(request, 'trips/detail.html', context)
@@ -142,7 +144,7 @@ class TopupForm(forms.ModelForm):
 def topup(request):
     transfers = models.MoneyTransfer.objects.filter(date=date.today(),
                                                     value__gt=0)
-    
+
     if request.method == 'POST':
         form = TopupForm(request.POST)
         money_transfer = form.save(commit=False)

@@ -1,53 +1,43 @@
 <html>
 <head>
-    <link rel="stylesheet" type="text/css" href="/static/zena.css" media="screen,print">
+  <link rel="stylesheet" type="text/css" href="/static/print.css" media="screen,print">
 </head>
 
 <body>
-  <table class="simple">
-    <tr>
-      <th>Data</th>
-      <th>Destinazione</th>
-      <th>Partecipanti</th>
-    </tr>
-
-    <tr>
-      <td>{{ trip.date }}</td>
-      <td>{{ trip.destination }}</td>
-      <td>{{ participants|length }}</td>
-    </tr>
-  </table>
-
-  <table class="simple">
+  <table class="participants">
   {% for header, participants in tables %}
     <tr>
-      <th class="header" colspan="8">{{ header }}</th>
+      <th class="header" colspan="10">{{ header }}</th>
     </tr>
     <tr>
       <th></th>
       <th>Nome</th>
       <th>Lista</th>
+      <th class="small">Username</th>
       <th>Socio?</th>
-      <th>Acconto</th>
+      <th class="small">Acconto</th>
       <th>Skipass</th>
+      <th>Assic?</th>
       <th>Saldo</th>
-      <th>Registrato da</th>
+      <th>&nbsp;</th>
     </tr>
 
     {% for p in participants %}
     <tr>
-      <td>{{ forloop.counter }}</td>
+      <td class="right">{{ forloop.counter }}</td>
       <td>{{ p.name|title }}</td>
       <td>{{ p.sublist }}</td>
-      <td>{{ p.is_member|yesno:"X,&nbsp;"|safe }}</td>
-      <td>{{ p.deposit }} €</td>
-      <td>&nbsp;</td>
-      <td>&nbsp;</td>
       {% if p.registered_by %}
-        <td>{{ p.registered_by.member }}</td>
+        <td class="small">{{ p.registered_by.member }}</td>
       {% else %}
-        <td>&nbsp;</td>
+        <td class="small">&nbsp;</td>
       {% endif %}
+      <td class="center">{{ p.is_member|yesno:"X,&nbsp;"|safe }}</td>
+      <td class="right">{{ p.deposit }} €</td>
+      <td>&nbsp;</td>
+      <td>&nbsp;</td>
+      <td>&nbsp;</td>
+      <td class="fullwidth">&nbsp;</td>
     </tr>
     {% endfor %}
   {% endfor %}
