@@ -183,18 +183,10 @@ table.simple tr:last-child td:last-child {
 table.simple tr:hover td {
 	background: #f2f2f2;
 	background: -webkit-gradient(linear, left top, left bottom, from(#f2f2f2), to(#f0f0f0));
-	background: -moz-linear-gradient(top,  #f2f2f2,  #f0f0f0);
+	background: -moz-linear-gradient(top,  #f2f2f2,  #f0f0f0);	
 }
 
 @media print {
-    @page {
-        margin:0px auto;
-    }
-
-    table.simple {
-        width: 100%;
-    }
-
     table.simple {
         border-collapse: collapse;
         border: 1px solid black;
@@ -202,10 +194,5 @@ table.simple tr:hover td {
 
     table.simple td,th,tr {
         border: 1px solid black!important;
-    }
-
-    table.simple td {
-        width: 1px;
-        white-space: nowrap;
     }
 }
