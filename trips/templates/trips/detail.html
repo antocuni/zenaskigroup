@@ -1,45 +1,65 @@
 <html>
 <head>
   <link rel="stylesheet" type="text/css" href="/static/print.css" media="screen,print">
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/1.11.3/jquery.min.js"></script>
+
+  <script>
+    function togglePrint(checkbox, id) {
+        if (checkbox.checked) {
+            $(id).removeClass("no-print");
+        }
+        else {
+            $(id).addClass("no-print");
+        }
+    }
+  </script>
 </head>
 
 <body>
-  <table class="participants">
-  {% for header, participants in tables %}
-    <tr>
-      <th class="header" colspan="10">{{ header }}</th>
-    </tr>
-    <tr>
-      <th></th>
-      <th>Nome</th>
-      <th>Lista</th>
-      <th class="small">Username</th>
-      <th>Socio?</th>
-      <th class="small">Acconto</th>
-      <th>Skipass</th>
-      <th>Assic?</th>
-      <th>Saldo</th>
-      <th>&nbsp;</th>
-    </tr>
+  <table id="{{cssid}}" class="participants">
+    {% for header, participants, cssid in tables %}
+    <tbody id="{{cssid}}">
+      <tr>
+        <th class="header" colspan="9">{{ header }}</th>
+        <th class="no-print">
+          <label>
+            <input type="checkbox" checked onclick='togglePrint(this, "#{{cssid}}")'> Stampa?
+          </label>
+        </th>
+      </tr>
+      <tr>
+        <th></th>
+        <th>Nome</th>
+        <th>Lista</th>
+        <th class="small">Username</th>
+        <th>Socio?</th>
+        <th class="small">Acconto</th>
+        <th>Skipass</th>
+        <th>Assic?</th>
+        <th>Saldo</th>
+        <th>&nbsp;</th>
+      </tr>
 
-    {% for p in participants %}
-    <tr>
-      <td class="right">{{ forloop.counter }}</td>
-      <td>{{ p.name|title }}</td>
-      <td>{{ p.sublist }}</td>
-      {% if p.registered_by %}
+      {% for p in participants %}
+      <tr>
+        <td class="right">{{ forloop.counter }}</td>
+        <td>{{ p.name|title }}</td>
+        <td>{{ p.sublist }}</td>
+        {% if p.registered_by %}
         <td class="small">{{ p.registered_by.member }}</td>
-      {% else %}
+        {% else %}
         <td class="small">&nbsp;</td>
-      {% endif %}
-      <td class="center">{{ p.is_member|yesno:"X,&nbsp;"|safe }}</td>
-      <td class="right">{{ p.deposit }} €</td>
-      <td>&nbsp;</td>
-      <td>&nbsp;</td>
-      <td>&nbsp;</td>
-      <td class="fullwidth">&nbsp;</td>
-    </tr>
+        {% endif %}
+        <td class="center">{{ p.is_member|yesno:"X,&nbsp;"|safe }}</td>
+        <td class="right">{{ p.deposit }} €</td>
+        <td>&nbsp;</td>
+        <td>&nbsp;</td>
+        <td>&nbsp;</td>
+        <td class="fullwidth">&nbsp;</td>
+      </tr>
+      {% endfor %}
+    </tbody>
+
     {% endfor %}
-  {% endfor %}
   </table>
 </body>

@@ -122,9 +122,9 @@ def detail(request, trip_id):
     reserves = list(reserves.all())
     #
     header = '%s %s' % (trip.destination, trip.date)
-    tables = [(header, participants)]
+    tables = [(header, participants, 'main')]
     if reserves:
-        tables.append(('Riserve', reserves))
+        tables.append(('Riserve', reserves, 'reserves'))
     context = {'trip': trip,
                'tables': tables}
     return render(request, 'trips/detail.html', context)

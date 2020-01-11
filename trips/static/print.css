@@ -10,6 +10,11 @@
     table.participants td,th,tr {
         border: 1px solid black!important;
     }
+
+    .no-print, .no-print *
+    {
+        display: none !important;
+    }
 }
 
 table.participants {
@@ -23,6 +28,11 @@ table.participants {
 
 	margin:0px;
 }
+
+table.participants tbody.no-print {
+    opacity: 50%;
+}
+
 
 table.participants *.small {
     font-size: 6pt;
