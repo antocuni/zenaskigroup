@@ -116,7 +116,10 @@ def detail(request, trip_id):
     #
     participants = trip.participant_set.filter(with_reservation=False)
     participants = list(participants.all())
-    participants.sort(key=lambda p: (p.sublist.lower().strip() == 'staff', p.name.lower()))
+    def key(p):
+        d = {'collaboratori': 1, 'collab': 1, 'staff': 2}
+        return d.get(p.sublist.lower().strip(), 0)
+    participants.sort(key=key)
     #
     reserves = trip.participant_set.filter(with_reservation=True)
     reserves = list(reserves.all())
