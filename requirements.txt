@@ -29,7 +29,7 @@ djangocms-text-ckeditor==2.6.0
 djangocms-video==0.1
 easy-thumbnails==2.3
 html5lib==0.999
-Pillow==3.0.0
+Pillow==8.3.2
 pkg-resources==0.0.0
 pytz==2015.6
 six==1.10.0
